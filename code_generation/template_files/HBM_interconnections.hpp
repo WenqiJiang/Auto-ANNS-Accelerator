@@ -1,7 +1,4 @@
 """
-Template inputs:
-    HBM_CHANNEL_NUM
-
 Variable to be replaced (<--variable_name-->):
     load_and_split_PQ_codes_wrapper_arguments
     load_and_split_PQ_codes_wrapper_func_body

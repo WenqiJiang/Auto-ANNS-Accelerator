@@ -26,10 +26,8 @@ for i in range(config["HBM_CHANNEL_NUM"]):
         s_scanned_entries_every_cell_Split_unit_replicated[{i}],
         s_single_PQ[{i} * 3 + 0], s_single_PQ[{i} * 3 + 1], s_single_PQ[{i} * 3 + 2]);""".format(i=i)
 
-template_str = template_str.replace(
-    "<--load_and_split_PQ_codes_wrapper_arguments-->", template_fill_dict["load_and_split_PQ_codes_wrapper_arguments"])
-template_str = template_str.replace(
-    "<--load_and_split_PQ_codes_wrapper_func_body-->", template_fill_dict["load_and_split_PQ_codes_wrapper_func_body"])
+for k in template_fill_dict:
+    template_str = template_str.replace("<--{}-->".format(k), template_fill_dict[k])
 output_str = template_str
 
 # Save generated file

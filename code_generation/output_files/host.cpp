@@ -1,8 +1,4 @@
 """
-Template inputs:
-    HBM_CHANNEL_NUM
-    DB_BYTES
-
 Variable to be replaced (<--variable_name-->):
     multiple lines (depends on HBM channel num):
         HBM_embedding_len    # number of 512-bit chunk in each bank

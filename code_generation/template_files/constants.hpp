@@ -1,7 +1,4 @@
 """
-Template inputs:
-    almost all the config variables
-
 Variable to be replaced (<--variable_name-->):
 
     NLIST
