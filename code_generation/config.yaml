@@ -6,6 +6,7 @@
   M: 16
   K: 256
   PRIORITY_QUEUE_LEN: 10
+  OPQ_ENABLE: True
 
   QUERY_NUM: 10000
 
@@ -42,3 +43,13 @@
   # number of 16 outputs per cycle, e.g., HBM channel num = 10, comp PE num = 30, then 
   #   SORT_GROUP_NUM = 2; if HBM channel = 12, PE_num = 36, then SORT_GROUP_NUM = 3
   SORT_GROUP_NUM: 2
+
+  DB_SCALE: "100M" # 1M to 1000M
+  # DB size in bytes, the contents will be evenly distributed to all bank
+  DB_BYTES: 2135895680
+
+  # Data directory (don't add "/" after the dir)
+  #   e.g., dir=/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_HBM_10_banks, 
+  #     then the content for HBM0 is:
+  #     /home/wejiang/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_HBM_10_banks/HBM_bank_0_raw
+  DATA_DIR: "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_HBM_10_banks"

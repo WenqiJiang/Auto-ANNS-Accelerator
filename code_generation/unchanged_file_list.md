@@ -3,6 +3,7 @@ The following files do not need any changes:
 * distance_estimation_by_LUT.hpp
 * LUT_construction.hpp
 * helpers.hpp
+* host.hpp
 * OPQ_preprocessing.hpp
 * priority_queue_distance_results_wrapper.hpp
 * priority_queue_distance_results.hpp

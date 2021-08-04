@@ -59,6 +59,7 @@ int main(int argc, char** argv)
     // size_t HBM_embedding25_len = 3337337;
     // size_t HBM_embedding26_len = 3337337;
 
+    int query_num = 10000;
     size_t HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_len = NLIST * 3;
     size_t HBM_query_vector_len = query_num * 128 < 10000 * 128? query_num * 128: 10000 * 128;
     size_t HBM_vector_quantizer_len = 8192 * 128;
