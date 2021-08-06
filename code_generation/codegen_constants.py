@@ -1,12 +1,19 @@
+import argparse 
+import os
 import yaml
 import numpy as np
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--input_dir', type=str, default="./template_files", help="template input directory")
+parser.add_argument('--output_dir', type=str, default="./output_files", help="output directory")
+args = parser.parse_args()
 
 # Load YAML configurations
 config_file = open("config.yaml", "r")
 config = yaml.load(config_file)
 
 # Load template
-template_dir = "./template_files/constants.hpp" 
+template_dir = os.path.join(args.input_dir, "constants.hpp")
 template_str = None
 with open(template_dir) as f:
     template_str = f.read()
@@ -30,12 +37,12 @@ template_fill_dict["NPROBE_PER_TABLE_CONSTRUCTION_PE_SMALLER"] = template_fill_d
 assert template_fill_dict["NPROBE_PER_TABLE_CONSTRUCTION_PE_SMALLER"] > 0
 
 for k in template_fill_dict:
-    template_str = template_str.replace("<--{}-->".format(k), template_fill_dict[k])
+    template_str = template_str.replace("<--{}-->".format(k), str(template_fill_dict[k]))
 output_str = template_str
 
 output_str = template_str
 
 # Save generated file
-output_dir = "./output_files/constants.hpp" 
+output_dir = os.path.join(args.output_dir, "constants.hpp")
 with open(output_dir, "w+") as f:
     f.write(output_str)

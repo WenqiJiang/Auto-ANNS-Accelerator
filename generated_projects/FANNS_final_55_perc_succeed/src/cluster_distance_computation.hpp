@@ -1,14 +1,3 @@
-/*
-Template inputs:
-    None, because the variables are defined in constants.hpp, e.g.,
-        #define PE_NUM_CENTER_DIST_COMP 15
-        #define PE_NUM_CENTER_DIST_COMP_EVEN 14
-        #define CENTROIDS_PER_PARTITION_EVEN 547
-        #define CENTROIDS_PER_PARTITION_LAST_PE (NLIST - PE_NUM_CENTER_DIST_COMP_EVEN * CENTROIDS_PER_PARTITION_EVEN)
-
-Variable to be replaced (<--variable_name-->):
-    None
-*/
 #pragma once 
 
 #include "constants.hpp"

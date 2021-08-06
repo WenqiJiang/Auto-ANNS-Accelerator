@@ -36,42 +36,42 @@ Variable to be replaced (<--variable_name-->):
 
 #pragma once
 
-#define NLIST <--NLIST-->
-#define NPROBE <--NPROBE-->
-#define D <--D-->
-#define M <--M-->
-#define K <--K-->
-#define PRIORITY_QUEUE_LEN <--PRIORITY_QUEUE_LEN-->
+#define NLIST 8192
+#define NPROBE 17
+#define D 128
+#define M 16
+#define K 256
+#define PRIORITY_QUEUE_LEN 10
 
-#define QUERY_NUM <--QUERY_NUM-->
+#define QUERY_NUM 10000
 
-#define LARGE_NUM <--LARGE_NUM--> // used to init the heap
+#define LARGE_NUM 99999999 // used to init the heap
 
 // stage 2
 // 16 = 15 equal one + 1 (all equal) diff must be 1!
-#define PE_NUM_CENTER_DIST_COMP <--PE_NUM_CENTER_DIST_COMP-->
-#define PE_NUM_CENTER_DIST_COMP_EVEN <--PE_NUM_CENTER_DIST_COMP_EVEN-->
-#define CENTROIDS_PER_PARTITION_EVEN <--CENTROIDS_PER_PARTITION_EVEN-->
-#define CENTROIDS_PER_PARTITION_LAST_PE <--CENTROIDS_PER_PARTITION_LAST_PE-->
+#define PE_NUM_CENTER_DIST_COMP 15
+#define PE_NUM_CENTER_DIST_COMP_EVEN 14
+#define CENTROIDS_PER_PARTITION_EVEN 547
+#define CENTROIDS_PER_PARTITION_LAST_PE 534
 
 // stage 3
 // 2 levels, first level 2 queue, second level 1 queue
-#define STAGE_3_PRIORITY_QUEUE_LEVEL <--STAGE_3_PRIORITY_QUEUE_LEVEL-->
-#define STAGE_3_PRIORITY_QUEUE_L1_NUM <--STAGE_3_PRIORITY_QUEUE_L1_NUM-->
+#define STAGE_3_PRIORITY_QUEUE_LEVEL 2
+#define STAGE_3_PRIORITY_QUEUE_L1_NUM 2
 
 // stage 4
 // first PE: construct 9 tables per query, last one construct 8
-#define PE_NUM_TABLE_CONSTRUCTION <--PE_NUM_TABLE_CONSTRUCTION-->
-#define PE_NUM_TABLE_CONSTRUCTION_LARGER <--PE_NUM_TABLE_CONSTRUCTION_LARGER-->
-#define PE_NUM_TABLE_CONSTRUCTION_SMALLER <--PE_NUM_TABLE_CONSTRUCTION_SMALLER-->
-#define NPROBE_PER_TABLE_CONSTRUCTION_PE_LARGER <--NPROBE_PER_TABLE_CONSTRUCTION_PE_LARGER-->
-#define NPROBE_PER_TABLE_CONSTRUCTION_PE_SMALLER <--NPROBE_PER_TABLE_CONSTRUCTION_PE_SMALLER-->
+#define PE_NUM_TABLE_CONSTRUCTION 6
+#define PE_NUM_TABLE_CONSTRUCTION_LARGER 5
+#define PE_NUM_TABLE_CONSTRUCTION_SMALLER 1
+#define NPROBE_PER_TABLE_CONSTRUCTION_PE_LARGER 3
+#define NPROBE_PER_TABLE_CONSTRUCTION_PE_SMALLER 2
 
 // stage 5
-#define HBM_CHANNEL_NUM <--HBM_CHANNEL_NUM-->
+#define HBM_CHANNEL_NUM 10
 // number of 16 outputs per cycle, e.g., HBM channel num = 10, comp PE num = 30, then 
 //   SORT_GROUP_NUM = 2; if HBM channel = 12, PE_num = 36, then SORT_GROUP_NUM = 3
-#define SORT_GROUP_NUM <--SORT_GROUP_NUM-->
+#define SORT_GROUP_NUM 2
 
 
 //////////////////////////////   TEMPLATE START  //////////////////////////////

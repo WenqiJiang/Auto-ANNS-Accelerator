@@ -87,22 +87,23 @@ exe: $(EXECUTABLE)
 
 # Building kernel
 $(XCLBIN)/$(KERNEL_NAME).$(TARGET).xo: src/vadd.cpp
+# $(XCLBIN)/$(KERNEL_NAME).$(TARGET).xo: src/vadd.cpp src/first_half.cpp src/second_half.cpp
 	mkdir -p $(XCLBIN)
-	$(VPP) $(CLFLAGS) --temp_dir $(BUILD_DIR_vadd) -c -k $(KERNEL_NAME) -I'$(<D)' -o'$@' '$<'  
+	$(VPP) $(CLFLAGS) --temp_dir $(BUILD_DIR_vadd) -c -k $(KERNEL_NAME) -I'$(<D)' -o'$@' '$<'  --jobs 8 #--from_step vpl.impl.phys_opt_design
 $(XCLBIN)/$(KERNEL_NAME).$(TARGET).xclbin: $(BINARY_CONTAINER_vadd_OBJS)
 	mkdir -p $(XCLBIN)
-	$(VPP) $(CLFLAGS) --temp_dir $(BUILD_DIR_vadd) -l $(LDCLFLAGS) -o'$@' $(+) 
+	$(VPP) $(CLFLAGS) --temp_dir $(BUILD_DIR_vadd) -l $(LDCLFLAGS) -o'$@' $(+) --jobs 8 #--from_step vpl.impl.phys_opt_design
 
 
 ifeq ($(VER),host_cpp)
 # Building Host
 $(EXECUTABLE): $(HOST_CPP_SRCS) $(HOST_CPP_HDRS)
 	mkdir -p $(XCLBIN)
-	$(CXX) $(CXXFLAGS) $(HOST_CPP_SRCS) $(HOST_CPP_HDRS) -o '$@' $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(HOST_CPP_SRCS) $(HOST_CPP_HDRS) -o '$@' $(LDFLAGS) -I /home/wejiang/OpenCL-CLHPP/include
 else
 $(EXECUTABLE): $(HOST_C_SRCS) $(HOST_C_HDRS)
 	mkdir -p $(XCLBIN)
-	$(CXX) $(CXXFLAGS) $(HOST_C_SRCS) $(HOST_C_HDRS) -o '$@' $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $(HOST_C_SRCS) $(HOST_C_HDRS) -o '$@' $(LDFLAGS) -I /home/wejiang/OpenCL-CLHPP/include
 endif
 
 emconfig:$(EMCONFIG_DIR)/emconfig.json

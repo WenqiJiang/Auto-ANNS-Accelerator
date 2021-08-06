@@ -1,4 +1,4 @@
-"""
+/*
 Variable to be replaced (<--variable_name-->):
 
     multiple lines (depends on HBM channel num):
@@ -12,7 +12,7 @@ Variable to be replaced (<--variable_name-->):
 
     basic constants:
 
-"""
+*/
 
 #include <stdio.h>
 #include <hls_stream.h>

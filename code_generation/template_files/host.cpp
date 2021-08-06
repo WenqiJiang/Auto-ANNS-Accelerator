@@ -1,4 +1,4 @@
-"""
+/*
 Variable to be replaced (<--variable_name-->):
     multiple lines (depends on HBM channel num):
         HBM_embedding_len    # number of 512-bit chunk in each bank
@@ -26,7 +26,7 @@ Variable to be replaced (<--variable_name-->):
         NLIST
         D
         M
-"""
+*/
 
     
 #include "host.hpp"

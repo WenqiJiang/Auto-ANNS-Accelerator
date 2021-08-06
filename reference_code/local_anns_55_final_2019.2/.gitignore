@@ -1,4 +1,8 @@
 host 
+src/hls_output
+hls_output
+*csv
+xclbin
 ./xclbin
 ./xclbin/*
 .run/*
@@ -17,3 +21,6 @@ xmltmp*
 ./xclbin
 _x/*
 _x.*
+*.wcfg
+*.wdb
+*.protoinst

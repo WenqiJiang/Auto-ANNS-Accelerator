@@ -1,11 +1,19 @@
+import argparse 
+import os
 import yaml
+import numpy as np
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--input_dir', type=str, default="./template_files", help="template input directory")
+parser.add_argument('--output_dir', type=str, default="./output_files", help="output directory")
+args = parser.parse_args()
 
 # Load YAML configurations
 config_file = open("config.yaml", "r")
 config = yaml.load(config_file)
 
 # Load template
-template_dir = "./template_files/host.cpp" 
+template_dir = os.path.join(args.input_dir, "host.cpp")
 template_str = None
 with open(template_dir) as f:
     template_str = f.read()
@@ -92,7 +100,7 @@ for i in range(config["HBM_CHANNEL_NUM"]):
         "{DATA_DIR}/product_quantizer_float32_{M}_{K}_{PARTITION}_raw", 
         std::ios::in | std::ios::binary);\n'''.format(
                 DATA_DIR=config["DATA_DIR"], M=config["M"],
-                K=config["K"],  PARTITION=int(config["K"]/config["M"]))
+                K=config["K"],  PARTITION=int(config["D"]/config["M"]))
     template_fill_dict["HBM_OPQ_matrix_fstream"] = \
         '''    std::ifstream HBM_OPQ_matrix_fstream(
         "{DATA_DIR}/OPQ_matrix_float32_{D}_{D}_raw", 
@@ -111,10 +119,10 @@ for i in range(config["HBM_CHANNEL_NUM"]):
 
 
 for k in template_fill_dict:
-    template_str = template_str.replace("<--{}-->".format(k), template_fill_dict[k])
+    template_str = template_str.replace("<--{}-->".format(k), str(template_fill_dict[k]))
 output_str = template_str
 
 # Save generated file
-output_dir = "./output_files/host.cpp" 
+output_dir = os.path.join(args.output_dir, "host.cpp")
 with open(output_dir, "w+") as f:
     f.write(output_str)

@@ -10,5 +10,3 @@ The following files do not need any changes:
 * priority_queue_vector_quantizer.hpp
 * select_Voronoi_cell.hpp 
 * sort_reduction_with_vecID.hpp
-
-TODO: vadd.hpp vadd.cpp host.hpp host.cpp

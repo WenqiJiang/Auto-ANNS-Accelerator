@@ -54,7 +54,17 @@ void replicate_s_scanned_entries_every_cell_Split_unit(
 
 template<const int query_num, const int nprobe>
 void load_and_split_PQ_codes_wrapper(
-<--load_and_split_PQ_codes_wrapper_arguments-->
+    const ap_uint512_t* HBM_in0,
+    const ap_uint512_t* HBM_in1,
+    const ap_uint512_t* HBM_in2,
+    const ap_uint512_t* HBM_in3,
+    const ap_uint512_t* HBM_in4,
+    const ap_uint512_t* HBM_in5,
+    const ap_uint512_t* HBM_in6,
+    const ap_uint512_t* HBM_in7,
+    const ap_uint512_t* HBM_in8,
+    const ap_uint512_t* HBM_in9,
+
     hls::stream<int>& s_start_addr_every_cell,
     hls::stream<int>& s_scanned_entries_every_cell_Load_unit,
     hls::stream<int>& s_scanned_entries_every_cell_Split_unit,
@@ -239,7 +249,17 @@ void replicate_s_scanned_entries_every_cell_Split_unit(
 
 template<const int query_num, const int nprobe>
 void load_and_split_PQ_codes_wrapper(
-<--load_and_split_PQ_codes_wrapper_arguments-->
+    const ap_uint512_t* HBM_in0,
+    const ap_uint512_t* HBM_in1,
+    const ap_uint512_t* HBM_in2,
+    const ap_uint512_t* HBM_in3,
+    const ap_uint512_t* HBM_in4,
+    const ap_uint512_t* HBM_in5,
+    const ap_uint512_t* HBM_in6,
+    const ap_uint512_t* HBM_in7,
+    const ap_uint512_t* HBM_in8,
+    const ap_uint512_t* HBM_in9,
+
     hls::stream<int>& s_start_addr_every_cell,
     hls::stream<int>& s_scanned_entries_every_cell_Load_unit,
     hls::stream<int>& s_scanned_entries_every_cell_Split_unit,
@@ -274,5 +294,55 @@ void load_and_split_PQ_codes_wrapper(
         s_scanned_entries_every_cell_Split_unit, 
         s_scanned_entries_every_cell_Split_unit_replicated); 
 
-<--load_and_split_PQ_codes_wrapper_func_body-->
+
+    load_and_split_PQ_codes<query_num, nprobe>(
+        HBM_in0, s_start_addr_every_cell_replicated[0], 
+        s_scanned_entries_every_cell_Load_unit_replicated[0], 
+        s_scanned_entries_every_cell_Split_unit_replicated[0],
+        s_single_PQ[0 * 3 + 0], s_single_PQ[0 * 3 + 1], s_single_PQ[0 * 3 + 2]);
+    load_and_split_PQ_codes<query_num, nprobe>(
+        HBM_in1, s_start_addr_every_cell_replicated[1], 
+        s_scanned_entries_every_cell_Load_unit_replicated[1], 
+        s_scanned_entries_every_cell_Split_unit_replicated[1],
+        s_single_PQ[1 * 3 + 0], s_single_PQ[1 * 3 + 1], s_single_PQ[1 * 3 + 2]);
+    load_and_split_PQ_codes<query_num, nprobe>(
+        HBM_in2, s_start_addr_every_cell_replicated[2], 
+        s_scanned_entries_every_cell_Load_unit_replicated[2], 
+        s_scanned_entries_every_cell_Split_unit_replicated[2],
+        s_single_PQ[2 * 3 + 0], s_single_PQ[2 * 3 + 1], s_single_PQ[2 * 3 + 2]);
+    load_and_split_PQ_codes<query_num, nprobe>(
+        HBM_in3, s_start_addr_every_cell_replicated[3], 
+        s_scanned_entries_every_cell_Load_unit_replicated[3], 
+        s_scanned_entries_every_cell_Split_unit_replicated[3],
+        s_single_PQ[3 * 3 + 0], s_single_PQ[3 * 3 + 1], s_single_PQ[3 * 3 + 2]);
+    load_and_split_PQ_codes<query_num, nprobe>(
+        HBM_in4, s_start_addr_every_cell_replicated[4], 
+        s_scanned_entries_every_cell_Load_unit_replicated[4], 
+        s_scanned_entries_every_cell_Split_unit_replicated[4],
+        s_single_PQ[4 * 3 + 0], s_single_PQ[4 * 3 + 1], s_single_PQ[4 * 3 + 2]);
+    load_and_split_PQ_codes<query_num, nprobe>(
+        HBM_in5, s_start_addr_every_cell_replicated[5], 
+        s_scanned_entries_every_cell_Load_unit_replicated[5], 
+        s_scanned_entries_every_cell_Split_unit_replicated[5],
+        s_single_PQ[5 * 3 + 0], s_single_PQ[5 * 3 + 1], s_single_PQ[5 * 3 + 2]);
+    load_and_split_PQ_codes<query_num, nprobe>(
+        HBM_in6, s_start_addr_every_cell_replicated[6], 
+        s_scanned_entries_every_cell_Load_unit_replicated[6], 
+        s_scanned_entries_every_cell_Split_unit_replicated[6],
+        s_single_PQ[6 * 3 + 0], s_single_PQ[6 * 3 + 1], s_single_PQ[6 * 3 + 2]);
+    load_and_split_PQ_codes<query_num, nprobe>(
+        HBM_in7, s_start_addr_every_cell_replicated[7], 
+        s_scanned_entries_every_cell_Load_unit_replicated[7], 
+        s_scanned_entries_every_cell_Split_unit_replicated[7],
+        s_single_PQ[7 * 3 + 0], s_single_PQ[7 * 3 + 1], s_single_PQ[7 * 3 + 2]);
+    load_and_split_PQ_codes<query_num, nprobe>(
+        HBM_in8, s_start_addr_every_cell_replicated[8], 
+        s_scanned_entries_every_cell_Load_unit_replicated[8], 
+        s_scanned_entries_every_cell_Split_unit_replicated[8],
+        s_single_PQ[8 * 3 + 0], s_single_PQ[8 * 3 + 1], s_single_PQ[8 * 3 + 2]);
+    load_and_split_PQ_codes<query_num, nprobe>(
+        HBM_in9, s_start_addr_every_cell_replicated[9], 
+        s_scanned_entries_every_cell_Load_unit_replicated[9], 
+        s_scanned_entries_every_cell_Split_unit_replicated[9],
+        s_single_PQ[9 * 3 + 0], s_single_PQ[9 * 3 + 1], s_single_PQ[9 * 3 + 2]);
 }

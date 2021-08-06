@@ -1,16 +1,3 @@
-/*
-Template inputs:
-    None, because the variables are defined in constants.hpp, e.g.,
-        #define PE_NUM_TABLE_CONSTRUCTION 6 // 2
-        #define PE_NUM_TABLE_CONSTRUCTION_LARGER 5 // 1
-        #define PE_NUM_TABLE_CONSTRUCTION_SMALLER 1
-        #define NPROBE_PER_TABLE_CONSTRUCTION_PE_LARGER 3 //9
-        #define NPROBE_PER_TABLE_CONSTRUCTION_PE_SMALLER 2 //8
-
-Variable to be replaced (<--variable_name-->):
-    None
-*/
-
 #pragma once 
 
 #include "constants.hpp"
