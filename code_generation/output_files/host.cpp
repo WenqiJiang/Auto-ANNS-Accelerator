@@ -78,7 +78,9 @@ int main(int argc, char** argv)
     size_t HBM_query_vector_len = query_num * 128 < 10000 * 128? query_num * 128: 10000 * 128;
     size_t HBM_vector_quantizer_len = 8192 * 128;
     size_t HBM_product_quantizer_len = 16 * 256 * (128 / 16);
+#ifdef OPQ_ENABLE
     size_t HBM_OPQ_matrix_len = 128 * 128;
+#endif
     size_t HBM_out_len = PRIORITY_QUEUE_LEN * query_num; 
 
     size_t sw_result_vec_ID_len = 10000 * 10;
@@ -102,7 +104,9 @@ int main(int argc, char** argv)
     size_t HBM_query_vector_size = HBM_query_vector_len * sizeof(float);
     size_t HBM_vector_quantizer_size = HBM_vector_quantizer_len * sizeof(float);
     size_t HBM_product_quantizer_size = HBM_product_quantizer_len * sizeof(float);
+#ifdef OPQ_ENABLE
     size_t HBM_OPQ_matrix_size = HBM_OPQ_matrix_len * sizeof(float);
+#endif
     size_t HBM_out_size = HBM_out_len * sizeof(ap_uint64_t); 
 
     size_t sw_result_vec_ID_size = sw_result_vec_ID_len * sizeof(int);
@@ -132,7 +136,9 @@ int main(int argc, char** argv)
     std::vector<float, aligned_allocator<float>> HBM_query_vectors(HBM_query_vector_len, 0);
     std::vector<float, aligned_allocator<float>> HBM_vector_quantizer(HBM_vector_quantizer_len, 0);
     std::vector<float, aligned_allocator<float>> HBM_product_quantizer(HBM_product_quantizer_len, 0);
+#ifdef OPQ_ENABLE
     std::vector<float, aligned_allocator<float>> HBM_OPQ_matrix(HBM_OPQ_matrix_len, 0);
+#endif
     std::vector<ap_uint64_t, aligned_allocator<ap_uint64_t>> HBM_out(HBM_out_len, 0);
     
     std::vector<int, aligned_allocator<int>> sw_result_vec_ID(sw_result_vec_ID_len, 0);
@@ -157,7 +163,9 @@ int main(int argc, char** argv)
     char* HBM_query_vector_char = (char*) malloc(HBM_query_vector_size);
     char* HBM_vector_quantizer_char = (char*) malloc(HBM_vector_quantizer_size);
     char* HBM_product_quantizer_char = (char*) malloc(HBM_product_quantizer_size);
+#ifdef OPQ_ENABLE
     char* HBM_OPQ_matrix_char = (char*) malloc(HBM_OPQ_matrix_size);
+#endif
 
     char* sw_result_vec_ID_char = (char*) malloc(sw_result_vec_ID_size);
     char* sw_result_dist_char = (char*) malloc(sw_result_dist_size);
@@ -210,10 +218,12 @@ int main(int argc, char** argv)
         "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_HBM_10_banks/product_quantizer_float32_16_256_8_raw", 
         std::ios::in | std::ios::binary);
 
+#ifdef OPQ_ENABLE
     std::ifstream HBM_OPQ_matrix_fstream(
         "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_HBM_10_banks/OPQ_matrix_float32_128_128_raw", 
         std::ios::in | std::ios::binary);
 
+#endif
 
     std::ifstream sw_result_vec_ID_fstream(
         "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_HBM_10_banks/result_nprobe_17_index_int32_10000_10_raw", 
@@ -242,7 +252,9 @@ int main(int argc, char** argv)
     HBM_query_vector_fstream.read(HBM_query_vector_char, HBM_query_vector_size);
     HBM_vector_quantizer_fstream.read(HBM_vector_quantizer_char, HBM_vector_quantizer_size);
     HBM_product_quantizer_fstream.read(HBM_product_quantizer_char, HBM_product_quantizer_size);
+#ifdef OPQ_ENABLE
     HBM_OPQ_matrix_fstream.read(HBM_OPQ_matrix_char, HBM_OPQ_matrix_size);
+#endif
 
     sw_result_vec_ID_fstream.read(sw_result_vec_ID_char, sw_result_vec_ID_size);
     sw_result_dist_fstream.read(sw_result_dist_char, sw_result_dist_size);
@@ -269,7 +281,9 @@ int main(int argc, char** argv)
     memcpy(&HBM_query_vectors[0], HBM_query_vector_char, HBM_query_vector_size);
     memcpy(&HBM_vector_quantizer[0], HBM_vector_quantizer_char, HBM_vector_quantizer_size);
     memcpy(&HBM_product_quantizer[0], HBM_product_quantizer_char, HBM_product_quantizer_size);
+#ifdef OPQ_ENABLE
     memcpy(&HBM_OPQ_matrix[0], HBM_OPQ_matrix_char, HBM_OPQ_matrix_size);
+#endif
 
     memcpy(&sw_result_vec_ID[0], sw_result_vec_ID_char, sw_result_vec_ID_size);
     memcpy(&sw_result_dist[0], sw_result_dist_char, sw_result_dist_size);
@@ -290,7 +304,9 @@ int main(int argc, char** argv)
     free(HBM_query_vector_char);
     free(HBM_vector_quantizer_char);
     free(HBM_product_quantizer_char);
+#ifdef OPQ_ENABLE
     free(HBM_OPQ_matrix_char);
+#endif
 
     free(sw_result_vec_ID_char);
     free(sw_result_dist_char);
@@ -369,7 +385,9 @@ int main(int argc, char** argv)
         HBM_query_vectorExt, 
         HBM_vector_quantizerExt, 
         HBM_product_quantizerExt, 
+#ifdef OPQ_ENABLE
         HBM_OPQ_matrixExt, 
+#endif
         HBM_outExt;
 //////////////////////////////   TEMPLATE END  //////////////////////////////
 
@@ -423,9 +441,11 @@ int main(int argc, char** argv)
     HBM_product_quantizerExt.param = 0;
     HBM_product_quantizerExt.flags = bank[24];
 
+#ifdef OPQ_ENABLE
     HBM_OPQ_matrixExt.obj = HBM_OPQ_matrix.data();
     HBM_OPQ_matrixExt.param = 0;
     HBM_OPQ_matrixExt.flags = bank[25];
+#endif
 
     HBM_outExt.obj = HBM_out.data();
     HBM_outExt.param = 0;
@@ -466,8 +486,10 @@ int main(int argc, char** argv)
             HBM_vector_quantizer_size, &HBM_vector_quantizerExt, &err));
     OCL_CHECK(err, cl::Buffer buffer_HBM_product_quantizer(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
             HBM_product_quantizer_size, &HBM_product_quantizerExt, &err));
+#ifdef OPQ_ENABLE
     OCL_CHECK(err, cl::Buffer buffer_HBM_OPQ_matrix(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
             HBM_OPQ_matrix_size, &HBM_OPQ_matrixExt, &err));
+#endif
     
 // .......................................................
 // Allocate Global Memory for sourcce_hw_results
@@ -485,25 +507,28 @@ int main(int argc, char** argv)
 // ============================================================================	
     
 //////////////////////////////   TEMPLATE START  //////////////////////////////
-    OCL_CHECK(err, err = krnl_vector_add.setArg(0, buffer_HBM_embedding0));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(1, buffer_HBM_embedding1));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(2, buffer_HBM_embedding2));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(3, buffer_HBM_embedding3));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(4, buffer_HBM_embedding4));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(5, buffer_HBM_embedding5));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(6, buffer_HBM_embedding6));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(7, buffer_HBM_embedding7));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(8, buffer_HBM_embedding8));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(9, buffer_HBM_embedding9));
+    int arg_counter = 0;
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding0));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding1));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding2));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding3));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding4));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding5));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding6));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding7));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding8));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding9));
 
     
-    OCL_CHECK(err, err = krnl_vector_add.setArg(10 + 0, buffer_HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(10 + 1, buffer_HBM_query_vectors));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(10 + 2, buffer_HBM_vector_quantizer));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(10 + 3, buffer_HBM_product_quantizer));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(10 + 4, buffer_HBM_OPQ_matrix));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_query_vectors));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_vector_quantizer));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_product_quantizer));
+#ifdef OPQ_ENABLE
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_OPQ_matrix));
+#endif
 
-    OCL_CHECK(err, err = krnl_vector_add.setArg(10 + 5, buffer_output));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_output));
     
 //////////////////////////////   TEMPLATE END  //////////////////////////////
 // ------------------------------------------------------
@@ -528,7 +553,10 @@ int main(int argc, char** argv)
         buffer_HBM_query_vectors,
         buffer_HBM_vector_quantizer,
         buffer_HBM_product_quantizer,
-        buffer_HBM_OPQ_matrix}, 0/* 0 means from host*/));	
+#ifdef OPQ_ENABLE
+        buffer_HBM_OPQ_matrix
+#endif
+        }, 0/* 0 means from host*/));	
     std::cout << "Host to device finished..." << std::endl;
 //////////////////////////////   TEMPLATE END  //////////////////////////////
 // ----------------------------------------

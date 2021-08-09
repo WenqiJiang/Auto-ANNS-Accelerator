@@ -56,8 +56,6 @@ void vadd(
     // HBM24: PQ quantizer
     float* HBM_product_quantizer,
 
-    // HBM25: OPQ Matrix
-    float* HBM_OPQ_matrix,
     // HBM26: output (vector_ID, distance)
     ap_uint64_t* HBM_out
     // const ap_uint512_t* HBM_in22, const ap_uint512_t* HBM_in23, 
@@ -84,7 +82,7 @@ void vadd(
 #pragma HLS INTERFACE m_axi port=HBM_query_vectors  offset=slave bundle=gmemB
 #pragma HLS INTERFACE m_axi port=HBM_vector_quantizer  offset=slave bundle=gmemC
 #pragma HLS INTERFACE m_axi port=HBM_product_quantizer  offset=slave bundle=gmemD
-#pragma HLS INTERFACE m_axi port=HBM_OPQ_matrix  offset=slave bundle=gmemE
+
 
 #pragma HLS INTERFACE m_axi port=HBM_out offset=slave bundle=gmemF
 
@@ -104,7 +102,7 @@ void vadd(
 #pragma HLS INTERFACE s_axilite port=HBM_query_vectors  bundle=control
 #pragma HLS INTERFACE s_axilite port=HBM_vector_quantizer  bundle=control
 #pragma HLS INTERFACE s_axilite port=HBM_product_quantizer  bundle=control
-#pragma HLS INTERFACE s_axilite port=HBM_OPQ_matrix  bundle=control
+
 
 #pragma HLS INTERFACE s_axilite port=HBM_out bundle=control
 
@@ -146,23 +144,8 @@ void vadd(
 
     load_PQ_quantizer(HBM_product_quantizer, s_PQ_quantizer_init);
 
-    hls::stream<float> s_OPQ_init;
-#pragma HLS stream variable=s_OPQ_init depth=512
-// #pragma HLS resource variable=s_OPQ_init core=FIFO_BRAM
-
-    load_OPQ_matrix(HBM_OPQ_matrix, s_OPQ_init);
-
     ////////////////////     Preprocessing    ////////////////////
 
-
-    hls::stream<float> s_preprocessed_query_vectors;
-#pragma HLS stream variable=s_preprocessed_query_vectors depth=512
-// #pragma HLS resource variable=s_preprocessed_query_vectors core=FIFO_BRAM
-
-    OPQ_preprocessing<QUERY_NUM>(
-        s_OPQ_init,
-        s_query_vectors,
-        s_preprocessed_query_vectors);
 
     hls::stream<float> s_preprocessed_query_vectors_lookup_PE;
 #pragma HLS stream variable=s_preprocessed_query_vectors_lookup_PE depth=512
@@ -173,7 +156,7 @@ void vadd(
 // #pragma HLS resource variable=s_preprocessed_query_vectors_distance_computation_PE core=FIFO_BRAM
 
     broadcast_preprocessed_query_vectors<QUERY_NUM>(
-        s_preprocessed_query_vectors,
+        s_query_vectors,
         s_preprocessed_query_vectors_distance_computation_PE,
         s_preprocessed_query_vectors_lookup_PE);
 

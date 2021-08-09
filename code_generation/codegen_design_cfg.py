@@ -28,6 +28,11 @@ for i in range(config["HBM_CHANNEL_NUM"]):
 	template_fill_dict["sp_memory_channel"] += \
         "sp=vadd_1.HBM_in{i}:HBM[{i}]\n".format(i=i)
 
+if config["OPQ_ENABLE"]:
+    template_fill_dict["connectivity_HBM_OPQ_matrix"] = "sp=vadd_1.HBM_OPQ_matrix:HBM[25]"
+else:
+    template_fill_dict["connectivity_HBM_OPQ_matrix"] = ""
+
 for k in template_fill_dict:
     template_str = template_str.replace("<--{}-->".format(k), str(template_fill_dict[k]))
 output_str = template_str

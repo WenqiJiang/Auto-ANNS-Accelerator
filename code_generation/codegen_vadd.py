@@ -35,6 +35,58 @@ for i in range(config["HBM_CHANNEL_NUM"]):
 	template_fill_dict["load_and_split_PQ_codes_wrapper_arg"] += \
         "        HBM_in{i},\n".format(i=i)
 
+if config["OPQ_ENABLE"]:
+    template_fill_dict["vadd_arg_OPQ_matrix"] = """
+    // HBM25: OPQ Matrix
+    float* HBM_OPQ_matrix,"""
+    template_fill_dict["vadd_m_axi_HBM_OPQ_matrix"] = "#pragma HLS INTERFACE m_axi port=HBM_OPQ_matrix  offset=slave bundle=gmemE"
+    template_fill_dict["vadd_s_axilite_HBM_OPQ_matrix"] = "#pragma HLS INTERFACE s_axilite port=HBM_OPQ_matrix  bundle=control"
+    template_fill_dict["stage_1_OPQ_preprocessing"] = """
+    hls::stream<float> s_OPQ_init;
+#pragma HLS stream variable=s_OPQ_init depth=512
+// #pragma HLS resource variable=s_OPQ_init core=FIFO_BRAM
+
+    load_OPQ_matrix(HBM_OPQ_matrix, s_OPQ_init);
+
+    hls::stream<float> s_preprocessed_query_vectors;
+#pragma HLS stream variable=s_preprocessed_query_vectors depth=512
+// #pragma HLS resource variable=s_preprocessed_query_vectors core=FIFO_BRAM
+
+    OPQ_preprocessing<QUERY_NUM>(
+        s_OPQ_init,
+        s_query_vectors,
+        s_preprocessed_query_vectors);
+
+    hls::stream<float> s_preprocessed_query_vectors_lookup_PE;
+#pragma HLS stream variable=s_preprocessed_query_vectors_lookup_PE depth=512
+// #pragma HLS resource variable=s_preprocessed_query_vectors_lookup_PE core=FIFO_BRAM
+
+    hls::stream<float> s_preprocessed_query_vectors_distance_computation_PE;
+#pragma HLS stream variable=s_preprocessed_query_vectors_distance_computation_PE depth=512
+// #pragma HLS resource variable=s_preprocessed_query_vectors_distance_computation_PE core=FIFO_BRAM
+
+    broadcast_preprocessed_query_vectors<QUERY_NUM>(
+        s_preprocessed_query_vectors,
+        s_preprocessed_query_vectors_distance_computation_PE,
+        s_preprocessed_query_vectors_lookup_PE);"""
+else:
+    template_fill_dict["vadd_arg_OPQ_matrix"] = ""
+    template_fill_dict["vadd_m_axi_HBM_OPQ_matrix"] = ""
+    template_fill_dict["vadd_s_axilite_HBM_OPQ_matrix"] = ""
+    template_fill_dict["stage_1_OPQ_preprocessing"] = """
+    hls::stream<float> s_preprocessed_query_vectors_lookup_PE;
+#pragma HLS stream variable=s_preprocessed_query_vectors_lookup_PE depth=512
+// #pragma HLS resource variable=s_preprocessed_query_vectors_lookup_PE core=FIFO_BRAM
+
+    hls::stream<float> s_preprocessed_query_vectors_distance_computation_PE;
+#pragma HLS stream variable=s_preprocessed_query_vectors_distance_computation_PE depth=512
+// #pragma HLS resource variable=s_preprocessed_query_vectors_distance_computation_PE core=FIFO_BRAM
+
+    broadcast_preprocessed_query_vectors<QUERY_NUM>(
+        s_query_vectors,
+        s_preprocessed_query_vectors_distance_computation_PE,
+        s_preprocessed_query_vectors_lookup_PE);"""
+
 for k in template_fill_dict:
     template_str = template_str.replace("<--{}-->".format(k), str(template_fill_dict[k]))
 output_str = template_str

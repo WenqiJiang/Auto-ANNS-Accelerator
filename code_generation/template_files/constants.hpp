@@ -7,6 +7,8 @@ Variable to be replaced (<--variable_name-->):
     M
     K
     PRIORITY_QUEUE_LEN
+    
+    OPQ_ENABLE
 
     QUERY_NUM
 
@@ -42,6 +44,8 @@ Variable to be replaced (<--variable_name-->):
 #define M <--M-->
 #define K <--K-->
 #define PRIORITY_QUEUE_LEN <--PRIORITY_QUEUE_LEN-->
+
+<--OPQ_ENABLE-->
 
 #define QUERY_NUM <--QUERY_NUM-->
 

@@ -39,13 +39,13 @@ Variable to be replaced (<--variable_name-->):
 #pragma once
 
 #define NLIST 8192
-#define NPROBE 17
+#define NPROBE 22
 #define D 128
 #define M 16
 #define K 256
 #define PRIORITY_QUEUE_LEN 10
 
-#define OPQ_ENABLE 1
+
 
 #define QUERY_NUM 10000
 
@@ -68,7 +68,7 @@ Variable to be replaced (<--variable_name-->):
 #define PE_NUM_TABLE_CONSTRUCTION 6
 #define PE_NUM_TABLE_CONSTRUCTION_LARGER 5
 #define PE_NUM_TABLE_CONSTRUCTION_SMALLER 1
-#define NPROBE_PER_TABLE_CONSTRUCTION_PE_LARGER 3
+#define NPROBE_PER_TABLE_CONSTRUCTION_PE_LARGER 4
 #define NPROBE_PER_TABLE_CONSTRUCTION_PE_SMALLER 2
 
 // stage 5

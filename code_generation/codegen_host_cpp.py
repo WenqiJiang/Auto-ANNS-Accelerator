@@ -76,7 +76,7 @@ for i in range(config["HBM_CHANNEL_NUM"]):
         '''    OCL_CHECK(err, cl::Buffer buffer_HBM_embedding{i}(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
             HBM_embedding{i}_size, &HBM_embedding{i}Ext, &err));\n'''.format(i=i)
     template_fill_dict["buffer_HBM_embedding_set_krnl_arg"] += \
-        "    OCL_CHECK(err, err = krnl_vector_add.setArg({i}, buffer_HBM_embedding{i}));\n".format(i=i)
+        "    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding{i}));\n".format(i=i)
     template_fill_dict["buffer_HBM_embedding_enqueueMigrateMemObjects"] += \
         "        buffer_HBM_embedding{i},\n".format(i=i)
 

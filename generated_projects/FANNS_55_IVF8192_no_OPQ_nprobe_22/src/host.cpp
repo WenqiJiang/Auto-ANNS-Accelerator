@@ -61,23 +61,43 @@ int main(int argc, char** argv)
 
     // e.g., 8192 + 10 banks
     // len = 3337337 * 512-bit per bank
-<--HBM_embedding_len-->
+    size_t HBM_embedding0_len = 3337297;
+    size_t HBM_embedding1_len = 3337297;
+    size_t HBM_embedding2_len = 3337297;
+    size_t HBM_embedding3_len = 3337297;
+    size_t HBM_embedding4_len = 3337297;
+    size_t HBM_embedding5_len = 3337297;
+    size_t HBM_embedding6_len = 3337297;
+    size_t HBM_embedding7_len = 3337297;
+    size_t HBM_embedding8_len = 3337297;
+    size_t HBM_embedding9_len = 3337297;
 
-    int query_num = <--QUERY_NUM-->;
+
+    int query_num = 10000;
     size_t HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_len = NLIST * 3;
-    size_t HBM_query_vector_len = query_num * <--D--> < <--QUERY_NUM--> * <--D-->? query_num * <--D-->: <--QUERY_NUM--> * <--D-->;
-    size_t HBM_vector_quantizer_len = <--NLIST--> * <--D-->;
-    size_t HBM_product_quantizer_len = <--M--> * 256 * (<--D--> / <--M-->);
+    size_t HBM_query_vector_len = query_num * 128 < 10000 * 128? query_num * 128: 10000 * 128;
+    size_t HBM_vector_quantizer_len = 8192 * 128;
+    size_t HBM_product_quantizer_len = 16 * 256 * (128 / 16);
 #ifdef OPQ_ENABLE
-    size_t HBM_OPQ_matrix_len = <--D--> * <--D-->;
+    size_t HBM_OPQ_matrix_len = 128 * 128;
 #endif
     size_t HBM_out_len = PRIORITY_QUEUE_LEN * query_num; 
 
-    size_t sw_result_vec_ID_len = <--QUERY_NUM--> * 10;
-    size_t sw_result_dist_len = <--QUERY_NUM--> * 10;
+    size_t sw_result_vec_ID_len = 10000 * 10;
+    size_t sw_result_dist_len = 10000 * 10;
 
     // size = 101841920
-<--HBM_embedding_size-->
+    size_t HBM_embedding0_size =  HBM_embedding0_len * sizeof(ap_uint512_t);
+    size_t HBM_embedding1_size =  HBM_embedding1_len * sizeof(ap_uint512_t);
+    size_t HBM_embedding2_size =  HBM_embedding2_len * sizeof(ap_uint512_t);
+    size_t HBM_embedding3_size =  HBM_embedding3_len * sizeof(ap_uint512_t);
+    size_t HBM_embedding4_size =  HBM_embedding4_len * sizeof(ap_uint512_t);
+    size_t HBM_embedding5_size =  HBM_embedding5_len * sizeof(ap_uint512_t);
+    size_t HBM_embedding6_size =  HBM_embedding6_len * sizeof(ap_uint512_t);
+    size_t HBM_embedding7_size =  HBM_embedding7_len * sizeof(ap_uint512_t);
+    size_t HBM_embedding8_size =  HBM_embedding8_len * sizeof(ap_uint512_t);
+    size_t HBM_embedding9_size =  HBM_embedding9_len * sizeof(ap_uint512_t);
+
 
     size_t HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_size = 
         HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_len * sizeof(int);
@@ -99,7 +119,17 @@ int main(int argc, char** argv)
 
     // allocate aligned 2D vectors
 //////////////////////////////   TEMPLATE START  //////////////////////////////
-<--HBM_embedding_allocate-->
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_embedding0(HBM_embedding0_len, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_embedding1(HBM_embedding1_len, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_embedding2(HBM_embedding2_len, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_embedding3(HBM_embedding3_len, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_embedding4(HBM_embedding4_len, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_embedding5(HBM_embedding5_len, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_embedding6(HBM_embedding6_len, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_embedding7(HBM_embedding7_len, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_embedding8(HBM_embedding8_len, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_embedding9(HBM_embedding9_len, 0);
+
 
     std::vector<int, aligned_allocator<int>> HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid(
         HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_len, 0);
@@ -116,7 +146,17 @@ int main(int argc, char** argv)
 
 //////////////////////////////   TEMPLATE END  //////////////////////////////
 
-<--HBM_embedding_char-->
+    char* HBM_embedding0_char = (char*) malloc(HBM_embedding0_size);
+    char* HBM_embedding1_char = (char*) malloc(HBM_embedding1_size);
+    char* HBM_embedding2_char = (char*) malloc(HBM_embedding2_size);
+    char* HBM_embedding3_char = (char*) malloc(HBM_embedding3_size);
+    char* HBM_embedding4_char = (char*) malloc(HBM_embedding4_size);
+    char* HBM_embedding5_char = (char*) malloc(HBM_embedding5_size);
+    char* HBM_embedding6_char = (char*) malloc(HBM_embedding6_size);
+    char* HBM_embedding7_char = (char*) malloc(HBM_embedding7_size);
+    char* HBM_embedding8_char = (char*) malloc(HBM_embedding8_size);
+    char* HBM_embedding9_char = (char*) malloc(HBM_embedding9_size);
+
 
     char* HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_char = 
         (char*) malloc(HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_size);
@@ -130,20 +170,81 @@ int main(int argc, char** argv)
     char* sw_result_vec_ID_char = (char*) malloc(sw_result_vec_ID_size);
     char* sw_result_dist_char = (char*) malloc(sw_result_dist_size);
 
-<--HBM_embedding_fstream-->
+    std::ifstream HBM_embedding0_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/HBM_bank_0_raw", 
+        std::ios::in | std::ios::binary);
+    std::ifstream HBM_embedding1_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/HBM_bank_1_raw", 
+        std::ios::in | std::ios::binary);
+    std::ifstream HBM_embedding2_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/HBM_bank_2_raw", 
+        std::ios::in | std::ios::binary);
+    std::ifstream HBM_embedding3_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/HBM_bank_3_raw", 
+        std::ios::in | std::ios::binary);
+    std::ifstream HBM_embedding4_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/HBM_bank_4_raw", 
+        std::ios::in | std::ios::binary);
+    std::ifstream HBM_embedding5_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/HBM_bank_5_raw", 
+        std::ios::in | std::ios::binary);
+    std::ifstream HBM_embedding6_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/HBM_bank_6_raw", 
+        std::ios::in | std::ios::binary);
+    std::ifstream HBM_embedding7_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/HBM_bank_7_raw", 
+        std::ios::in | std::ios::binary);
+    std::ifstream HBM_embedding8_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/HBM_bank_8_raw", 
+        std::ios::in | std::ios::binary);
+    std::ifstream HBM_embedding9_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/HBM_bank_9_raw", 
+        std::ios::in | std::ios::binary);
 
-<--HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_fstream-->
-<--HBM_query_vector_fstream-->
-<--HBM_vector_quantizer_fstream-->
-<--HBM_product_quantizer_fstream-->
+
+    std::ifstream HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_3_by_8192_raw", 
+        std::ios::in | std::ios::binary);
+
+    std::ifstream HBM_query_vector_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/query_vectors_float32_10000_128_raw", 
+        std::ios::in | std::ios::binary);
+
+    std::ifstream HBM_vector_quantizer_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/vector_quantizer_float32_8192_128_raw", 
+        std::ios::in | std::ios::binary);
+
+    std::ifstream HBM_product_quantizer_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/product_quantizer_float32_16_256_8_raw", 
+        std::ios::in | std::ios::binary);
+
 #ifdef OPQ_ENABLE
-<--HBM_OPQ_matrix_fstream-->
+    std::ifstream HBM_OPQ_matrix_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/OPQ_matrix_float32_128_128_raw", 
+        std::ios::in | std::ios::binary);
+
 #endif
 
-<--sw_result_vec_ID_fstream-->
-<--sw_result_dist_fstream-->
+    std::ifstream sw_result_vec_ID_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/result_nprobe_22_index_int32_10000_10_raw", 
+        std::ios::in | std::ios::binary);
+
+    std::ifstream sw_result_dist_fstream(
+        "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks/result_nprobe_22_distance_float32_10000_10_raw", 
+        std::ios::in | std::ios::binary);
+
         
-<--HBM_embedding0_fstream_read-->
+    HBM_embedding0_fstream.read(HBM_embedding0_char, HBM_embedding0_size);
+    HBM_embedding1_fstream.read(HBM_embedding1_char, HBM_embedding1_size);
+    HBM_embedding2_fstream.read(HBM_embedding2_char, HBM_embedding2_size);
+    HBM_embedding3_fstream.read(HBM_embedding3_char, HBM_embedding3_size);
+    HBM_embedding4_fstream.read(HBM_embedding4_char, HBM_embedding4_size);
+    HBM_embedding5_fstream.read(HBM_embedding5_char, HBM_embedding5_size);
+    HBM_embedding6_fstream.read(HBM_embedding6_char, HBM_embedding6_size);
+    HBM_embedding7_fstream.read(HBM_embedding7_char, HBM_embedding7_size);
+    HBM_embedding8_fstream.read(HBM_embedding8_char, HBM_embedding8_size);
+    HBM_embedding9_fstream.read(HBM_embedding9_char, HBM_embedding9_size);
+
 
     HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_fstream.read(
         HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_char,
@@ -162,7 +263,17 @@ int main(int argc, char** argv)
     // std::cout << "HBM_vector_quantizer_fstream read bytes: " << HBM_vector_quantizer_fstream.gcount() << std::endl;
     // std::cout << "HBM_product_quantizer_fstream read bytes: " << HBM_product_quantizer_fstream.gcount() << std::endl;
  
-<--HBM_embedding_memcpy-->
+    memcpy(&HBM_embedding0[0], HBM_embedding0_char, HBM_embedding0_size);
+    memcpy(&HBM_embedding1[0], HBM_embedding1_char, HBM_embedding1_size);
+    memcpy(&HBM_embedding2[0], HBM_embedding2_char, HBM_embedding2_size);
+    memcpy(&HBM_embedding3[0], HBM_embedding3_char, HBM_embedding3_size);
+    memcpy(&HBM_embedding4[0], HBM_embedding4_char, HBM_embedding4_size);
+    memcpy(&HBM_embedding5[0], HBM_embedding5_char, HBM_embedding5_size);
+    memcpy(&HBM_embedding6[0], HBM_embedding6_char, HBM_embedding6_size);
+    memcpy(&HBM_embedding7[0], HBM_embedding7_char, HBM_embedding7_size);
+    memcpy(&HBM_embedding8[0], HBM_embedding8_char, HBM_embedding8_size);
+    memcpy(&HBM_embedding9[0], HBM_embedding9_char, HBM_embedding9_size);
+
 
     memcpy(&HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid[0], 
         HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_char, 
@@ -177,7 +288,17 @@ int main(int argc, char** argv)
     memcpy(&sw_result_vec_ID[0], sw_result_vec_ID_char, sw_result_vec_ID_size);
     memcpy(&sw_result_dist[0], sw_result_dist_char, sw_result_dist_size);
 
-<--HBM_embedding_char_free-->
+    free(HBM_embedding0_char);
+    free(HBM_embedding1_char);
+    free(HBM_embedding2_char);
+    free(HBM_embedding3_char);
+    free(HBM_embedding4_char);
+    free(HBM_embedding5_char);
+    free(HBM_embedding6_char);
+    free(HBM_embedding7_char);
+    free(HBM_embedding8_char);
+    free(HBM_embedding9_char);
+
 
     free(HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_char);
     free(HBM_query_vector_char);
@@ -249,7 +370,17 @@ int main(int argc, char** argv)
 //////////////////////////////   TEMPLATE START  //////////////////////////////
     std::cout << "Start to allocate device memory..." << std::endl;
     cl_mem_ext_ptr_t 
-<--HBM_embeddingExt-->
+        HBM_embedding0Ext,
+        HBM_embedding1Ext,
+        HBM_embedding2Ext,
+        HBM_embedding3Ext,
+        HBM_embedding4Ext,
+        HBM_embedding5Ext,
+        HBM_embedding6Ext,
+        HBM_embedding7Ext,
+        HBM_embedding8Ext,
+        HBM_embedding9Ext,
+
         HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_validExt, // HBM 21
         HBM_query_vectorExt, 
         HBM_vector_quantizerExt, 
@@ -261,7 +392,37 @@ int main(int argc, char** argv)
 //////////////////////////////   TEMPLATE END  //////////////////////////////
 
 //////////////////////////////   TEMPLATE START  //////////////////////////////
-<--HBM_embedding0Ext_set-->
+    HBM_embedding0Ext.obj = HBM_embedding0.data();
+    HBM_embedding0Ext.param = 0;
+    HBM_embedding0Ext.flags = bank[0];
+    HBM_embedding1Ext.obj = HBM_embedding1.data();
+    HBM_embedding1Ext.param = 0;
+    HBM_embedding1Ext.flags = bank[1];
+    HBM_embedding2Ext.obj = HBM_embedding2.data();
+    HBM_embedding2Ext.param = 0;
+    HBM_embedding2Ext.flags = bank[2];
+    HBM_embedding3Ext.obj = HBM_embedding3.data();
+    HBM_embedding3Ext.param = 0;
+    HBM_embedding3Ext.flags = bank[3];
+    HBM_embedding4Ext.obj = HBM_embedding4.data();
+    HBM_embedding4Ext.param = 0;
+    HBM_embedding4Ext.flags = bank[4];
+    HBM_embedding5Ext.obj = HBM_embedding5.data();
+    HBM_embedding5Ext.param = 0;
+    HBM_embedding5Ext.flags = bank[5];
+    HBM_embedding6Ext.obj = HBM_embedding6.data();
+    HBM_embedding6Ext.param = 0;
+    HBM_embedding6Ext.flags = bank[6];
+    HBM_embedding7Ext.obj = HBM_embedding7.data();
+    HBM_embedding7Ext.param = 0;
+    HBM_embedding7Ext.flags = bank[7];
+    HBM_embedding8Ext.obj = HBM_embedding8.data();
+    HBM_embedding8Ext.param = 0;
+    HBM_embedding8Ext.flags = bank[8];
+    HBM_embedding9Ext.obj = HBM_embedding9.data();
+    HBM_embedding9Ext.param = 0;
+    HBM_embedding9Ext.flags = bank[9];
+
 
     HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_validExt.obj = 
         HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid.data();
@@ -292,7 +453,27 @@ int main(int argc, char** argv)
 
 
 //////////////////////////////   TEMPLATE START  //////////////////////////////
-<--buffer_HBM_embedding-->
+    OCL_CHECK(err, cl::Buffer buffer_HBM_embedding0(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_embedding0_size, &HBM_embedding0Ext, &err));
+    OCL_CHECK(err, cl::Buffer buffer_HBM_embedding1(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_embedding1_size, &HBM_embedding1Ext, &err));
+    OCL_CHECK(err, cl::Buffer buffer_HBM_embedding2(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_embedding2_size, &HBM_embedding2Ext, &err));
+    OCL_CHECK(err, cl::Buffer buffer_HBM_embedding3(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_embedding3_size, &HBM_embedding3Ext, &err));
+    OCL_CHECK(err, cl::Buffer buffer_HBM_embedding4(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_embedding4_size, &HBM_embedding4Ext, &err));
+    OCL_CHECK(err, cl::Buffer buffer_HBM_embedding5(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_embedding5_size, &HBM_embedding5Ext, &err));
+    OCL_CHECK(err, cl::Buffer buffer_HBM_embedding6(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_embedding6_size, &HBM_embedding6Ext, &err));
+    OCL_CHECK(err, cl::Buffer buffer_HBM_embedding7(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_embedding7_size, &HBM_embedding7Ext, &err));
+    OCL_CHECK(err, cl::Buffer buffer_HBM_embedding8(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_embedding8_size, &HBM_embedding8Ext, &err));
+    OCL_CHECK(err, cl::Buffer buffer_HBM_embedding9(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_embedding9_size, &HBM_embedding9Ext, &err));
+
 
     OCL_CHECK(err, cl::Buffer buffer_HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid(
         context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
@@ -327,7 +508,17 @@ int main(int argc, char** argv)
     
 //////////////////////////////   TEMPLATE START  //////////////////////////////
     int arg_counter = 0;
-<--buffer_HBM_embedding_set_krnl_arg-->
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding0));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding1));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding2));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding3));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding4));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding5));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding6));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding7));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding8));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding9));
+
     
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid));
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_query_vectors));
@@ -347,7 +538,17 @@ int main(int argc, char** argv)
     std::cout << "Starting copy from Host to device..." << std::endl;
     OCL_CHECK(
         err, err = q.enqueueMigrateMemObjects({
-<--buffer_HBM_embedding_enqueueMigrateMemObjects-->
+        buffer_HBM_embedding0,
+        buffer_HBM_embedding1,
+        buffer_HBM_embedding2,
+        buffer_HBM_embedding3,
+        buffer_HBM_embedding4,
+        buffer_HBM_embedding5,
+        buffer_HBM_embedding6,
+        buffer_HBM_embedding7,
+        buffer_HBM_embedding8,
+        buffer_HBM_embedding9,
+
         buffer_HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid,
         buffer_HBM_query_vectors,
         buffer_HBM_vector_quantizer,

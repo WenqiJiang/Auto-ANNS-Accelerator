@@ -35,6 +35,10 @@ template_fill_dict["NPROBE_PER_TABLE_CONSTRUCTION_PE_SMALLER"] = template_fill_d
     template_fill_dict["PE_NUM_TABLE_CONSTRUCTION_LARGER"] * template_fill_dict["NPROBE_PER_TABLE_CONSTRUCTION_PE_LARGER"]
 # check valid
 assert template_fill_dict["NPROBE_PER_TABLE_CONSTRUCTION_PE_SMALLER"] > 0
+if config["OPQ_ENABLE"]:
+    template_fill_dict["OPQ_ENABLE"] = "#define OPQ_ENABLE 1"
+else:
+    template_fill_dict["OPQ_ENABLE"] = ""
 
 for k in template_fill_dict:
     template_str = template_str.replace("<--{}-->".format(k), str(template_fill_dict[k]))
