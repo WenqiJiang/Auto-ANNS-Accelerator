@@ -12,6 +12,17 @@ Variable to be replaced (<--variable_name-->):
         HBM_embeddingExt_set
         buffer_HBM_embedding
 
+    multiple lines (depends on stage 2 PE num / on or off-chip):
+        HBM_centroid_vectors_len
+        HBM_centroid_vectors_size
+        HBM_centroid_vectors_allocate
+        HBM_centroid_vectors_memcpy
+        HBM_centroid_vectorsExt
+        HBM_centroid_vectorsExt_set
+        buffer_HBM_centroid_vectors
+        buffer_HBM_centroid_vectors_set_krnl_arg
+        buffer_HBM_centroid_vectors_enqueueMigrateMemObjects
+
     single line:
         HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_fstream
         HBM_query_vector_fstream
@@ -72,6 +83,13 @@ int main(int argc, char** argv)
     size_t HBM_embedding8_len = 3337337;
     size_t HBM_embedding9_len = 3337337;
 
+    size_t HBM_centroid_vectors0_len = 10928;
+    size_t HBM_centroid_vectors1_len = 10928;
+    size_t HBM_centroid_vectors2_len = 10928;
+    size_t HBM_centroid_vectors3_len = 10928;
+    size_t HBM_centroid_vectors4_len = 10928;
+    size_t HBM_centroid_vectors5_len = 10896;
+
 
     int query_num = 10000;
     size_t HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_len = NLIST * 3;
@@ -98,15 +116,20 @@ int main(int argc, char** argv)
     size_t HBM_embedding8_size =  HBM_embedding8_len * sizeof(ap_uint512_t);
     size_t HBM_embedding9_size =  HBM_embedding9_len * sizeof(ap_uint512_t);
 
+    size_t HBM_centroid_vectors0_size =  HBM_centroid_vectors0_len * sizeof(ap_uint512_t);
+    size_t HBM_centroid_vectors1_size =  HBM_centroid_vectors1_len * sizeof(ap_uint512_t);
+    size_t HBM_centroid_vectors2_size =  HBM_centroid_vectors2_len * sizeof(ap_uint512_t);
+    size_t HBM_centroid_vectors3_size =  HBM_centroid_vectors3_len * sizeof(ap_uint512_t);
+    size_t HBM_centroid_vectors4_size =  HBM_centroid_vectors4_len * sizeof(ap_uint512_t);
+    size_t HBM_centroid_vectors5_size =  HBM_centroid_vectors5_len * sizeof(ap_uint512_t);
+
 
     size_t HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_size = 
         HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_len * sizeof(int);
     size_t HBM_query_vector_size = HBM_query_vector_len * sizeof(float);
     size_t HBM_vector_quantizer_size = HBM_vector_quantizer_len * sizeof(float);
     size_t HBM_product_quantizer_size = HBM_product_quantizer_len * sizeof(float);
-#ifdef OPQ_ENABLE
     size_t HBM_OPQ_matrix_size = HBM_OPQ_matrix_len * sizeof(float);
-#endif
     size_t HBM_out_size = HBM_out_len * sizeof(ap_uint64_t); 
 
     size_t sw_result_vec_ID_size = sw_result_vec_ID_len * sizeof(int);
@@ -130,11 +153,28 @@ int main(int argc, char** argv)
     std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_embedding8(HBM_embedding8_len, 0);
     std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_embedding9(HBM_embedding9_len, 0);
 
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_centroid_vectors0(HBM_centroid_vectors0_len, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_centroid_vectors1(HBM_centroid_vectors1_len, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_centroid_vectors2(HBM_centroid_vectors2_len, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_centroid_vectors3(HBM_centroid_vectors3_len, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_centroid_vectors4(HBM_centroid_vectors4_len, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_centroid_vectors5(HBM_centroid_vectors5_len, 0);
+
+
+
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_centroid_vectors_0(NLIST * D, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_centroid_vectors_1(NLIST * D, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_centroid_vectors_2(NLIST * D, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_centroid_vectors_3(NLIST * D, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_centroid_vectors_4(NLIST * D, 0);
+    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_centroid_vectors_5(NLIST * D, 0);
 
     std::vector<int, aligned_allocator<int>> HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid(
         HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_len, 0);
     std::vector<float, aligned_allocator<float>> HBM_query_vectors(HBM_query_vector_len, 0);
+#ifdef STAGE2_ON_CHIP
     std::vector<float, aligned_allocator<float>> HBM_vector_quantizer(HBM_vector_quantizer_len, 0);
+#endif
     std::vector<float, aligned_allocator<float>> HBM_product_quantizer(HBM_product_quantizer_len, 0);
 #ifdef OPQ_ENABLE
     std::vector<float, aligned_allocator<float>> HBM_OPQ_matrix(HBM_OPQ_matrix_len, 0);
@@ -285,6 +325,14 @@ int main(int argc, char** argv)
     memcpy(&HBM_OPQ_matrix[0], HBM_OPQ_matrix_char, HBM_OPQ_matrix_size);
 #endif
 
+    memcpy(&HBM_centroid_vectors0[0], HBM_query_vector_char + 0, HBM_centroid_vectors0_size);
+    memcpy(&HBM_centroid_vectors1[0], HBM_query_vector_char + 699392, HBM_centroid_vectors1_size);
+    memcpy(&HBM_centroid_vectors2[0], HBM_query_vector_char + 1398784, HBM_centroid_vectors2_size);
+    memcpy(&HBM_centroid_vectors3[0], HBM_query_vector_char + 2098176, HBM_centroid_vectors3_size);
+    memcpy(&HBM_centroid_vectors4[0], HBM_query_vector_char + 2797568, HBM_centroid_vectors4_size);
+    memcpy(&HBM_centroid_vectors5[0], HBM_query_vector_char + 3496960, HBM_centroid_vectors5_size);
+
+
     memcpy(&sw_result_vec_ID[0], sw_result_vec_ID_char, sw_result_vec_ID_size);
     memcpy(&sw_result_dist[0], sw_result_dist_char, sw_result_dist_size);
 
@@ -381,9 +429,18 @@ int main(int argc, char** argv)
         HBM_embedding8Ext,
         HBM_embedding9Ext,
 
+        HBM_centroid_vectors0Ext,
+        HBM_centroid_vectors1Ext,
+        HBM_centroid_vectors2Ext,
+        HBM_centroid_vectors3Ext,
+        HBM_centroid_vectors4Ext,
+        HBM_centroid_vectors5Ext,
+
         HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_validExt, // HBM 21
         HBM_query_vectorExt, 
+#ifdef STAGE2_ON_CHIP
         HBM_vector_quantizerExt, 
+#endif
         HBM_product_quantizerExt, 
 #ifdef OPQ_ENABLE
         HBM_OPQ_matrixExt, 
@@ -423,6 +480,25 @@ int main(int argc, char** argv)
     HBM_embedding9Ext.param = 0;
     HBM_embedding9Ext.flags = bank[9];
 
+    HBM_centroid_vectors0Ext.obj = HBM_centroid_vectors0.data();
+    HBM_centroid_vectors0Ext.param = 0;
+    HBM_centroid_vectors0Ext.flags = bank[12];
+    HBM_centroid_vectors1Ext.obj = HBM_centroid_vectors1.data();
+    HBM_centroid_vectors1Ext.param = 0;
+    HBM_centroid_vectors1Ext.flags = bank[13];
+    HBM_centroid_vectors2Ext.obj = HBM_centroid_vectors2.data();
+    HBM_centroid_vectors2Ext.param = 0;
+    HBM_centroid_vectors2Ext.flags = bank[14];
+    HBM_centroid_vectors3Ext.obj = HBM_centroid_vectors3.data();
+    HBM_centroid_vectors3Ext.param = 0;
+    HBM_centroid_vectors3Ext.flags = bank[15];
+    HBM_centroid_vectors4Ext.obj = HBM_centroid_vectors4.data();
+    HBM_centroid_vectors4Ext.param = 0;
+    HBM_centroid_vectors4Ext.flags = bank[16];
+    HBM_centroid_vectors5Ext.obj = HBM_centroid_vectors5.data();
+    HBM_centroid_vectors5Ext.param = 0;
+    HBM_centroid_vectors5Ext.flags = bank[17];
+
 
     HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_validExt.obj = 
         HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid.data();
@@ -433,9 +509,11 @@ int main(int argc, char** argv)
     HBM_query_vectorExt.param = 0;
     HBM_query_vectorExt.flags = bank[22];
 
+#ifdef STAGE2_ON_CHIP
     HBM_vector_quantizerExt.obj = HBM_vector_quantizer.data();
     HBM_vector_quantizerExt.param = 0;
     HBM_vector_quantizerExt.flags = bank[23];
+#endif
 
     HBM_product_quantizerExt.obj = HBM_product_quantizer.data();
     HBM_product_quantizerExt.param = 0;
@@ -474,6 +552,19 @@ int main(int argc, char** argv)
     OCL_CHECK(err, cl::Buffer buffer_HBM_embedding9(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
             HBM_embedding9_size, &HBM_embedding9Ext, &err));
 
+    OCL_CHECK(err, cl::Buffer buffer_HBM_centroid_vectors0(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_centroid_vectors0_size, &HBM_centroid_vectors0Ext, &err));
+    OCL_CHECK(err, cl::Buffer buffer_HBM_centroid_vectors1(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_centroid_vectors1_size, &HBM_centroid_vectors1Ext, &err));
+    OCL_CHECK(err, cl::Buffer buffer_HBM_centroid_vectors2(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_centroid_vectors2_size, &HBM_centroid_vectors2Ext, &err));
+    OCL_CHECK(err, cl::Buffer buffer_HBM_centroid_vectors3(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_centroid_vectors3_size, &HBM_centroid_vectors3Ext, &err));
+    OCL_CHECK(err, cl::Buffer buffer_HBM_centroid_vectors4(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_centroid_vectors4_size, &HBM_centroid_vectors4Ext, &err));
+    OCL_CHECK(err, cl::Buffer buffer_HBM_centroid_vectors5(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_centroid_vectors5_size, &HBM_centroid_vectors5Ext, &err));
+
 
     OCL_CHECK(err, cl::Buffer buffer_HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid(
         context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
@@ -482,8 +573,10 @@ int main(int argc, char** argv)
 
     OCL_CHECK(err, cl::Buffer buffer_HBM_query_vectors(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
             HBM_query_vector_size, &HBM_query_vectorExt, &err));
+#ifdef STAGE2_ON_CHIP
     OCL_CHECK(err, cl::Buffer buffer_HBM_vector_quantizer(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
             HBM_vector_quantizer_size, &HBM_vector_quantizerExt, &err));
+#endif
     OCL_CHECK(err, cl::Buffer buffer_HBM_product_quantizer(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
             HBM_product_quantizer_size, &HBM_product_quantizerExt, &err));
 #ifdef OPQ_ENABLE
@@ -519,10 +612,19 @@ int main(int argc, char** argv)
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding8));
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_embedding9));
 
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_centroid_vectors0));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_centroid_vectors1));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_centroid_vectors2));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_centroid_vectors3));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_centroid_vectors4));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_centroid_vectors5));
+
     
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid));
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_query_vectors));
+#ifdef STAGE2_ON_CHIP
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_vector_quantizer));
+#endif
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_product_quantizer));
 #ifdef OPQ_ENABLE
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_OPQ_matrix));
@@ -549,9 +651,18 @@ int main(int argc, char** argv)
         buffer_HBM_embedding8,
         buffer_HBM_embedding9,
 
+        buffer_HBM_centroid_vectors0,
+        buffer_HBM_centroid_vectors1,
+        buffer_HBM_centroid_vectors2,
+        buffer_HBM_centroid_vectors3,
+        buffer_HBM_centroid_vectors4,
+        buffer_HBM_centroid_vectors5,
+
         buffer_HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid,
         buffer_HBM_query_vectors,
+#ifdef STAGE2_ON_CHIP
         buffer_HBM_vector_quantizer,
+#endif
         buffer_HBM_product_quantizer,
 #ifdef OPQ_ENABLE
         buffer_HBM_OPQ_matrix

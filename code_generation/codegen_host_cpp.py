@@ -41,7 +41,7 @@ template_fill_dict["HBM_embedding0_fstream_read"] = ""
 template_fill_dict["HBM_embedding_memcpy"] = ""
 template_fill_dict["HBM_embedding_char_free"] = ""
 template_fill_dict["HBM_embeddingExt"] = ""
-template_fill_dict["HBM_embedding0Ext_set"] = ""
+template_fill_dict["HBM_embeddingExt_set"] = ""
 template_fill_dict["buffer_HBM_embedding"] = ""
 template_fill_dict["buffer_HBM_embedding_set_krnl_arg"] = ""
 template_fill_dict["buffer_HBM_embedding_enqueueMigrateMemObjects"] = ""
@@ -68,7 +68,7 @@ for i in range(config["HBM_CHANNEL_NUM"]):
         "    free(HBM_embedding{i}_char);\n".format(i=i)
     template_fill_dict["HBM_embeddingExt"] += \
         "        HBM_embedding{i}Ext,\n".format(i=i)
-    template_fill_dict["HBM_embedding0Ext_set"] += \
+    template_fill_dict["HBM_embeddingExt_set"] += \
         '''    HBM_embedding{i}Ext.obj = HBM_embedding{i}.data();
     HBM_embedding{i}Ext.param = 0;
     HBM_embedding{i}Ext.flags = bank[{i}];\n'''.format(i=i)
@@ -116,6 +116,55 @@ for i in range(config["HBM_CHANNEL_NUM"]):
         "{DATA_DIR}/result_nprobe_{NPROBE}_distance_float32_{QUERY_NUM}_10_raw", 
         std::ios::in | std::ios::binary);\n'''.format(
                 DATA_DIR=config["DATA_DIR"], NPROBE=config["NPROBE"], QUERY_NUM=config["QUERY_NUM"])
+
+centroids_per_partition_even = int(np.ceil(
+    config["NLIST"] / config["PE_NUM_CENTER_DIST_COMP"]))
+bytes_float = 4
+bytes_ap512 = 64
+
+template_fill_dict["HBM_centroid_vectors_len"] = ""
+template_fill_dict["HBM_centroid_vectors_size"] = ""
+template_fill_dict["HBM_centroid_vectors_allocate"] = ""
+template_fill_dict["HBM_centroid_vectors_memcpy"] = ""
+template_fill_dict["HBM_centroid_vectorsExt"] = ""
+template_fill_dict["HBM_centroid_vectorsExt_set"] = ""
+template_fill_dict["buffer_HBM_centroid_vectors"] = ""
+template_fill_dict["buffer_HBM_centroid_vectors_set_krnl_arg"] = ""
+template_fill_dict["buffer_HBM_centroid_vectors_enqueueMigrateMemObjects"] = ""
+if config["STAGE2_ON_CHIP"] == False:
+    for i in range(config["PE_NUM_CENTER_DIST_COMP"]):
+        if i != config["PE_NUM_CENTER_DIST_COMP"] - 1:
+            template_fill_dict["HBM_centroid_vectors_len"] += \
+                "    size_t HBM_centroid_vectors{i}_len = {l};\n".format(
+                    i=i, l=int(centroids_per_partition_even * config["D"] * bytes_float / bytes_ap512))
+        else:
+            centroids_per_partition_last = \
+                config["NLIST"] - \
+                (config["PE_NUM_CENTER_DIST_COMP"] - 1) * centroids_per_partition_even
+            template_fill_dict["HBM_centroid_vectors_len"] += \
+                "    size_t HBM_centroid_vectors{i}_len = {l};\n".format(
+                    i=i, l=int(centroids_per_partition_last * config["D"] * bytes_float / bytes_ap512))
+        template_fill_dict["HBM_centroid_vectors_size"] += \
+            "    size_t HBM_centroid_vectors{i}_size =  HBM_centroid_vectors{i}_len * sizeof(ap_uint512_t);\n".format(i=i)
+        template_fill_dict["HBM_centroid_vectors_allocate"] += \
+            "    std::vector<ap_uint512_t, aligned_allocator<ap_uint512_t>> HBM_centroid_vectors{i}(HBM_centroid_vectors{i}_len, 0);\n".format(i=i)
+        template_fill_dict["HBM_centroid_vectors_memcpy"] += \
+            "    memcpy(&HBM_centroid_vectors{i}[0], HBM_query_vector_char + {start_addr}, HBM_centroid_vectors{i}_size);\n".format(
+                i=i, start_addr=int(i * centroids_per_partition_even * config["D"] * bytes_float)
+            )
+        template_fill_dict["HBM_centroid_vectorsExt"] += \
+            "        HBM_centroid_vectors{i}Ext,\n".format(i=i)
+        template_fill_dict["HBM_centroid_vectorsExt_set"] += \
+            '''    HBM_centroid_vectors{i}Ext.obj = HBM_centroid_vectors{i}.data();
+    HBM_centroid_vectors{i}Ext.param = 0;
+    HBM_centroid_vectors{i}Ext.flags = bank[{c}];\n'''.format(i=i, c=i + config["STAGE2_OFF_CHIP_START_CHANNEL"])
+        template_fill_dict["buffer_HBM_centroid_vectors"] += \
+            '''    OCL_CHECK(err, cl::Buffer buffer_HBM_centroid_vectors{i}(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY | CL_MEM_EXT_PTR_XILINX, 
+            HBM_centroid_vectors{i}_size, &HBM_centroid_vectors{i}Ext, &err));\n'''.format(i=i)
+        template_fill_dict["buffer_HBM_centroid_vectors_set_krnl_arg"] += \
+            "    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_centroid_vectors{i}));\n".format(i=i)
+        template_fill_dict["buffer_HBM_centroid_vectors_enqueueMigrateMemObjects"] += \
+            "        buffer_HBM_centroid_vectors{i},\n".format(i=i)
 
 
 for k in template_fill_dict:

@@ -39,6 +39,10 @@ if config["OPQ_ENABLE"]:
     template_fill_dict["OPQ_ENABLE"] = "#define OPQ_ENABLE 1"
 else:
     template_fill_dict["OPQ_ENABLE"] = ""
+if config["STAGE2_ON_CHIP"]:
+    template_fill_dict["STAGE2_ON_CHIP"] = "#define STAGE2_ON_CHIP 1"
+else:
+    template_fill_dict["STAGE2_ON_CHIP"] = ""
 
 for k in template_fill_dict:
     template_str = template_str.replace("<--{}-->".format(k), str(template_fill_dict[k]))

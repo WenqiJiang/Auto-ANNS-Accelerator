@@ -15,6 +15,7 @@ Variable to be replaced (<--variable_name-->):
     LARGE_NUM
 
     // stage 2
+    STAGE2_ON_CHIP
     PE_NUM_CENTER_DIST_COMP
     PE_NUM_CENTER_DIST_COMP_EVEN
     CENTROIDS_PER_PARTITION_EVEN
@@ -53,6 +54,7 @@ Variable to be replaced (<--variable_name-->):
 
 // stage 2
 // 16 = 15 equal one + 1 (all equal) diff must be 1!
+<--STAGE2_ON_CHIP-->
 #define PE_NUM_CENTER_DIST_COMP <--PE_NUM_CENTER_DIST_COMP-->
 #define PE_NUM_CENTER_DIST_COMP_EVEN <--PE_NUM_CENTER_DIST_COMP_EVEN-->
 #define CENTROIDS_PER_PARTITION_EVEN <--CENTROIDS_PER_PARTITION_EVEN-->

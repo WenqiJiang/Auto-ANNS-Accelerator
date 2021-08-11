@@ -33,6 +33,15 @@ if config["OPQ_ENABLE"]:
 else:
     template_fill_dict["connectivity_HBM_OPQ_matrix"] = ""
 
+if config["STAGE2_ON_CHIP"]:
+    template_fill_dict["stage2_memory_channel"] = ""
+else:
+    connectivity_str = "" 
+    for i in range(config["PE_NUM_CENTER_DIST_COMP"]):
+        connectivity_str += "sp=vadd_1.HBM_centroid_vectors_{i}:HBM[{c}]\n".format(
+            i=i, c=int(i + config["STAGE2_OFF_CHIP_START_CHANNEL"]))
+    template_fill_dict["stage2_memory_channel"] = connectivity_str
+
 for k in template_fill_dict:
     template_str = template_str.replace("<--{}-->".format(k), str(template_fill_dict[k]))
 output_str = template_str

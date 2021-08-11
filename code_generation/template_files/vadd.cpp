@@ -7,12 +7,21 @@ Variable to be replaced (<--variable_name-->):
         HBM_in_s_axilite
         load_and_split_PQ_codes_wrapper_arg
 
+    multiple lines (depends on stage 2 PE num / on or off-chip):
+        stage2_vadd_arg
+        stage2_m_axi
+        stage2_s_axilite
+
     single line:
+        vadd_arg_HBM_vector_quantizer
         vadd_arg_OPQ_matrix
+        vadd_m_axi_HBM_vector_quantizer
         vadd_m_axi_HBM_OPQ_matrix
+        vadd_s_axilite_HBM_vector_quantizer
         vadd_s_axilite_HBM_OPQ_matrix
         stage_1_OPQ_preprocessing
-
+        stage_2_IVF_center_distance_computation
+        
     basic constants:
 
 */
@@ -37,12 +46,12 @@ extern "C" {
 
 void vadd(  
 <--HBM_in_vadd_arg-->
+<--stage2_vadd_arg-->
     // HBM21: assigned for HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid
     const int* HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid, 
     // HBM22: query vectors
     float* HBM_query_vectors,
-    // HBM23: center vector table (Vector_quantizer)
-    float* HBM_vector_quantizer,
+<--vadd_arg_HBM_vector_quantizer-->
     // HBM24: PQ quantizer
     float* HBM_product_quantizer,
 <--vadd_arg_OPQ_matrix-->
@@ -57,20 +66,22 @@ void vadd(
     )
 {
 <--HBM_in_m_axi-->
+<--stage2_m_axi-->
 
 #pragma HLS INTERFACE m_axi port=HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid  offset=slave bundle=gmemA
 #pragma HLS INTERFACE m_axi port=HBM_query_vectors  offset=slave bundle=gmemB
-#pragma HLS INTERFACE m_axi port=HBM_vector_quantizer  offset=slave bundle=gmemC
+<--vadd_m_axi_HBM_vector_quantizer-->
 #pragma HLS INTERFACE m_axi port=HBM_product_quantizer  offset=slave bundle=gmemD
 <--vadd_m_axi_HBM_OPQ_matrix-->
 
 #pragma HLS INTERFACE m_axi port=HBM_out offset=slave bundle=gmemF
 
 <--HBM_in_s_axilite-->
+<--stage2_s_axilite-->
 
 #pragma HLS INTERFACE s_axilite port=HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid  bundle=control
 #pragma HLS INTERFACE s_axilite port=HBM_query_vectors  bundle=control
-#pragma HLS INTERFACE s_axilite port=HBM_vector_quantizer  bundle=control
+<--vadd_s_axilite_HBM_vector_quantizer-->
 #pragma HLS INTERFACE s_axilite port=HBM_product_quantizer  bundle=control
 <--vadd_s_axilite_HBM_OPQ_matrix-->
 
@@ -94,12 +105,7 @@ void vadd(
 #pragma HLS stream variable=s_center_vectors_init_lookup_PE depth=2
 // #pragma HLS resource variable=s_center_vectors_init_lookup_PE core=FIFO_SRL
 
-//     hls::stream<float> s_center_vectors_init_distance_computation_PE[PE_NUM_CENTER_DIST_COMP];
-// #pragma HLS stream variable=s_center_vectors_init_distance_computation_PE depth=8
-// #pragma HLS array_partition variable=s_center_vectors_init_distance_computation_PE complete
-// // #pragma HLS resource variable=s_center_vectors_init_distance_computation_PE core=FIFO_SRL
-
-    // load_center_vectors(HBM_vector_quantizer, s_center_vectors_init_distance_computation_PE, s_center_vectors_init_lookup_PE);
+#ifdef STAGE2_ON_CHIP
     hls::stream<float> s_center_vectors_init_distance_computation_PE;
 #pragma HLS stream variable=s_center_vectors_init_distance_computation_PE depth=8
 
@@ -107,6 +113,7 @@ void vadd(
         HBM_vector_quantizer,
         s_center_vectors_init_distance_computation_PE,
         s_center_vectors_init_lookup_PE);
+#endif
 
     hls::stream<float> s_PQ_quantizer_init;
 #pragma HLS stream variable=s_PQ_quantizer_init depth=4
@@ -124,10 +131,7 @@ void vadd(
 #pragma HLS stream variable=s_merged_cell_distance depth=512
 // #pragma HLS resource variable=s_merged_cell_distance core=FIFO_BRAM
 
-    compute_cell_distance_wrapper<QUERY_NUM>(
-        s_center_vectors_init_distance_computation_PE, 
-        s_preprocessed_query_vectors_distance_computation_PE, 
-        s_merged_cell_distance);
+<--stage_2_IVF_center_distance_computation-->
 
     ////////////////////     Select Scanned Cells     ////////////////////    
 

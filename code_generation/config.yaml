@@ -1,23 +1,26 @@
 ---
   # Constants
   NLIST: 8192
-  NPROBE: 22
+  NPROBE: 17
   D: 128
   M: 16
   K: 256
   PRIORITY_QUEUE_LEN: 10
-  OPQ_ENABLE: False
 
   QUERY_NUM: 10000
 
   LARGE_NUM: 99999999 # used to init the heap
+  # stage 1
+  OPQ_ENABLE: True
 
   # stage 2
   # except last PE: compute more distances per query, last one compute less
   # e.g., nlist = 8192, PE num = 15, 
   #   each of the first 14 PEs construct 547 tables (8192 / 15 round up), 
   #   while the last constructs 534: 14 * 547 + 534 = 8192
-  PE_NUM_CENTER_DIST_COMP: 15
+  STAGE2_ON_CHIP: False
+  STAGE2_OFF_CHIP_START_CHANNEL: 12
+  PE_NUM_CENTER_DIST_COMP: 6
   # The rest variables should be caculated in python (YAML does not support arithmetics) 
   # PE_NUM_CENTER_DIST_COMP_EVEN: 14
   # CENTROIDS_PER_PARTITION_EVEN: 547
@@ -46,13 +49,13 @@
 
   DB_SCALE: "100M" # 1M to 1000M
   # DB size in bytes, the contents will be evenly distributed to all bank
-  DB_BYTES: 2135870080
+  DB_BYTES: 2135895680
 
   # Data directory (don't add "/" after the dir)
   #   e.g., dir=/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_HBM_10_banks, 
   #     then the content for HBM0 is:
   #     /home/wejiang/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_HBM_10_banks/HBM_bank_0_raw
-  DATA_DIR: "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_HBM_10_banks"
+  DATA_DIR: "/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_HBM_10_banks"
 
   # FPGA frequency
   FREQ: 140

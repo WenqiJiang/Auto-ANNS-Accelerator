@@ -87,6 +87,41 @@ else:
         s_preprocessed_query_vectors_distance_computation_PE,
         s_preprocessed_query_vectors_lookup_PE);"""
 
+# Stage 2 on-chip / off-chip replacement
+template_fill_dict["stage2_vadd_arg"] = ""
+template_fill_dict["stage2_m_axi"] = ""
+template_fill_dict["stage2_s_axilite"] = ""
+template_fill_dict["stage_2_IVF_center_distance_computation"] = """
+    compute_cell_distance_wrapper<QUERY_NUM>(
+        s_center_vectors_init_distance_computation_PE, 
+        s_preprocessed_query_vectors_distance_computation_PE, 
+        s_merged_cell_distance);"""
+template_fill_dict["vadd_s_axilite_HBM_vector_quantizer"] = \
+    "#pragma HLS INTERFACE s_axilite port=HBM_vector_quantizer  bundle=control"
+template_fill_dict["vadd_m_axi_HBM_vector_quantizer"] = \
+    "#pragma HLS INTERFACE m_axi port=HBM_vector_quantizer  offset=slave bundle=gmemC"
+template_fill_dict["vadd_arg_HBM_vector_quantizer"] = \
+    """    // HBM23: center vector table (Vector_quantizer)
+    float* HBM_vector_quantizer,"""
+if config["STAGE2_ON_CHIP"] == False:
+    func_call_str = ""
+    for i in range(config["PE_NUM_CENTER_DIST_COMP"]):
+        template_fill_dict["stage2_vadd_arg"] += \
+            "    const ap_uint512_t* HBM_centroid_vectors_{i},\n".format(i=i)
+        template_fill_dict["stage2_m_axi"] += \
+            "#pragma HLS INTERFACE m_axi port=HBM_centroid_vectors_{i}  offset=slave bundle=gmemC{i}\n".format(i=i)
+        template_fill_dict["stage2_s_axilite"] += \
+            "#pragma HLS INTERFACE s_axilite port=HBM_centroid_vectors_{i}  bundle=control\n".format(i=i)
+        func_call_str += "        HBM_centroid_vectors_{i},\n".format(i=i)
+    template_fill_dict["stage_2_IVF_center_distance_computation"] = """
+    compute_cell_distance_wrapper<QUERY_NUM>(
+{func_call_str}
+        s_query_vectors, 
+        s_partial_cell_distance);""".format(func_call_str=func_call_str)
+    template_fill_dict["vadd_s_axilite_HBM_vector_quantizer"] = ""
+    template_fill_dict["vadd_m_axi_HBM_vector_quantizer"] = ""
+    template_fill_dict["vadd_arg_HBM_vector_quantizer"] = ""
+
 for k in template_fill_dict:
     template_str = template_str.replace("<--{}-->".format(k), str(template_fill_dict[k]))
 output_str = template_str

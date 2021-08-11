@@ -1,0 +1,475 @@
+mkdir -p ./xclbin
+g++ -g -I./ -I/opt/xilinx/xrt/include -I/opt/Xilinx/Vivado/2019.2/include -Wall -O0 -g -std=c++11 -fmessage-length=0 src/host.cpp src/host.hpp -o 'host' -L/opt/xilinx/xrt/lib -lOpenCL -lpthread -lrt -lstdc++
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+src/opencl.hpp: In function ‘cl_int cl::UnloadCompiler()’:
+src/opencl.hpp:2771:14: warning: ‘cl_int clUnloadCompiler()’ is deprecated [-Wdeprecated-declarations]
+     return ::clUnloadCompiler();
+              ^~~~~~~~~~~~~~~~
+In file included from /usr/include/CL/opencl.h:47:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+/usr/include/CL/cl.h:1436:1: note: declared here
+ clUnloadCompiler(void) CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED;
+ ^~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+src/opencl.hpp:2771:31: warning: ‘cl_int clUnloadCompiler()’ is deprecated [-Wdeprecated-declarations]
+     return ::clUnloadCompiler();
+                               ^
+In file included from /usr/include/CL/opencl.h:47:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+/usr/include/CL/cl.h:1436:1: note: declared here
+ clUnloadCompiler(void) CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED;
+ ^~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+src/opencl.hpp: In constructor ‘cl::Image2DGL::Image2DGL(const cl::Context&, cl_mem_flags, cl_GLenum, cl_GLint, cl_GLuint, cl_int*)’:
+src/opencl.hpp:4986:21: warning: ‘_cl_mem* clCreateFromGLTexture2D(cl_context, cl_mem_flags, cl_GLenum, cl_GLint, cl_GLuint, cl_int*)’ is deprecated [-Wdeprecated-declarations]
+         object_ = ::clCreateFromGLTexture2D(
+                     ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/CL/opencl.h:48:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+/usr/include/CL/cl_gl.h:114:1: note: declared here
+ clCreateFromGLTexture2D(cl_context      /* context */,
+ ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+src/opencl.hpp:4992:19: warning: ‘_cl_mem* clCreateFromGLTexture2D(cl_context, cl_mem_flags, cl_GLenum, cl_GLint, cl_GLuint, cl_int*)’ is deprecated [-Wdeprecated-declarations]
+             &error);
+                   ^
+In file included from /usr/include/CL/opencl.h:48:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+/usr/include/CL/cl_gl.h:114:1: note: declared here
+ clCreateFromGLTexture2D(cl_context      /* context */,
+ ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+src/opencl.hpp: In constructor ‘cl::Image3DGL::Image3DGL(const cl::Context&, cl_mem_flags, cl_GLenum, cl_GLint, cl_GLuint, cl_int*)’:
+src/opencl.hpp:5303:21: warning: ‘_cl_mem* clCreateFromGLTexture3D(cl_context, cl_mem_flags, cl_GLenum, cl_GLint, cl_GLuint, cl_int*)’ is deprecated [-Wdeprecated-declarations]
+         object_ = ::clCreateFromGLTexture3D(
+                     ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/CL/opencl.h:48:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+/usr/include/CL/cl_gl.h:122:1: note: declared here
+ clCreateFromGLTexture3D(cl_context      /* context */,
+ ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+src/opencl.hpp:5309:19: warning: ‘_cl_mem* clCreateFromGLTexture3D(cl_context, cl_mem_flags, cl_GLenum, cl_GLint, cl_GLuint, cl_int*)’ is deprecated [-Wdeprecated-declarations]
+             &error);
+                   ^
+In file included from /usr/include/CL/opencl.h:48:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+/usr/include/CL/cl_gl.h:122:1: note: declared here
+ clCreateFromGLTexture3D(cl_context      /* context */,
+ ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+src/opencl.hpp: At global scope:
+src/opencl.hpp:6062:63: warning: ignoring attributes on template argument ‘cl_int {aka int}’ [-Wignored-attributes]
+     typename std::enable_if<!std::is_pointer<T>::value, cl_int>::type
+                                                               ^
+src/opencl.hpp:6506:22: warning: ignoring attributes on template argument ‘cl_int {aka int}’ [-Wignored-attributes]
+         vector<cl_int>* binaryStatus = NULL,
+                      ^
+src/opencl.hpp: In member function ‘cl_int cl::CommandQueue::enqueueMarker(cl::Event*) const’:
+src/opencl.hpp:8625:15: warning: ‘cl_int clEnqueueMarker(cl_command_queue, _cl_event**)’ is deprecated [-Wdeprecated-declarations]
+             ::clEnqueueMarker(
+               ^~~~~~~~~~~~~~~
+In file included from /usr/include/CL/opencl.h:47:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+/usr/include/CL/cl.h:1424:1: note: declared here
+ clEnqueueMarker(cl_command_queue    /* command_queue */,
+ ^~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+src/opencl.hpp:8627:46: warning: ‘cl_int clEnqueueMarker(cl_command_queue, _cl_event**)’ is deprecated [-Wdeprecated-declarations]
+                 (event != NULL) ? &tmp : NULL),
+                                              ^
+In file included from /usr/include/CL/opencl.h:47:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+/usr/include/CL/cl.h:1424:1: note: declared here
+ clEnqueueMarker(cl_command_queue    /* command_queue */,
+ ^~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+src/opencl.hpp: In member function ‘cl_int cl::CommandQueue::enqueueWaitForEvents(cl::vector<cl::Event>&) const’:
+src/opencl.hpp:8640:15: warning: ‘cl_int clEnqueueWaitForEvents(cl_command_queue, cl_uint, _cl_event* const*)’ is deprecated [-Wdeprecated-declarations]
+             ::clEnqueueWaitForEvents(
+               ^~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/CL/opencl.h:47:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+/usr/include/CL/cl.h:1428:1: note: declared here
+ clEnqueueWaitForEvents(cl_command_queue /* command_queue */,
+ ^~~~~~~~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+src/opencl.hpp:8643:77: warning: ‘cl_int clEnqueueWaitForEvents(cl_command_queue, cl_uint, _cl_event* const*)’ is deprecated [-Wdeprecated-declarations]
+                 events.size() > 0 ? (const cl_event*) &events.front() : NULL),
+                                                                             ^
+In file included from /usr/include/CL/opencl.h:47:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+/usr/include/CL/cl.h:1428:1: note: declared here
+ clEnqueueWaitForEvents(cl_command_queue /* command_queue */,
+ ^~~~~~~~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+src/opencl.hpp: In member function ‘cl_int cl::CommandQueue::enqueueBarrier() const’:
+src/opencl.hpp:8777:15: warning: ‘cl_int clEnqueueBarrier(cl_command_queue)’ is deprecated [-Wdeprecated-declarations]
+             ::clEnqueueBarrier(object_),
+               ^~~~~~~~~~~~~~~~
+In file included from /usr/include/CL/opencl.h:47:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+/usr/include/CL/cl.h:1433:1: note: declared here
+ clEnqueueBarrier(cl_command_queue /* command_queue */) CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED;
+ ^~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+src/opencl.hpp:8777:39: warning: ‘cl_int clEnqueueBarrier(cl_command_queue)’ is deprecated [-Wdeprecated-declarations]
+             ::clEnqueueBarrier(object_),
+                                       ^
+In file included from /usr/include/CL/opencl.h:47:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21,
+                 from src/host.cpp:1:
+/usr/include/CL/cl.h:1433:1: note: declared here
+ clEnqueueBarrier(cl_command_queue /* command_queue */) CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED;
+ ^~~~~~~~~~~~~~~~
+In file included from src/host.hpp:21:0,
+                 from src/host.cpp:1:
+src/cl2.hpp: At global scope:
+src/cl2.hpp:19:151: note: #pragma message: cl2.hpp has been renamed to opencl.hpp to make it clear that it supports all versions of OpenCL. Please include opencl.hpp directly.
+ #pragma message("cl2.hpp has been renamed to opencl.hpp to make it clear that it supports all versions of OpenCL. Please include opencl.hpp directly.")
+                                                                                                                                                       ^
+src/host.cpp: In function ‘int main(int, char**)’:
+src/host.cpp:33:12: warning: unused variable ‘HBM_embedding2_size’ [-Wunused-variable]
+     size_t HBM_embedding2_size =  HBM_BANK2_SIZE;
+            ^~~~~~~~~~~~~~~~~~~
+src/host.cpp:34:12: warning: unused variable ‘HBM_embedding3_size’ [-Wunused-variable]
+     size_t HBM_embedding3_size =  HBM_BANK3_SIZE;
+            ^~~~~~~~~~~~~~~~~~~
+src/host.cpp:35:12: warning: unused variable ‘HBM_embedding4_size’ [-Wunused-variable]
+     size_t HBM_embedding4_size =  HBM_BANK4_SIZE;
+            ^~~~~~~~~~~~~~~~~~~
+src/host.cpp:36:12: warning: unused variable ‘HBM_embedding5_size’ [-Wunused-variable]
+     size_t HBM_embedding5_size =  HBM_BANK5_SIZE;
+            ^~~~~~~~~~~~~~~~~~~
+src/host.cpp:37:12: warning: unused variable ‘HBM_embedding6_size’ [-Wunused-variable]
+     size_t HBM_embedding6_size =  HBM_BANK6_SIZE;
+            ^~~~~~~~~~~~~~~~~~~
+src/host.cpp:38:12: warning: unused variable ‘HBM_embedding7_size’ [-Wunused-variable]
+     size_t HBM_embedding7_size =  HBM_BANK7_SIZE;
+            ^~~~~~~~~~~~~~~~~~~
+src/host.cpp:39:12: warning: unused variable ‘HBM_embedding8_size’ [-Wunused-variable]
+     size_t HBM_embedding8_size =  HBM_BANK8_SIZE;
+            ^~~~~~~~~~~~~~~~~~~
+src/host.cpp:40:12: warning: unused variable ‘HBM_embedding9_size’ [-Wunused-variable]
+     size_t HBM_embedding9_size =  HBM_BANK9_SIZE;
+            ^~~~~~~~~~~~~~~~~~~
+src/host.cpp:47:12: warning: unused variable ‘HBM_embedding16_size’ [-Wunused-variable]
+     size_t HBM_embedding16_size =  HBM_BANK16_SIZE;
+            ^~~~~~~~~~~~~~~~~~~~
+src/host.cpp:48:12: warning: unused variable ‘HBM_embedding17_size’ [-Wunused-variable]
+     size_t HBM_embedding17_size =  HBM_BANK17_SIZE;
+            ^~~~~~~~~~~~~~~~~~~~
+src/host.cpp:49:12: warning: unused variable ‘HBM_embedding18_size’ [-Wunused-variable]
+     size_t HBM_embedding18_size =  HBM_BANK18_SIZE;
+            ^~~~~~~~~~~~~~~~~~~~
+src/host.cpp:50:12: warning: unused variable ‘HBM_embedding19_size’ [-Wunused-variable]
+     size_t HBM_embedding19_size =  HBM_BANK19_SIZE;
+            ^~~~~~~~~~~~~~~~~~~~
+src/host.cpp:51:12: warning: unused variable ‘HBM_embedding20_size’ [-Wunused-variable]
+     size_t HBM_embedding20_size =  HBM_BANK20_SIZE;
+            ^~~~~~~~~~~~~~~~~~~~
+src/host.cpp:52:12: warning: unused variable ‘HBM_embedding21_size’ [-Wunused-variable]
+     size_t HBM_embedding21_size =  HBM_BANK21_SIZE;
+            ^~~~~~~~~~~~~~~~~~~~
+src/host.cpp:53:12: warning: unused variable ‘HBM_embedding22_size’ [-Wunused-variable]
+     size_t HBM_embedding22_size =  HBM_BANK22_SIZE;
+            ^~~~~~~~~~~~~~~~~~~~
+src/host.cpp:54:12: warning: unused variable ‘HBM_embedding23_size’ [-Wunused-variable]
+     size_t HBM_embedding23_size =  HBM_BANK23_SIZE;
+            ^~~~~~~~~~~~~~~~~~~~
+src/host.cpp:55:12: warning: unused variable ‘HBM_embedding24_size’ [-Wunused-variable]
+     size_t HBM_embedding24_size =  HBM_BANK24_SIZE;
+            ^~~~~~~~~~~~~~~~~~~~
+src/host.cpp:56:12: warning: unused variable ‘HBM_embedding25_size’ [-Wunused-variable]
+     size_t HBM_embedding25_size =  HBM_BANK25_SIZE;
+            ^~~~~~~~~~~~~~~~~~~~
+src/host.cpp:57:12: warning: unused variable ‘HBM_embedding26_size’ [-Wunused-variable]
+     size_t HBM_embedding26_size =  HBM_BANK26_SIZE;
+            ^~~~~~~~~~~~~~~~~~~~
+src/host.cpp:58:12: warning: unused variable ‘HBM_embedding27_size’ [-Wunused-variable]
+     size_t HBM_embedding27_size =  HBM_BANK27_SIZE;
+            ^~~~~~~~~~~~~~~~~~~~
+src/host.cpp:59:12: warning: unused variable ‘HBM_embedding28_size’ [-Wunused-variable]
+     size_t HBM_embedding28_size =  HBM_BANK28_SIZE;
+            ^~~~~~~~~~~~~~~~~~~~
+src/host.cpp:60:12: warning: unused variable ‘HBM_embedding29_size’ [-Wunused-variable]
+     size_t HBM_embedding29_size =  HBM_BANK29_SIZE;
+            ^~~~~~~~~~~~~~~~~~~~
+src/host.cpp:61:12: warning: unused variable ‘HBM_embedding30_size’ [-Wunused-variable]
+     size_t HBM_embedding30_size =  HBM_BANK30_SIZE;
+            ^~~~~~~~~~~~~~~~~~~~
+src/host.cpp:62:12: warning: unused variable ‘HBM_embedding31_size’ [-Wunused-variable]
+     size_t HBM_embedding31_size =  HBM_BANK31_SIZE;
+            ^~~~~~~~~~~~~~~~~~~~
+src/host.cpp:149:11: warning: unused variable ‘query_vec’ [-Wunused-variable]
+     float query_vec[D] =  {0};
+           ^~~~~~~~~
+In file included from /opt/Xilinx/Vivado/2019.2/include/ap_common.h:641:0,
+                 from /opt/Xilinx/Vivado/2019.2/include/ap_int.h:54,
+                 from src/types.hpp:3,
+                 from src/host.cpp:2:
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h: In instantiation of ‘void ap_private<_AP_W, _AP_S, true>::clearUnusedBits() volatile [with int _AP_W = 32; bool _AP_S = true]’:
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h:1647:3:   required from ‘ap_private<_AP_W, _AP_S, true>::ap_private(int) [with int _AP_W = 32; bool _AP_S = true]’
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h:4665:3:   required from ‘ap_private<_AP_W, _AP_S, false>& ap_private<_AP_W, _AP_S, false>::operator=(int) [with int _AP_W = 512; bool _AP_S = false]’
+/opt/Xilinx/Vivado/2019.2/include/ap_int.h:301:3:   required from ‘ap_uint<_AP_W>::ap_uint(int) [with int _AP_W = 512]’
+src/host.cpp:127:99:   required from here
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h:2144:28: warning: enum constant in boolean context [-Wint-in-bool-context]
+             : (excess_bits ? (((uint64_t)VAL) << (excess_bits)) >> (excess_bits)
+               ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                            : (uint64_t)VAL));
+                            ~~~~~~~~~~~~~~~~
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h: In instantiation of ‘void ap_private<_AP_W, _AP_S, true>::clearUnusedBits() volatile [with int _AP_W = 32; bool _AP_S = false]’:
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h:1426:20:   required from ‘ap_private<_AP_W, _AP_S>& ap_private<_AP_W, _AP_S, true>::operator=(const ap_private<_AP_W1, _AP_S1>&) [with int _AP_W1 = 64; bool _AP_S1 = false; int _AP_W = 32; bool _AP_S = false]’
+/opt/Xilinx/Vivado/2019.2/include/ap_int_base.h:364:13:   required from ‘ap_int_base<_AP_W, _AP_S>::ap_int_base(const ap_range_ref<_AP_W2, _AP_S2>&) [with int _AP_W2 = 64; bool _AP_S2 = false; int _AP_W = 32; bool _AP_S = false]’
+/opt/Xilinx/Vivado/2019.2/include/ap_int.h:237:69:   required from ‘ap_uint<_AP_W>::ap_uint(const ap_range_ref<_AP_W2, _AP_S2>&) [with int _AP_W2 = 64; bool _AP_S2 = false; int _AP_W = 32]’
+src/host.cpp:631:57:   required from here
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h:2144:28: warning: enum constant in boolean context [-Wint-in-bool-context]
+In file included from /opt/Xilinx/Vivado/2019.2/include/ap_common.h:641:0,
+                 from /opt/Xilinx/Vivado/2019.2/include/ap_int.h:54,
+                 from src/types.hpp:3,
+                 from src/host.cpp:2:
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h: In instantiation of ‘void ap_private<_AP_W, _AP_S, false>::cpSext(const ap_private<_AP_W1, _AP_S1>&) [with int _AP_W1 = 32; bool _AP_S1 = true; int _AP_W = 512; bool _AP_S = false]’:
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h:5335:13:   required from ‘void ap_private<_AP_W, _AP_S, false>::cpSextOrTrunc(const ap_private<_AP_W1, _AP_S1>&) [with int _AP_W1 = 32; bool _AP_S1 = true; int _AP_W = 512; bool _AP_S = false]’
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h:4598:20:   required from ‘ap_private<_AP_W, _AP_S, false>& ap_private<_AP_W, _AP_S, false>::operator=(const ap_private<_AP_W1, _AP_S1>&) [with int _AP_W1 = 32; bool _AP_S1 = true; int _AP_W = 512; bool _AP_S = false]’
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h:4665:3:   required from ‘ap_private<_AP_W, _AP_S, false>& ap_private<_AP_W, _AP_S, false>::operator=(int) [with int _AP_W = 512; bool _AP_S = false]’
+/opt/Xilinx/Vivado/2019.2/include/ap_int.h:301:3:   required from ‘ap_uint<_AP_W>::ap_uint(int) [with int _AP_W = 512]’
+src/host.cpp:127:99:   required from here
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h:5292:45: warning: enum constant in boolean context [-Wint-in-bool-context]
+       static const uint64_t mask = wordBits ? (~0ULL << (wordBits)) : 0ULL;
+                                    ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h:5300:43: warning: enum constant in boolean context [-Wint-in-bool-context]
+     static const uint64_t mask = wordBits ? (~0ULL << (wordBits)) : 0ULL;
+                                  ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h: In instantiation of ‘void ap_private<_AP_W, _AP_S, false>::cpSext(const ap_private<_AP_W1, _AP_S1>&) [with int _AP_W1 = 32; bool _AP_S1 = false; int _AP_W = 512; bool _AP_S = false]’:
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h:5335:13:   required from ‘void ap_private<_AP_W, _AP_S, false>::cpSextOrTrunc(const ap_private<_AP_W1, _AP_S1>&) [with int _AP_W1 = 32; bool _AP_S1 = false; int _AP_W = 512; bool _AP_S = false]’
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h:4598:20:   required from ‘ap_private<_AP_W, _AP_S, false>& ap_private<_AP_W, _AP_S, false>::operator=(const ap_private<_AP_W1, _AP_S1>&) [with int _AP_W1 = 32; bool _AP_S1 = false; int _AP_W = 512; bool _AP_S = false]’
+/opt/Xilinx/Vivado/2019.2/include/ap_int_base.h:215:13:   required from ‘ap_int_base<_AP_W, _AP_S>::ap_int_base(const ap_int_base<_AP_W2, _AP_S2>&) [with int _AP_W2 = 32; bool _AP_S2 = false; int _AP_W = 512; bool _AP_S = false]’
+/opt/Xilinx/Vivado/2019.2/include/ap_int_ref.h:413:31:   required from ‘ap_range_ref<_AP_W, _AP_S>& ap_range_ref<_AP_W, _AP_S>::operator=(const ap_int_base<_AP_W2, _AP_S2>&) [with int _AP_W2 = 32; bool _AP_S2 = false; int _AP_W = 512; bool _AP_S = false]’
+src/host.cpp:208:73:   required from here
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h:5292:45: warning: enum constant in boolean context [-Wint-in-bool-context]
+       static const uint64_t mask = wordBits ? (~0ULL << (wordBits)) : 0ULL;
+                                    ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/opt/Xilinx/Vivado/2019.2/include/etc/ap_private.h:5300:43: warning: enum constant in boolean context [-Wint-in-bool-context]
+     static const uint64_t mask = wordBits ? (~0ULL << (wordBits)) : 0ULL;
+                                  ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21:
+src/opencl.hpp: In function ‘cl_int cl::UnloadCompiler()’:
+src/opencl.hpp:2771:14: warning: ‘cl_int clUnloadCompiler()’ is deprecated [-Wdeprecated-declarations]
+     return ::clUnloadCompiler();
+              ^~~~~~~~~~~~~~~~
+In file included from /usr/include/CL/opencl.h:47:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21:
+/usr/include/CL/cl.h:1436:1: note: declared here
+ clUnloadCompiler(void) CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED;
+ ^~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21:
+src/opencl.hpp:2771:31: warning: ‘cl_int clUnloadCompiler()’ is deprecated [-Wdeprecated-declarations]
+     return ::clUnloadCompiler();
+                               ^
+In file included from /usr/include/CL/opencl.h:47:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21:
+/usr/include/CL/cl.h:1436:1: note: declared here
+ clUnloadCompiler(void) CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED;
+ ^~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21:
+src/opencl.hpp: In constructor ‘cl::Image2DGL::Image2DGL(const cl::Context&, cl_mem_flags, cl_GLenum, cl_GLint, cl_GLuint, cl_int*)’:
+src/opencl.hpp:4986:21: warning: ‘_cl_mem* clCreateFromGLTexture2D(cl_context, cl_mem_flags, cl_GLenum, cl_GLint, cl_GLuint, cl_int*)’ is deprecated [-Wdeprecated-declarations]
+         object_ = ::clCreateFromGLTexture2D(
+                     ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/CL/opencl.h:48:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21:
+/usr/include/CL/cl_gl.h:114:1: note: declared here
+ clCreateFromGLTexture2D(cl_context      /* context */,
+ ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21:
+src/opencl.hpp:4992:19: warning: ‘_cl_mem* clCreateFromGLTexture2D(cl_context, cl_mem_flags, cl_GLenum, cl_GLint, cl_GLuint, cl_int*)’ is deprecated [-Wdeprecated-declarations]
+             &error);
+                   ^
+In file included from /usr/include/CL/opencl.h:48:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21:
+/usr/include/CL/cl_gl.h:114:1: note: declared here
+ clCreateFromGLTexture2D(cl_context      /* context */,
+ ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21:
+src/opencl.hpp: In constructor ‘cl::Image3DGL::Image3DGL(const cl::Context&, cl_mem_flags, cl_GLenum, cl_GLint, cl_GLuint, cl_int*)’:
+src/opencl.hpp:5303:21: warning: ‘_cl_mem* clCreateFromGLTexture3D(cl_context, cl_mem_flags, cl_GLenum, cl_GLint, cl_GLuint, cl_int*)’ is deprecated [-Wdeprecated-declarations]
+         object_ = ::clCreateFromGLTexture3D(
+                     ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/CL/opencl.h:48:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21:
+/usr/include/CL/cl_gl.h:122:1: note: declared here
+ clCreateFromGLTexture3D(cl_context      /* context */,
+ ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21:
+src/opencl.hpp:5309:19: warning: ‘_cl_mem* clCreateFromGLTexture3D(cl_context, cl_mem_flags, cl_GLenum, cl_GLint, cl_GLuint, cl_int*)’ is deprecated [-Wdeprecated-declarations]
+             &error);
+                   ^
+In file included from /usr/include/CL/opencl.h:48:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21:
+/usr/include/CL/cl_gl.h:122:1: note: declared here
+ clCreateFromGLTexture3D(cl_context      /* context */,
+ ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21:
+src/opencl.hpp: At global scope:
+src/opencl.hpp:6062:63: warning: ignoring attributes on template argument ‘cl_int {aka int}’ [-Wignored-attributes]
+     typename std::enable_if<!std::is_pointer<T>::value, cl_int>::type
+                                                               ^
+src/opencl.hpp:6506:22: warning: ignoring attributes on template argument ‘cl_int {aka int}’ [-Wignored-attributes]
+         vector<cl_int>* binaryStatus = NULL,
+                      ^
+src/opencl.hpp: In member function ‘cl_int cl::CommandQueue::enqueueMarker(cl::Event*) const’:
+src/opencl.hpp:8625:15: warning: ‘cl_int clEnqueueMarker(cl_command_queue, _cl_event**)’ is deprecated [-Wdeprecated-declarations]
+             ::clEnqueueMarker(
+               ^~~~~~~~~~~~~~~
+In file included from /usr/include/CL/opencl.h:47:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21:
+/usr/include/CL/cl.h:1424:1: note: declared here
+ clEnqueueMarker(cl_command_queue    /* command_queue */,
+ ^~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21:
+src/opencl.hpp:8627:46: warning: ‘cl_int clEnqueueMarker(cl_command_queue, _cl_event**)’ is deprecated [-Wdeprecated-declarations]
+                 (event != NULL) ? &tmp : NULL),
+                                              ^
+In file included from /usr/include/CL/opencl.h:47:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21:
+/usr/include/CL/cl.h:1424:1: note: declared here
+ clEnqueueMarker(cl_command_queue    /* command_queue */,
+ ^~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21:
+src/opencl.hpp: In member function ‘cl_int cl::CommandQueue::enqueueWaitForEvents(cl::vector<cl::Event>&) const’:
+src/opencl.hpp:8640:15: warning: ‘cl_int clEnqueueWaitForEvents(cl_command_queue, cl_uint, _cl_event* const*)’ is deprecated [-Wdeprecated-declarations]
+             ::clEnqueueWaitForEvents(
+               ^~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/CL/opencl.h:47:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21:
+/usr/include/CL/cl.h:1428:1: note: declared here
+ clEnqueueWaitForEvents(cl_command_queue /* command_queue */,
+ ^~~~~~~~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21:
+src/opencl.hpp:8643:77: warning: ‘cl_int clEnqueueWaitForEvents(cl_command_queue, cl_uint, _cl_event* const*)’ is deprecated [-Wdeprecated-declarations]
+                 events.size() > 0 ? (const cl_event*) &events.front() : NULL),
+                                                                             ^
+In file included from /usr/include/CL/opencl.h:47:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21:
+/usr/include/CL/cl.h:1428:1: note: declared here
+ clEnqueueWaitForEvents(cl_command_queue /* command_queue */,
+ ^~~~~~~~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21:
+src/opencl.hpp: In member function ‘cl_int cl::CommandQueue::enqueueBarrier() const’:
+src/opencl.hpp:8777:15: warning: ‘cl_int clEnqueueBarrier(cl_command_queue)’ is deprecated [-Wdeprecated-declarations]
+             ::clEnqueueBarrier(object_),
+               ^~~~~~~~~~~~~~~~
+In file included from /usr/include/CL/opencl.h:47:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21:
+/usr/include/CL/cl.h:1433:1: note: declared here
+ clEnqueueBarrier(cl_command_queue /* command_queue */) CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED;
+ ^~~~~~~~~~~~~~~~
+In file included from src/cl2.hpp:17:0,
+                 from src/host.hpp:21:
+src/opencl.hpp:8777:39: warning: ‘cl_int clEnqueueBarrier(cl_command_queue)’ is deprecated [-Wdeprecated-declarations]
+             ::clEnqueueBarrier(object_),
+                                       ^
+In file included from /usr/include/CL/opencl.h:47:0,
+                 from src/opencl.hpp:530,
+                 from src/cl2.hpp:17,
+                 from src/host.hpp:21:
+/usr/include/CL/cl.h:1433:1: note: declared here
+ clEnqueueBarrier(cl_command_queue /* command_queue */) CL_EXT_SUFFIX__VERSION_1_1_DEPRECATED;
+ ^~~~~~~~~~~~~~~~
+In file included from src/host.hpp:21:0:
+src/cl2.hpp: At global scope:
+src/cl2.hpp:19:151: note: #pragma message: cl2.hpp has been renamed to opencl.hpp to make it clear that it supports all versions of OpenCL. Please include opencl.hpp directly.
+ #pragma message("cl2.hpp has been renamed to opencl.hpp to make it clear that it supports all versions of OpenCL. Please include opencl.hpp directly.")
+                                                                                                                                                       ^
