@@ -1,10 +1,16 @@
 # Performance & Resource Analysis
 
+Final Version
+
+* Template
+  * on-chip IVF index: distance_computation_PE_systolic_optimized_perfect_loop
+  * off-chip IVF index: off_chip_distance_computation_PE_systolic_optimized_perfect_loop
+* FANNS: distance_computation_PE_systolic_optimized
+
+
 Note: due to a bug in Vitis_hls 2019.2, some folders cannot by synthesized by vitis_hls -f synthesis.tcl (dataflow check error). To walk around this, build the project to hardware directly using the entire Vitis flow with "time make check TARGET=hw DEVICE=xilinx_u280_xdma_201920_3 VER=host_cpp".
 
 We don't need double buffering query vector. For nlist <= 8192, the initialization overhead is 128/(8192+128). For nlist = 16384, it might needs more PEs (e.g. 4 PE), the initialization overhead is 128/(4096 + 128), negligible as well.
-
-Although we implemented several optimized versions that save resources, the Vitis HLS flow somehow fail at the placement stage, thus we choose to use **distance_computation_PE_systolic_optimized** as the final version.
 
 
 ## Nlist constraint & Multiple PEs
@@ -25,6 +31,299 @@ We need 2 copies of coarse-grained centroids, one in this centroid distance comp
 For the case of using multiple PEs (16384), simply multiple the resource consumption of optimized_version2 by PE number (2 or 4).
 
 For the case of using float at URAM type, the effective URAM size is reduced by half, thus can only choose nlist < 8192 as the option.
+
+
+## distance_computation_PE_systolic_optimized_perfect_loop
+
+4 components: component A~C for computation, component D for forwarding
+
+Here we use 10000 queries, 6 PEs for 8192 centroids, thus each PE computes ceil(8192 / 6) = 1366 rows.
+
+Performance Model
+
+Assume computation cycle >> systolic array query propagation delay.
+
+total CC = query_num * (L_load_query + (L_compute_A + N_compute * II_compute)) + L_compute_B + L_compute_C ~= query_num * (L_load_query + (L_compute_A + N_compute * II_compute))
+
+L_load_query = 128, L_compute_A = 8, II_compute = 1, N_compute = centroid_per_PE * 8 (unroll factor = 16, D = 128, thus need 128 / 16 = 8 iterations to compute one value)
+
+we have estimated total CC = 10000 * (128 + 8 + 1366 * 8) = 110,640,000, very close to the real CC (111,718,624)
+
+
+Top-level:
+```
+================================================================
+== Performance Estimates
+================================================================
++ Timing: 
+    * Summary: 
+    +--------+---------+----------+------------+
+    |  Clock |  Target | Estimated| Uncertainty|
+    +--------+---------+----------+------------+
+    |ap_clk  | 7.14 ns | 5.214 ns |   1.93 ns  |
+    +--------+---------+----------+------------+
+
++ Latency: 
+    * Summary: 
+    +-----------+-----------+-----------+-----------+-----------+-----------+----------+
+    |    Latency (cycles)   |   Latency (absolute)  |        Interval       | Pipeline |
+    |    min    |    max    |    min    |    max    |    min    |    max    |   Type   |
+    +-----------+-----------+-----------+-----------+-----------+-----------+----------+
+    |  111718624|  111718624| 0.798 sec | 0.798 sec |  111718580|  111718580| dataflow |
+    +-----------+-----------+-----------+-----------+-----------+-----------+----------+
+
+    + Detail: 
+        * Instance: 
+        +----------------------------------------------------------+-------------------------------------------------------+-----------+-----------+-----------+-----------+-----------+-----------+----------+
+        |                                                          |                                                       |    Latency (cycles)   |   Latency (absolute)  |        Interval       | Pipeline |
+        |                         Instance                         |                         Module                        |    min    |    max    |    min    |    max    |    min    |    max    |   Type   |
+        +----------------------------------------------------------+-------------------------------------------------------+-----------+-----------+-----------+-----------+-----------+-----------+----------+
+        |compute_cell_distance_tail_PE_10000_1366_1362_8192_35_U0  |compute_cell_distance_tail_PE_10000_1366_1362_8192_35  |  111398579|  111398579| 0.796 sec | 0.796 sec |  111398580|  111398580| dataflow |
+        |compute_cell_distance_middle_PE_10000_1366_8192_33_U0     |compute_cell_distance_middle_PE_10000_1366_8192_33     |  111718579|  111718579| 0.798 sec | 0.798 sec |  111718580|  111718580| dataflow |
+        |compute_cell_distance_middle_PE_10000_1366_8192_34_U0     |compute_cell_distance_middle_PE_10000_1366_8192_34     |  111718579|  111718579| 0.798 sec | 0.798 sec |  111718580|  111718580| dataflow |
+        |compute_cell_distance_middle_PE_10000_1366_8192_31_U0     |compute_cell_distance_middle_PE_10000_1366_8192_31     |  111718579|  111718579| 0.798 sec | 0.798 sec |  111718580|  111718580| dataflow |
+        |compute_cell_distance_middle_PE_10000_1366_8192_32_U0     |compute_cell_distance_middle_PE_10000_1366_8192_32     |  111718579|  111718579| 0.798 sec | 0.798 sec |  111718580|  111718580| dataflow |
+        |compute_cell_distance_head_PE_10000_1366_8192_U0          |compute_cell_distance_head_PE_10000_1366_8192_s        |  111718579|  111718579| 0.798 sec | 0.798 sec |  111718580|  111718580| dataflow |
+        |broadcast_query_vector_10000_U0                           |broadcast_query_vector_10000_s                         |    1280010|    1280010|  9.143 ms |  9.143 ms |    1280010|    1280010|   none   |
+        |write_result_81920000_U0                                  |write_result_81920000_s                                |   81920008|   81920008| 0.585 sec | 0.585 sec |   81920008|   81920008|   none   |
+        |broadcast_init_centroid_vectors_U0                        |broadcast_init_centroid_vectors                        |    1048586|    1048586|  7.490 ms |  7.490 ms |    1048586|    1048586|   none   |
+        |vadd_entry74_U0                                           |vadd_entry74                                           |          0|          0|    0 ns   |    0 ns   |          0|          0|   none   |
+        +----------------------------------------------------------+-------------------------------------------------------+-----------+-----------+-----------+-----------+-----------+-----------+----------+
+
+        * Loop: 
+        N/A
+```
+
+One PE (component A~C + forward):
+```
++ Latency: 
+    * Summary: 
+    +-----------+-----------+-----------+-----------+-----------+-----------+----------+
+    |    Latency (cycles)   |   Latency (absolute)  |        Interval       | Pipeline |
+    |    min    |    max    |    min    |    max    |    min    |    max    |   Type   |
+    +-----------+-----------+-----------+-----------+-----------+-----------+----------+
+    |  111718579|  111718579| 0.798 sec | 0.798 sec |  111718580|  111718580| dataflow |
+    +-----------+-----------+-----------+-----------+-----------+-----------+----------+
+
+    + Detail: 
+        * Instance: 
+        +----------------------------------------------------------------+-------------------------------------------------------------+-----------+-----------+-----------+-----------+-----------+-----------+---------+
+        |                                                                |                                                             |    Latency (cycles)   |   Latency (absolute)  |        Interval       | Pipeline|
+        |                            Instance                            |                            Module                           |    min    |    max    |    min    |    max    |    min    |    max    |   Type  |
+        +----------------------------------------------------------------+-------------------------------------------------------------+-----------+-----------+-----------+-----------+-----------+-----------+---------+
+        |compute_cell_distance_middle_component_A_10000_1366_8192_36_U0  |compute_cell_distance_middle_component_A_10000_1366_8192_36  |  111718579|  111718579| 0.798 sec | 0.798 sec |  111718579|  111718579|   none  |
+        |compute_cell_distance_component_B_10000_1366_37_U0              |compute_cell_distance_component_B_10000_1366_37              |  109280063|  109280063| 0.781 sec | 0.781 sec |  109280063|  109280063|   none  |
+        |compute_cell_distance_component_C_10000_1366_138_U0             |compute_cell_distance_component_C_10000_1366_138             |  109280028|  109280028| 0.781 sec | 0.781 sec |  109280028|  109280028|   none  |
+        |forward_cell_distance_middle_10000_1366_39_U0                   |forward_cell_distance_middle_10000_1366_39                   |   27320002|   27320002| 0.195 sec | 0.195 sec |   27320002|   27320002|   none  |
+        +----------------------------------------------------------------+-------------------------------------------------------------+-----------+-----------+-----------+-----------+-----------+-----------+---------+
+
+        * Loop: 
+        N/A
+```
+
+Component A (the most time-consuming part, latency at inner loop):
+```
++ Latency: 
+    * Summary: 
+    +-----------+-----------+-----------+-----------+-----------+-----------+---------+
+    |    Latency (cycles)   |   Latency (absolute)  |        Interval       | Pipeline|
+    |    min    |    max    |    min    |    max    |    min    |    max    |   Type  |
+    +-----------+-----------+-----------+-----------+-----------+-----------+---------+
+    |  111718579|  111718579| 0.798 sec | 0.798 sec |  111718579|  111718579|   none  |
+    +-----------+-----------+-----------+-----------+-----------+-----------+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        +-------------+-----------+-----------+----------+-----------+-----------+--------+----------+
+        |             |    Latency (cycles)   | Iteration|  Initiation Interval  |  Trip  |          |
+        |  Loop Name  |    min    |    max    |  Latency |  achieved |   target  |  Count | Pipelined|
+        +-------------+-----------+-----------+----------+-----------+-----------+--------+----------+
+        |- Loop 1     |    1048576|    1048576|         3|          2|          1|  524288|    yes   |
+        |- Loop 2     |  110670000|  110670000|     11067|          -|          -|   10000|    no    |
+        | + Loop 2.1  |        128|        128|         2|          1|          1|     128|    yes   |
+        | + Loop 2.2  |      10934|      10934|         8|          1|          1|   10928|    yes   |
+        +-------------+-----------+-----------+----------+-----------+-----------+--------+----------+
+```
+
+Component B (latency at outer loop):
+
+```
++ Latency: 
+    * Summary: 
+    +-----------+-----------+-----------+-----------+-----------+-----------+---------+
+    |    Latency (cycles)   |   Latency (absolute)  |        Interval       | Pipeline|
+    |    min    |    max    |    min    |    max    |    min    |    max    |   Type  |
+    +-----------+-----------+-----------+-----------+-----------+-----------+---------+
+    |  108960063|  108960063| 0.778 sec | 0.778 sec |  108960063|  108960063|   none  |
+    +-----------+-----------+-----------+-----------+-----------+-----------+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        +----------+-----------+-----------+----------+-----------+-----------+-----------+----------+
+        |          |    Latency (cycles)   | Iteration|  Initiation Interval  |    Trip   |          |
+        | Loop Name|    min    |    max    |  Latency |  achieved |   target  |   Count   | Pipelined|
+        +----------+-----------+-----------+----------+-----------+-----------+-----------+----------+
+        |- Loop 1  |  108960061|  108960061|        63|          1|          1|  108960000|    yes   |
+        +----------+-----------+-----------+----------+-----------+-----------+-----------+----------+
+```
+
+Component C (latency at outer loop):
+
+```
++ Latency: 
+    * Summary: 
+    +-----------+-----------+-----------+-----------+-----------+-----------+---------+
+    |    Latency (cycles)   |   Latency (absolute)  |        Interval       | Pipeline|
+    |    min    |    max    |    min    |    max    |    min    |    max    |   Type  |
+    +-----------+-----------+-----------+-----------+-----------+-----------+---------+
+    |  108960028|  108960028| 0.778 sec | 0.778 sec |  108960028|  108960028|   none  |
+    +-----------+-----------+-----------+-----------+-----------+-----------+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        +----------+-----------+-----------+----------+-----------+-----------+----------+----------+
+        |          |    Latency (cycles)   | Iteration|  Initiation Interval  |   Trip   |          |
+        | Loop Name|    min    |    max    |  Latency |  achieved |   target  |   Count  | Pipelined|
+        +----------+-----------+-----------+----------+-----------+-----------+----------+----------+
+        |- Loop 1  |  108960026|  108960026|        35|          8|          8|  13620000|    yes   |
+        +----------+-----------+-----------+----------+-----------+-----------+----------+----------+
+
+```
+
+Resource Consumption of an entire PE (component A~C + forward):
+
+Vivado:
+
+LUT: 11065 (HLS: 10800)
+BRAM18K: 15 (HLS: 15)
+URAM: 24 (HLS: 24, this is related to PE num and NLIST)
+DSP: 112 (HLS: 112)
+
+
+HLS: 
+
+```
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++---------------------+---------+------+---------+---------+-----+
+|         Name        | BRAM_18K|  DSP |    FF   |   LUT   | URAM|
++---------------------+---------+------+---------+---------+-----+
+|DSP                  |        -|     -|        -|        -|    -|
+|Expression           |        -|     -|        0|       22|    -|
+|FIFO                 |       15|     -|      347|      176|    -|
+|Instance             |        0|   112|    14229|    10557|   24|
+|Memory               |        -|     -|        -|        -|    -|
+|Multiplexer          |        -|     -|        -|       45|    -|
+|Register             |        -|     -|        7|        -|    -|
++---------------------+---------+------+---------+---------+-----+
+|Total                |       15|   112|    14583|    10800|   24|
++---------------------+---------+------+---------+---------+-----+
+|Available SLR        |     1344|  3008|   869120|   434560|  320|
++---------------------+---------+------+---------+---------+-----+
+|Utilization SLR (%)  |        1|     3|        1|        2|    7|
++---------------------+---------+------+---------+---------+-----+
+|Available            |     4032|  9024|  2607360|  1303680|  960|
++---------------------+---------+------+---------+---------+-----+
+|Utilization (%)      |    ~0   |     1|    ~0   |    ~0   |    2|
++---------------------+---------+------+---------+---------+-----+
+```
+
+## off_chip_distance_computation_PE_systolic_optimized_perfect_loop
+
+(Same as on-chip version, just replace URAM with HBM channel)
+
+4 components: component A~C for computation, component D for forwarding
+
+Here we use 10000 queries, 6 PEs for 8192 centroids, thus each PE computes ceil(8192 / 6) = 1366 rows.
+
+Performance Model
+
+Assume computation cycle >> systolic array query propagation delay.
+
+total CC = query_num * (L_load_query + (L_compute_A + N_compute * II_compute)) + L_compute_B + L_compute_C ~= query_num * (L_load_query + (L_compute_A + N_compute * II_compute))
+
+L_load_query = 128, L_compute_A = 8, II_compute = 1, N_compute = centroid_per_PE * 8 (unroll factor = 16, D = 128, thus need 128 / 16 = 8 iterations to compute one value)
+
+we have estimated total CC = 10000 * (128 + 8 + 1366 * 8) = 110,640,000, very close to the real CC (110,750,001)
+
+
+Performance & Resource of an entire middle PE:
+
+```
+================================================================
+== Performance Estimates
+================================================================
++ Timing: 
+    * Summary: 
+    +--------+---------+----------+------------+
+    |  Clock |  Target | Estimated| Uncertainty|
+    +--------+---------+----------+------------+
+    |ap_clk  | 7.14 ns | 5.214 ns |   1.93 ns  |
+    +--------+---------+----------+------------+
+
++ Latency: 
+    * Summary: 
+    +-----------+-----------+-----------+-----------+-----------+-----------+----------+
+    |    Latency (cycles)   |   Latency (absolute)  |        Interval       | Pipeline |
+    |    min    |    max    |    min    |    max    |    min    |    max    |   Type   |
+    +-----------+-----------+-----------+-----------+-----------+-----------+----------+
+    |  110750001|  110750001| 0.791 sec | 0.791 sec |  110750002|  110750002| dataflow |
+    +-----------+-----------+-----------+-----------+-----------+-----------+----------+
+
+    + Detail: 
+        * Instance: 
+        +----------------------------------------------------------------+-------------------------------------------------------------+-----------+-----------+-----------+-----------+-----------+-----------+---------+
+        |                                                                |                                                             |    Latency (cycles)   |   Latency (absolute)  |        Interval       | Pipeline|
+        |                            Instance                            |                            Module                           |    min    |    max    |    min    |    max    |    min    |    max    |   Type  |
+        +----------------------------------------------------------------+-------------------------------------------------------------+-----------+-----------+-----------+-----------+-----------+-----------+---------+
+        |compute_cell_distance_middle_component_A_10000_1366_8192_44_U0  |compute_cell_distance_middle_component_A_10000_1366_8192_44  |  110750001|  110750001| 0.791 sec | 0.791 sec |  110750001|  110750001|   none  |
+        |compute_cell_distance_component_B_10000_1366_45_U0              |compute_cell_distance_component_B_10000_1366_45              |  109280063|  109280063| 0.781 sec | 0.781 sec |  109280063|  109280063|   none  |
+        |compute_cell_distance_component_C_10000_1366_146_U0             |compute_cell_distance_component_C_10000_1366_146             |  109280028|  109280028| 0.781 sec | 0.781 sec |  109280028|  109280028|   none  |
+        |forward_cell_distance_middle_10000_1366_1_U0                    |forward_cell_distance_middle_10000_1366_1                    |   40980002|   40980002| 0.293 sec | 0.293 sec |   40980002|   40980002|   none  |
+        +----------------------------------------------------------------+-------------------------------------------------------------+-----------+-----------+-----------+-----------+-----------+-----------+---------+
+
+        * Loop: 
+        N/A
+
+
+
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++---------------------+---------+------+---------+---------+-----+
+|         Name        | BRAM_18K|  DSP |    FF   |   LUT   | URAM|
++---------------------+---------+------+---------+---------+-----+
+|DSP                  |        -|     -|        -|        -|    -|
+|Expression           |        -|     -|        0|       22|    -|
+|FIFO                 |       15|     -|      347|      176|    -|
+|Instance             |        0|   112|    14774|    10420|    -|
+|Memory               |        -|     -|        -|        -|    -|
+|Multiplexer          |        -|     -|        -|       36|    -|
+|Register             |        -|     -|        6|        -|    -|
++---------------------+---------+------+---------+---------+-----+
+|Total                |       15|   112|    15127|    10654|    0|
++---------------------+---------+------+---------+---------+-----+
+|Available SLR        |     1344|  3008|   869120|   434560|  320|
++---------------------+---------+------+---------+---------+-----+
+|Utilization SLR (%)  |        1|     3|        1|        2|    0|
++---------------------+---------+------+---------+---------+-----+
+|Available            |     4032|  9024|  2607360|  1303680|  960|
++---------------------+---------+------+---------+---------+-----+
+|Utilization (%)      |    ~0   |     1|    ~0   |    ~0   |    0|
++---------------------+---------+------+---------+---------+-----+
+```
 
 ## distance_computation_PE_systolic_unoptimized
 
