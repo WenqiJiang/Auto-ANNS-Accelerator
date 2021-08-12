@@ -232,6 +232,28 @@ void split_cell_ID(
 
 template<const int query_num>
 void lookup_center_vectors(
+    float* HBM_vector_quantizer,
+    hls::stream<int>& s_searched_cell_id_lookup_PE,
+    hls::stream<float>& s_center_vectors_lookup_PE) {
+
+    //  lookup center vectors given ID
+    for (int query_id = 0; query_id < query_num; query_id++) {
+
+        for (int nprobe_id = 0; nprobe_id < NPROBE; nprobe_id++) {
+
+            int vec_id = s_searched_cell_id_lookup_PE.read();
+            int start_addr = vec_id * D;
+
+            for (int i = 0; i < D; i++) {
+#pragma HLS pipeline II=1
+                s_center_vectors_lookup_PE.write(HBM_vector_quantizer[start_addr + i]);
+            }
+        }
+    }
+}
+
+template<const int query_num>
+void lookup_center_vectors(
     hls::stream<float> &s_center_vectors_init_lookup_PE,
     hls::stream<int>& s_searched_cell_id_lookup_PE,
     hls::stream<float>& s_center_vectors_lookup_PE) {
