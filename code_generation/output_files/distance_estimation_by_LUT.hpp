@@ -15,7 +15,7 @@ void PQ_lookup_computation_wrapper(
     hls::stream<distance_LUT_PQ16_t>& s_distance_LUT,
     hls::stream<int>& s_scanned_entries_every_cell_PQ_lookup_computation, 
     hls::stream<int>& s_last_valid_channel, 
-<--PQ_lookup_computation_wrapper_arguments-->);
+    hls::stream<single_PQ_result> (&s_single_PQ_result)[stream_num]);
 
 
 template<const int query_num, const int nprobe>
@@ -279,7 +279,7 @@ void PQ_lookup_computation_wrapper(
     hls::stream<distance_LUT_PQ16_t>& s_distance_LUT,
     hls::stream<int>& s_scanned_entries_every_cell_PQ_lookup_computation, 
     hls::stream<int>& s_last_valid_channel, 
-<--PQ_lookup_computation_wrapper_arguments-->) {
+    hls::stream<single_PQ_result> (&s_single_PQ_result)[stream_num]) {
 #pragma HLS inline
 
     hls::stream<distance_LUT_PQ16_t> s_distance_LUT_systolic[stream_num];
@@ -292,7 +292,11 @@ void PQ_lookup_computation_wrapper(
 #pragma HLS array_partition variable=s_scanned_entries_every_cell_PQ_lookup_computation_replicated complete
 // #pragma HLS RESOURCE variable=s_scanned_entries_every_cell_PQ_lookup_computation_replicated core=FIFO_SRL
 
-<--PQ_lookup_computation_wrapper_replicate_signal-->
+
+    replicate_s_scanned_entries_every_cell_PQ_lookup_computation<query_num, nprobe, stream_num>(
+        s_scanned_entries_every_cell_PQ_lookup_computation, 
+        s_scanned_entries_every_cell_PQ_lookup_computation_replicated);
+
 
     hls::stream<int> s_last_element_valid_PQ_lookup_computation[stream_num];
 #pragma HLS stream variable=s_last_element_valid_PQ_lookup_computation depth=8

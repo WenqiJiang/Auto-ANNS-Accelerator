@@ -51,11 +51,11 @@
 
   # stage 6
   # there could be a sorting network before the priority queue group (SORT_GROUP_ENABLE)
-  #   if not, set SORT_GROUP_ENABLE to False, and SORT_GROUP_NUM to None
+  #   if not, set SORT_GROUP_ENABLE to False, and SORT_GROUP_NUM to 0
   # number of 16 outputs per cycle, e.g., HBM channel num = 10, comp PE num = 30, then 
   #   SORT_GROUP_NUM = 2; if HBM channel = 12, PE_num = 36, then SORT_GROUP_NUM = 3
   SORT_GROUP_ENABLE: False
-  SORT_GROUP_NUM: None
+  SORT_GROUP_NUM: 0
   # SORT_GROUP_ENABLE: True
   # SORT_GROUP_NUM: 2
 
