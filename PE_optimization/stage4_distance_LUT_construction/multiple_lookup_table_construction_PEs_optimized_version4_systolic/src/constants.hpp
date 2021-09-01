@@ -9,7 +9,7 @@
 #define CENTROID_PARTITIONS 32
 #define CENTROIDS_PER_PARTITION (NLIST / CENTROID_PARTITIONS)
 // #define QUERY_NUM 10 // sw_emu
-#define QUERY_NUM 10000
+#define QUERY_NUM 10
 
 #define LARGE_NUM 99999999 // used to init the heap
 

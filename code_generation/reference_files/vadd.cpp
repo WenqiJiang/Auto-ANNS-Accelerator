@@ -1,3 +1,19 @@
+/*
+Variable to be replaced (<--variable_name-->):
+
+    multiple lines (depends on HBM channel num):
+        HBM_in_vadd_arg
+        HBM_in_m_axi
+        HBM_in_s_axilite
+        load_and_split_PQ_codes_wrapper_arg
+
+    single line:
+
+
+    basic constants:
+
+*/
+
 #include <stdio.h>
 #include <hls_stream.h>
 
@@ -11,35 +27,24 @@
 #include "priority_queue_distance_results_wrapper.hpp"
 #include "priority_queue_vector_quantizer.hpp"
 #include "select_Voronoi_cell.hpp"
-#include "sort_reduction_with_vecID.hpp"
 #include "types.hpp"
 
 extern "C" {
 
 void vadd(  
-    const ap_uint512_t* HBM_in0, 
-    const ap_uint512_t* HBM_in1, 
-    const ap_uint512_t* HBM_in2, 
-    const ap_uint512_t* HBM_in3, 
-    const ap_uint512_t* HBM_in4, 
-    const ap_uint512_t* HBM_in5, 
-    const ap_uint512_t* HBM_in6, 
-    const ap_uint512_t* HBM_in7, 
-    const ap_uint512_t* HBM_in8, 
-    const ap_uint512_t* HBM_in9, 
-    // const ap_uint512_t* HBM_in10, 
-    // const ap_uint512_t* HBM_in11, 
-    // const ap_uint512_t* HBM_in12, 
-    // const ap_uint512_t* HBM_in13, 
-    // const ap_uint512_t* HBM_in14, 
-    // const ap_uint512_t* HBM_in15, 
-    // const ap_uint512_t* HBM_in16, 
-    // const ap_uint512_t* HBM_in17, 
-    // const ap_uint512_t* HBM_in18, 
-    // const ap_uint512_t* HBM_in19, 
-    // const ap_uint512_t* HBM_in20, 
-    // HBM21: assigned for HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid
-    const int* HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid, 
+    const ap_uint512_t* HBM_in0,
+    const ap_uint512_t* HBM_in1,
+    const ap_uint512_t* HBM_in2,
+    const ap_uint512_t* HBM_in3,
+    const ap_uint512_t* HBM_in4,
+    const ap_uint512_t* HBM_in5,
+    const ap_uint512_t* HBM_in6,
+    const ap_uint512_t* HBM_in7,
+    const ap_uint512_t* HBM_in8,
+    const ap_uint512_t* HBM_in9,
+
+    // HBM21: assigned for HBM_addr_info
+    const int* HBM_addr_info, 
     // HBM22: query vectors
     float* HBM_query_vectors,
     // HBM23: center vector table (Vector_quantizer)
@@ -58,84 +63,47 @@ void vadd(
     // const ap_uint512_t* table_DDR0, const ap_uint512_t* table_DDR1, 
     )
 {
-#pragma HLS INTERFACE m_axi port=HBM_in0  offset=slave bundle=gmem0
-#pragma HLS INTERFACE m_axi port=HBM_in1  offset=slave bundle=gmem1
-#pragma HLS INTERFACE m_axi port=HBM_in2  offset=slave bundle=gmem2
-#pragma HLS INTERFACE m_axi port=HBM_in3  offset=slave bundle=gmem3
-#pragma HLS INTERFACE m_axi port=HBM_in4  offset=slave bundle=gmem4
-#pragma HLS INTERFACE m_axi port=HBM_in5  offset=slave bundle=gmem5
-#pragma HLS INTERFACE m_axi port=HBM_in6  offset=slave bundle=gmem6
-#pragma HLS INTERFACE m_axi port=HBM_in7  offset=slave bundle=gmem7
-#pragma HLS INTERFACE m_axi port=HBM_in8  offset=slave bundle=gmem8
-#pragma HLS INTERFACE m_axi port=HBM_in9  offset=slave bundle=gmem9
-// #pragma HLS INTERFACE m_axi port=HBM_in10  offset=slave bundle=gmem10
-// #pragma HLS INTERFACE m_axi port=HBM_in11  offset=slave bundle=gmem11
-// #pragma HLS INTERFACE m_axi port=HBM_in12  offset=slave bundle=gmem12
-// #pragma HLS INTERFACE m_axi port=HBM_in13  offset=slave bundle=gmem13
-// #pragma HLS INTERFACE m_axi port=HBM_in14  offset=slave bundle=gmem14
-// #pragma HLS INTERFACE m_axi port=HBM_in15  offset=slave bundle=gmem15
-// #pragma HLS INTERFACE m_axi port=HBM_in16  offset=slave bundle=gmem16
-// #pragma HLS INTERFACE m_axi port=HBM_in17  offset=slave bundle=gmem17
-// #pragma HLS INTERFACE m_axi port=HBM_in18  offset=slave bundle=gmem18
-// #pragma HLS INTERFACE m_axi port=HBM_in19  offset=slave bundle=gmem19
-// #pragma HLS INTERFACE m_axi port=HBM_in20  offset=slave bundle=gmem20
-#pragma HLS INTERFACE m_axi port=HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid  offset=slave bundle=gmem21
-#pragma HLS INTERFACE m_axi port=HBM_query_vectors  offset=slave bundle=gmem22
-#pragma HLS INTERFACE m_axi port=HBM_vector_quantizer  offset=slave bundle=gmem23
-#pragma HLS INTERFACE m_axi port=HBM_product_quantizer  offset=slave bundle=gmem24
-#pragma HLS INTERFACE m_axi port=HBM_OPQ_matrix  offset=slave bundle=gmem25
-// #pragma HLS INTERFACE m_axi port=HBM_in26  offset=slave bundle=gmem26
-// #pragma HLS INTERFACE m_axi port=HBM_in27  offset=slave bundle=gmem27
-// #pragma HLS INTERFACE m_axi port=HBM_in28  offset=slave bundle=gmem28
-// #pragma HLS INTERFACE m_axi port=HBM_in29  offset=slave bundle=gmem29
-// #pragma HLS INTERFACE m_axi port=HBM_in30  offset=slave bundle=gmem30
-// #pragma HLS INTERFACE m_axi port=HBM_in31  offset=slave bundle=gmem31
+#pragma HLS INTERFACE m_axi port=HBM_in0 offset=slave bundle=gmem0
+#pragma HLS INTERFACE m_axi port=HBM_in1 offset=slave bundle=gmem1
+#pragma HLS INTERFACE m_axi port=HBM_in2 offset=slave bundle=gmem2
+#pragma HLS INTERFACE m_axi port=HBM_in3 offset=slave bundle=gmem3
+#pragma HLS INTERFACE m_axi port=HBM_in4 offset=slave bundle=gmem4
+#pragma HLS INTERFACE m_axi port=HBM_in5 offset=slave bundle=gmem5
+#pragma HLS INTERFACE m_axi port=HBM_in6 offset=slave bundle=gmem6
+#pragma HLS INTERFACE m_axi port=HBM_in7 offset=slave bundle=gmem7
+#pragma HLS INTERFACE m_axi port=HBM_in8 offset=slave bundle=gmem8
+#pragma HLS INTERFACE m_axi port=HBM_in9 offset=slave bundle=gmem9
 
-// #pragma HLS INTERFACE m_axi port=table_DDR0  offset=slave bundle=gmem32
-// #pragma HLS INTERFACE m_axi port=table_DDR1  offset=slave bundle=gmem33
 
-// PLRAM
-#pragma HLS INTERFACE m_axi port=HBM_out offset=slave bundle=gmem34
+#pragma HLS INTERFACE m_axi port=HBM_addr_info  offset=slave bundle=gmemA
+#pragma HLS INTERFACE m_axi port=HBM_query_vectors  offset=slave bundle=gmemB
+#pragma HLS INTERFACE m_axi port=HBM_vector_quantizer  offset=slave bundle=gmemC
+#pragma HLS INTERFACE m_axi port=HBM_product_quantizer  offset=slave bundle=gmemD
+#pragma HLS INTERFACE m_axi port=HBM_OPQ_matrix  offset=slave bundle=gmemE
 
-#pragma HLS INTERFACE s_axilite port=HBM_in0  bundle=control
-#pragma HLS INTERFACE s_axilite port=HBM_in1  bundle=control
-#pragma HLS INTERFACE s_axilite port=HBM_in2  bundle=control
-#pragma HLS INTERFACE s_axilite port=HBM_in3  bundle=control
-#pragma HLS INTERFACE s_axilite port=HBM_in4  bundle=control
-#pragma HLS INTERFACE s_axilite port=HBM_in5  bundle=control
-#pragma HLS INTERFACE s_axilite port=HBM_in6  bundle=control
-#pragma HLS INTERFACE s_axilite port=HBM_in7  bundle=control
-#pragma HLS INTERFACE s_axilite port=HBM_in8  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in9  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in10  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in11  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in12  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in13  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in14  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in15  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in16  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in17  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in18  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in19  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in20  bundle=control
-#pragma HLS INTERFACE s_axilite port=HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid  bundle=control
-#pragma HLS INTERFACE s_axilite port=HBM_query_vectors  bundle=control
-#pragma HLS INTERFACE s_axilite port=HBM_vector_quantizer  bundle=control
-#pragma HLS INTERFACE s_axilite port=HBM_product_quantizer  bundle=control
-#pragma HLS INTERFACE s_axilite port=HBM_OPQ_matrix  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in26  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in27  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in28  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in29  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in30  bundle=control
-// #pragma HLS INTERFACE s_axilite port=HBM_in31  bundle=control
+#pragma HLS INTERFACE m_axi port=HBM_out offset=slave bundle=gmemF
 
-// #pragma HLS INTERFACE s_axilite port=table_DDR0  bundle=control
-// #pragma HLS INTERFACE s_axilite port=table_DDR1  bundle=control
+#pragma HLS INTERFACE s_axilite port=HBM_in0  
+#pragma HLS INTERFACE s_axilite port=HBM_in1  
+#pragma HLS INTERFACE s_axilite port=HBM_in2  
+#pragma HLS INTERFACE s_axilite port=HBM_in3  
+#pragma HLS INTERFACE s_axilite port=HBM_in4  
+#pragma HLS INTERFACE s_axilite port=HBM_in5  
+#pragma HLS INTERFACE s_axilite port=HBM_in6  
+#pragma HLS INTERFACE s_axilite port=HBM_in7  
+#pragma HLS INTERFACE s_axilite port=HBM_in8  
+#pragma HLS INTERFACE s_axilite port=HBM_in9  
 
-#pragma HLS INTERFACE s_axilite port=HBM_out bundle=control
 
-#pragma HLS INTERFACE s_axilite port=return bundle=control
+#pragma HLS INTERFACE s_axilite port=HBM_addr_info  
+#pragma HLS INTERFACE s_axilite port=HBM_query_vectors  
+#pragma HLS INTERFACE s_axilite port=HBM_vector_quantizer  
+#pragma HLS INTERFACE s_axilite port=HBM_product_quantizer  
+#pragma HLS INTERFACE s_axilite port=HBM_OPQ_matrix  
+
+#pragma HLS INTERFACE s_axilite port=HBM_out 
+
+#pragma HLS INTERFACE s_axilite port=return 
     
 #pragma HLS dataflow
 
@@ -205,17 +173,6 @@ void vadd(
 
     ////////////////////      Center Distance Computation    ////////////////////
 
-//     hls::stream<dist_cell_ID_t> s_partial_cell_distance[PE_NUM_CENTER_DIST_COMP];
-// #pragma HLS stream variable=s_partial_cell_distance depth=512
-// // #pragma HLS resource variable=s_partial_cell_distance core=FIFO_BRAM
-// #pragma HLS array_partition variable=s_partial_cell_distance complete
-
-//     compute_cell_distance_wrapper<QUERY_NUM>(
-//         s_center_vectors_init_distance_computation_PE, s_preprocessed_query_vectors_distance_computation_PE,
-//         s_partial_cell_distance);
-
-    ////////////////////     Select Scanned Cells     ////////////////////    
-
     hls::stream<dist_cell_ID_t> s_merged_cell_distance;
 #pragma HLS stream variable=s_merged_cell_distance depth=512
 // #pragma HLS resource variable=s_merged_cell_distance core=FIFO_BRAM
@@ -225,9 +182,7 @@ void vadd(
         s_preprocessed_query_vectors_distance_computation_PE, 
         s_merged_cell_distance);
 
-    // merge_partial_cell_distance<QUERY_NUM>(
-    //     s_partial_cell_distance, 
-    //     s_merged_cell_distance);
+    ////////////////////     Select Scanned Cells     ////////////////////    
 
     hls::stream<dist_cell_ID_t> s_selected_distance_cell_ID;
 #pragma HLS stream variable=s_selected_distance_cell_ID depth=512
@@ -289,10 +244,6 @@ void vadd(
 #pragma HLS stream variable=s_scanned_entries_every_cell_PQ_lookup_computation depth=512
 // #pragma HLS RESOURCE variable=s_scanned_entries_every_cell_PQ_lookup_computation core=FIFO_BRAM
 
-    hls::stream<int> s_scanned_entries_every_cell_Dummy;
-#pragma HLS stream variable=s_scanned_entries_every_cell_Dummy depth=512
-// #pragma HLS RESOURCE variable=s_scanned_entries_every_cell_Dummy core=FIFO_BRAM
-
     hls::stream<int> s_last_valid_channel;
 #pragma HLS stream variable=s_last_valid_channel depth=512
 // #pragma HLS RESOURCE variable=s_last_valid_channel core=FIFO_BRAM
@@ -310,38 +261,38 @@ void vadd(
 // #pragma HLS RESOURCE variable=s_scanned_entries_per_query_Priority_queue core=FIFO_BRAM
 
     scan_controller<QUERY_NUM, NLIST, NPROBE>(
-        HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid,
+        HBM_addr_info,
         s_searched_cell_id_scan_controller, 
         s_start_addr_every_cell,
         s_scanned_entries_every_cell_Load_unit, 
-        s_scanned_entries_every_cell_Split_unit,
         s_scanned_entries_every_cell_PQ_lookup_computation,
-        s_scanned_entries_every_cell_Dummy,
         s_last_valid_channel, 
-        s_scanned_entries_per_query_Sort_and_reduction,
         s_scanned_entries_per_query_Priority_queue);
 
     // each 512 bit can store 3 set of (vecID, PQ code)
-    hls::stream<single_PQ> s_single_PQ[3 * HBM_CHANNEL_NUM];
+    hls::stream<single_PQ> s_single_PQ[STAGE5_COMP_PE_NUM];
 #pragma HLS stream variable=s_single_PQ depth=8
 #pragma HLS array_partition variable=s_single_PQ complete
 // #pragma HLS RESOURCE variable=s_single_PQ core=FIFO_SRL
 
     load_and_split_PQ_codes_wrapper<QUERY_NUM, NPROBE>(
-        HBM_in0, HBM_in1, HBM_in2, HBM_in3, HBM_in4, HBM_in5, HBM_in6, HBM_in7, 
-        HBM_in8, HBM_in9,
-        // HBM_in10, HBM_in11, HBM_in12, HBM_in13, 
-        // HBM_in14, HBM_in15, HBM_in16, HBM_in17, HBM_in18, HBM_in19, 
-        // HBM_in20, HBM_in21, HBM_in22, HBM_in23, HBM_in24, HBM_in25, HBM_in26, 
-        // HBM_in9, 
-        // HBM_in10, 
+        HBM_in0,
+        HBM_in1,
+        HBM_in2,
+        HBM_in3,
+        HBM_in4,
+        HBM_in5,
+        HBM_in6,
+        HBM_in7,
+        HBM_in8,
+        HBM_in9,
+
         s_start_addr_every_cell,
         s_scanned_entries_every_cell_Load_unit,
-        s_scanned_entries_every_cell_Split_unit,
         s_single_PQ);
 
     // 64 streams = 21 channels * 3 + 1 dummy
-    hls::stream<single_PQ_result> s_single_PQ_result[SORT_GROUP_NUM][16];
+    hls::stream<single_PQ_result> s_single_PQ_result[STAGE5_COMP_PE_NUM];
 #pragma HLS stream variable=s_single_PQ_result depth=8
 #pragma HLS array_partition variable=s_single_PQ_result complete
 // #pragma HLS RESOURCE variable=s_single_PQ_result core=FIFO_SRL
@@ -349,35 +300,20 @@ void vadd(
 
     ////////////////////     Estimate Distance by LUT     ////////////////////    
 
-    PQ_lookup_computation_wrapper<QUERY_NUM, NPROBE>(
+    PQ_lookup_computation_wrapper<QUERY_NUM, NPROBE, STAGE5_COMP_PE_NUM, PQ_CODE_CHANNELS_PER_STREAM>(
         s_single_PQ, 
         s_distance_LUT, 
         s_scanned_entries_every_cell_PQ_lookup_computation,
-        s_scanned_entries_every_cell_Dummy,
         s_last_valid_channel,
         s_single_PQ_result);
-
-    ////////////////////     Sort Results     ////////////////////    
-    Sort_reduction<single_PQ_result, SORT_GROUP_NUM * 16, 16, Collect_smallest> sort_reduction_module;
-
-    hls::stream<single_PQ_result> s_sorted_PQ_result[16];
-#pragma HLS stream variable=s_sorted_PQ_result depth=8
-#pragma HLS array_partition variable=s_sorted_PQ_result complete
-// #pragma HLS RESOURCE variable=s_sorted_PQ_result core=FIFO_SRL
-
-    sort_reduction_module.sort_and_reduction<QUERY_NUM>(
-        s_scanned_entries_per_query_Sort_and_reduction, 
-        s_single_PQ_result, 
-        s_sorted_PQ_result);
-
 
     hls::stream<single_PQ_result> s_output; // the top 10 numbers
 #pragma HLS stream variable=s_output depth=512
 // #pragma HLS RESOURCE variable=s_output core=FIFO_BRAM
 
-    stream_redirect_to_priority_queue_wrapper<QUERY_NUM>(
+    stage6_priority_queue_group_L2_wrapper<QUERY_NUM>(
         s_scanned_entries_per_query_Priority_queue, 
-        s_sorted_PQ_result, 
+        s_single_PQ_result, 
         s_output);
 
     ////////////////////     Write Results     ////////////////////    

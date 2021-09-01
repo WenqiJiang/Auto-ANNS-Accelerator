@@ -1,10 +1,122 @@
 # Performance & Resource analysis for distance LUT PE
 
-Update: use the multiple_lookup_table_construction_PEs_optimized_version4_systolic version as the final version. Some other code styles either causes placement error, or consumes more resources.
+Update: use the multiple_lookup_table_construction_PEs_optimized_version5_systolic version as the final version. Some other code styles either causes placement error, or consumes more resources.
 
 Previously, we optimized the PE as single_lookup_table_construction_PE_optimized_version2. This version can roughly output 1 row of distance LUT per cycle (1 row per 1.2 cycle, dependent to nprobe), thus should be sufficient for most cases. However, this large PE will lead to placement error.
 
 Another try is when we use the large unoptimized version multiple_lookup_table_construction_PEs_unoptimized_large which consumes ~200 DSPs. This version works without network stack. But with the network stack only the small version survives the placement & routing.
+
+
+## multiple_lookup_table_construction_PEs_optimized_version5_systolic
+
+Same as multiple_lookup_table_construction_PEs_optimized_version4_systolic, just using wider SIMD width of 16, consuming ~100 DSPs.
+
+I use two dataflow functions for LUT table construction and resource gathering, thus making a perfect nested loop. To be more specific, each row contains 16 values, and all of them must be gathered to pass as result. In this implementation, I use one function computing the 16 values per row, with a pipeline of 1 CC per 2 values, and another function to gather 16 numbers as a wide data type. 
+
+This version is also interconnected by systolic array, avoiding the high-fanout problem.
+
+Each PE is responsible for constructing one distance LUT. For example, nprobe=17 and PE_num=5, then the number of LUTs constructed by three PEs are: 4, 4, 4, 4, 1.
+
+Performance: 
+
+Per PE:
+
+total_time = query_num * (L_load_query + nprobe_per_PE * (L_load_and_compute_residual + L_compute + N_comupte * II_compute)
+
+here, L_load_query = 128, L_load_and_compute_residual = 132, L_compute = 36, N_comupte = 256 * D / SIMD_width = 256 * 128 / 16 = 2048, II_compute = 1
+
+nprobe_per_PE can be different for different PE for the case that each PE has different number of LUTs to construct, e.g., 4, 4, 4, 4, 1 as above.
+
+For all PEs, 
+
+total_time = query_num * (L_load_query + nprobe_per_PE_max * (L_load_and_compute_residual + L_compute + N_comupte * II_compute))
+
+For the example above, nprobe_per_PE_max = 4
+
+Verification: Suppose query_num=10000, nprobe=17, PE num=5, nprobe_per_PE=4
+
+10000 * (128 + 4 * (132 + 36 + 2048 * 1)) = 89920000  , very close to 214702771 estimated by HLS.
+
+10000 query performance:
+
+```
++ Timing: 
+    * Summary: 
+    +--------+---------+----------+------------+
+    |  Clock |  Target | Estimated| Uncertainty|
+    +--------+---------+----------+------------+
+    |ap_clk  | 7.14 ns | 5.018 ns |   1.93 ns  |
+    +--------+---------+----------+------------+
+
++ Latency: 
+    * Summary: 
+    +----------+----------+-----------+-----------+----------+----------+---------+
+    |   Latency (cycles)  |   Latency (absolute)  |       Interval      | Pipeline|
+    |    min   |    max   |    min    |    max    |    min   |    max   |   Type  |
+    +----------+----------+-----------+-----------+----------+----------+---------+
+    |  90112771|  90112771| 0.644 sec | 0.644 sec |  90112771|  90112771|   none  |
+    +----------+----------+-----------+-----------+----------+----------+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        +---------------------------------------------+----------+----------+----------+-----------+-----------+-------+----------+
+        |                                             |   Latency (cycles)  | Iteration|  Initiation Interval  |  Trip |          |
+        |                  Loop Name                  |    min   |    max   |  Latency |  achieved |   target  | Count | Pipelined|
+        +---------------------------------------------+----------+----------+----------+-----------+-----------+-------+----------+
+        |- Loop 1                                     |     32768|     32768|         2|          1|          1|  32768|    yes   |
+        |- Loop 2                                     |  90080000|  90080000|      9008|          -|          -|  10000|    no    |
+        | + Loop 2.1                                  |       128|       128|         2|          1|          1|    128|    yes   |
+        | + Loop 2.2                                  |      8876|      8876|      2219|          -|          -|      4|    no    |
+        |  ++ residual_center_vectors                 |       132|       132|         6|          1|          1|    128|    yes   |
+        |  ++ single_row_lookup_table_construction_L  |      2082|      2082|        36|          1|          1|   2048|    yes   |
+        +---------------------------------------------+----------+----------+----------+-----------+-----------+-------+----------+
+```
+
+Resource (compute PE + forward): 
+
+HLS: 
+
+BRAM18K: 18
+
+DSP: 108
+
+FF: 13210
+
+LUT: 10486
+
+URAM: 8
+
+```
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++---------------------+---------+------+---------+---------+-----+
+|         Name        | BRAM_18K|  DSP |    FF   |   LUT   | URAM|
++---------------------+---------+------+---------+---------+-----+
+|DSP                  |        -|     -|        -|        -|    -|
+|Expression           |        -|     -|        0|       22|    -|
+|FIFO                 |       17|     -|      483|      168|    -|
+|Instance             |        1|   108|    12721|    10260|    8|
+|Memory               |        -|     -|        -|        -|    -|
+|Multiplexer          |        -|     -|        -|       36|    -|
+|Register             |        -|     -|        6|        -|    -|
++---------------------+---------+------+---------+---------+-----+
+|Total                |       18|   108|    13210|    10486|    8|
++---------------------+---------+------+---------+---------+-----+
+|Available SLR        |     1344|  3008|   869120|   434560|  320|
++---------------------+---------+------+---------+---------+-----+
+|Utilization SLR (%)  |        1|     3|        1|        2|    2|
++---------------------+---------+------+---------+---------+-----+
+|Available            |     4032|  9024|  2607360|  1303680|  960|
++---------------------+---------+------+---------+---------+-----+
+|Utilization (%)      |    ~0   |     1|    ~0   |    ~0   |  ~0 |
++---------------------+---------+------+---------+---------+-----+
+```
+
 
 ## multiple_lookup_table_construction_PEs_optimized_version4_systolic
 

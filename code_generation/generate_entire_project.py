@@ -16,6 +16,11 @@ parser.add_argument('--reference_project_dir', type=str, default="../reference_c
 parser.add_argument('--output_project_dir', type=str, default="../generated_projects/ANNS_project_{}".format(time_str), help="output project directory")
 args = parser.parse_args()
 
+# Sanity check
+assert config["PE_NUM_CENTER_DIST_COMP"] <= 8, \
+    "ERROR: Stage 2 PE number should be less than 8 (might be supported in the future)," +
+    " otherwise otherwise the computation will be faster than result forwarding. "
+
 # Load YAML configurations
 config_file = open("config.yaml", "r")
 config = yaml.load(config_file)
@@ -38,16 +43,30 @@ os.system("python codegen_host_cpp.py --input_dir template_files --output_dir {}
     os.path.join(args.output_project_dir, "src")))
 os.system("python codegen_vadd.py --input_dir template_files --output_dir {}".format(
     os.path.join(args.output_project_dir, "src")))
+os.system("python codegen_design_cfg.py --input_dir template_files --output_dir {}".format(
+    args.output_project_dir))
 
 # select stage 2 on-chip / off-chip
 if config["STAGE2_ON_CHIP"]:
-    os.system("cp -r {i} {o}".format(
+    os.system("cp {i} {o}".format(
         i="./template_files/on_chip_cluster_distance_computation.hpp",
         o=os.path.join(args.output_project_dir, "src/cluster_distance_computation.hpp")))
 else:
-    os.system("cp -r {i} {o}".format(
+    os.system("cp {i} {o}".format(
         i="./template_files/off_chip_cluster_distance_computation.hpp",
         o=os.path.join(args.output_project_dir, "src/cluster_distance_computation.hpp")))
 
-os.system("python codegen_design_cfg.py --input_dir template_files --output_dir {}".format(
-    args.output_project_dir))
+# select stage 3 priority queue group levels
+if config["STAGE_3_PRIORITY_QUEUE_LEVEL"] == 1:
+    os.system("cp {i} {o}".format(
+        i="./template_files/select_Voronoi_cell_1_level.hpp",
+        o=os.path.join(args.output_project_dir, "src/select_Voronoi_cell.hpp")))
+elif config["STAGE_3_PRIORITY_QUEUE_LEVEL"] == 2:
+    if config["STAGE_3_PRIORITY_QUEUE_L1_NUM"] == 2:
+        os.system("cp {i} {o}".format(
+            i="./template_files/select_Voronoi_cell_2_levels_2_queues.hpp",
+            o=os.path.join(args.output_project_dir, "src/select_Voronoi_cell.hpp")))
+    else:
+        raise ValueError
+else:
+    raise ValueError

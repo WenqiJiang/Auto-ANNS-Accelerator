@@ -35,6 +35,8 @@ For the case of using float at URAM type, the effective URAM size is reduced by 
 
 ## distance_computation_PE_systolic_optimized_perfect_loop
 
+Note: this implementation only supports the case when PE_NUM <= 8 (compute per vector takes 8 CC), otherwise the computation will be faster than result forwarding, unless we implement additional FIFOs.
+
 4 components: component A~C for computation, component D for forwarding
 
 Here we use 10000 queries, 6 PEs for 8192 centroids, thus each PE computes ceil(8192 / 6) = 1366 rows.
@@ -242,6 +244,8 @@ HLS:
 ## off_chip_distance_computation_PE_systolic_optimized_perfect_loop
 
 (Same as on-chip version, just replace URAM with HBM channel)
+
+Note: this implementation only supports the case when PE_NUM <= 8 (compute per vector takes 8 CC), otherwise the computation will be faster than result forwarding, unless we implement additional FIFOs.
 
 4 components: component A~C for computation, component D for forwarding
 

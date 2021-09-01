@@ -1,3 +1,14 @@
+/*
+Variable to be replaced (<--variable_name-->):
+
+    single line:
+        scan_controller_arg_s_scanned_entries_every_cell_Dummy
+        scan_controller_arg_s_scanned_entries_per_query_Sort_and_reduction
+        scan_controller_body_s_scanned_entries_every_cell_Dummy
+        scan_controller_body_s_scanned_entries_per_query_Sort_and_reduction
+
+*/
+
 #pragma once 
 
 #include "constants.hpp"
@@ -58,13 +69,9 @@ void scan_controller(
     hls::stream<int> &s_start_addr_every_cell,
     hls::stream<int> &s_scanned_entries_every_cell_Load_unit,
     hls::stream<int> &s_scanned_entries_every_cell_PQ_lookup_computation,
-    ///// Template START: if there's a sort-reduction unit in stage 6, add the signal below
-    // hls::stream<int> &s_scanned_entries_every_cell_Dummy,
-    ///// Template END /////
+
     hls::stream<int> &s_last_valid_channel,
-    ///// Template START: if there's a sort-reduction unit in stage 6, add the signal below
-    // hls::stream<int> &s_scanned_entries_per_query_Sort_and_reduction,
-    ///// Template END /////
+
     hls::stream<int> &s_scanned_entries_per_query_Priority_queue);
 
 template<const int query_num>
@@ -304,13 +311,9 @@ void scan_controller(
     hls::stream<int> &s_start_addr_every_cell,
     hls::stream<int> &s_scanned_entries_every_cell_Load_unit,
     hls::stream<int> &s_scanned_entries_every_cell_PQ_lookup_computation,
-    ///// Template START: if there's a sort-reduction unit in stage 6, add the signal below
-    // hls::stream<int> &s_scanned_entries_every_cell_Dummy,
-    ///// Template END /////
+
     hls::stream<int> &s_last_valid_channel,
-    ///// Template START: if there's a sort-reduction unit in stage 6, add the signal below
-    // hls::stream<int> &s_scanned_entries_per_query_Sort_and_reduction,
-    ///// Template END /////
+
     hls::stream<int> &s_scanned_entries_per_query_Priority_queue) {
    
     // s_last_element_valid_PQ_lookup_computation -> last element of a channel can 
@@ -362,17 +365,12 @@ void scan_controller(
             s_start_addr_every_cell.write(start_addr);
             s_scanned_entries_every_cell_Load_unit.write(scanned_entries_every_cell);
             s_scanned_entries_every_cell_PQ_lookup_computation.write(scanned_entries_every_cell_compute_unit);
-            ///// Template START: if there's a sort-reduction unit in stage 6, add the signal below
-            // s_scanned_entries_every_cell_Dummy.write(scanned_entries_every_cell_compute_unit);
-            ///// Template END /////
+
             s_last_valid_channel.write(last_valid_channel);
 
             accumulated_scanned_entries_per_query += scanned_entries_every_cell_compute_unit;
         }
 
-        ///// Template START: if there's a sort-reduction unit in stage 6, add the signal below
-        // s_scanned_entries_per_query_Sort_and_reduction.write(accumulated_scanned_entries_per_query);
-        ///// Template END /////
         s_scanned_entries_per_query_Priority_queue.write(accumulated_scanned_entries_per_query);
     }
 }
