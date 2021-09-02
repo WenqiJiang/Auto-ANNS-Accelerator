@@ -12,6 +12,8 @@ args = parser.parse_args()
 config_file = open("config.yaml", "r")
 config = yaml.load(config_file)
 
+assert config["PE_NUM_CENTER_DIST_COMP"] <= 8, \
+    "ERROR: Stage 2 PE number should be less than 8 (might be supported in the future), otherwise otherwise the computation will be faster than result forwarding. "
 # select stage 2 on-chip / off-chip
 if config["STAGE2_ON_CHIP"]:
     os.system("cp {i} {o}".format(

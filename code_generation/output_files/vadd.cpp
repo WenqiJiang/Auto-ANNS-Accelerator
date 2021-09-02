@@ -60,8 +60,18 @@ Variable to be replaced (<--variable_name-->):
 extern "C" {
 
 void vadd(  
-<--HBM_in_vadd_arg-->
-<--stage2_vadd_arg-->
+    const ap_uint512_t* HBM_in0,
+    const ap_uint512_t* HBM_in1,
+    const ap_uint512_t* HBM_in2,
+    const ap_uint512_t* HBM_in3,
+    const ap_uint512_t* HBM_in4,
+    const ap_uint512_t* HBM_in5,
+    const ap_uint512_t* HBM_in6,
+    const ap_uint512_t* HBM_in7,
+    const ap_uint512_t* HBM_in8,
+    const ap_uint512_t* HBM_in9,
+
+
     // HBM21: assigned for HBM_addr_info
     const int* HBM_addr_info, 
     // HBM22: query vectors
@@ -70,7 +80,9 @@ void vadd(
     float* HBM_vector_quantizer,
     // HBM24: PQ quantizer
     float* HBM_product_quantizer,
-<--vadd_arg_OPQ_matrix-->
+
+    // HBM25: OPQ Matrix
+    float* HBM_OPQ_matrix,
     // HBM26: output (vector_ID, distance)
     ap_uint64_t* HBM_out
     // const ap_uint512_t* HBM_in22, const ap_uint512_t* HBM_in23, 
@@ -81,25 +93,45 @@ void vadd(
     // const ap_uint512_t* table_DDR0, const ap_uint512_t* table_DDR1, 
     )
 {
-<--HBM_in_m_axi-->
-<--stage2_m_axi-->
+#pragma HLS INTERFACE m_axi port=HBM_in0 offset=slave bundle=gmem0
+#pragma HLS INTERFACE m_axi port=HBM_in1 offset=slave bundle=gmem1
+#pragma HLS INTERFACE m_axi port=HBM_in2 offset=slave bundle=gmem2
+#pragma HLS INTERFACE m_axi port=HBM_in3 offset=slave bundle=gmem3
+#pragma HLS INTERFACE m_axi port=HBM_in4 offset=slave bundle=gmem4
+#pragma HLS INTERFACE m_axi port=HBM_in5 offset=slave bundle=gmem5
+#pragma HLS INTERFACE m_axi port=HBM_in6 offset=slave bundle=gmem6
+#pragma HLS INTERFACE m_axi port=HBM_in7 offset=slave bundle=gmem7
+#pragma HLS INTERFACE m_axi port=HBM_in8 offset=slave bundle=gmem8
+#pragma HLS INTERFACE m_axi port=HBM_in9 offset=slave bundle=gmem9
+
+
 
 #pragma HLS INTERFACE m_axi port=HBM_addr_info  offset=slave bundle=gmemA
 #pragma HLS INTERFACE m_axi port=HBM_query_vectors  offset=slave bundle=gmemB
 #pragma HLS INTERFACE m_axi port=HBM_vector_quantizer  offset=slave bundle=gmemC
 #pragma HLS INTERFACE m_axi port=HBM_product_quantizer  offset=slave bundle=gmemD
-<--vadd_m_axi_HBM_OPQ_matrix-->
+#pragma HLS INTERFACE m_axi port=HBM_OPQ_matrix  offset=slave bundle=gmemE
 
 #pragma HLS INTERFACE m_axi port=HBM_out offset=slave bundle=gmemF
 
-<--HBM_in_s_axilite-->
-<--stage2_s_axilite-->
+#pragma HLS INTERFACE s_axilite port=HBM_in0
+#pragma HLS INTERFACE s_axilite port=HBM_in1
+#pragma HLS INTERFACE s_axilite port=HBM_in2
+#pragma HLS INTERFACE s_axilite port=HBM_in3
+#pragma HLS INTERFACE s_axilite port=HBM_in4
+#pragma HLS INTERFACE s_axilite port=HBM_in5
+#pragma HLS INTERFACE s_axilite port=HBM_in6
+#pragma HLS INTERFACE s_axilite port=HBM_in7
+#pragma HLS INTERFACE s_axilite port=HBM_in8
+#pragma HLS INTERFACE s_axilite port=HBM_in9
+
+
 
 #pragma HLS INTERFACE s_axilite port=HBM_addr_info 
 #pragma HLS INTERFACE s_axilite port=HBM_query_vectors 
 #pragma HLS INTERFACE s_axilite port=HBM_vector_quantizer 
 #pragma HLS INTERFACE s_axilite port=HBM_product_quantizer 
-<--vadd_s_axilite_HBM_OPQ_matrix-->
+#pragma HLS INTERFACE s_axilite port=HBM_OPQ_matrix
 
 #pragma HLS INTERFACE s_axilite port=HBM_out
 
@@ -139,7 +171,34 @@ void vadd(
 
     ////////////////////     Preprocessing    ////////////////////
 
-<--stage_1_OPQ_preprocessing-->
+
+    hls::stream<float> s_OPQ_init;
+#pragma HLS stream variable=s_OPQ_init depth=512
+// #pragma HLS resource variable=s_OPQ_init core=FIFO_BRAM
+
+    load_OPQ_matrix(HBM_OPQ_matrix, s_OPQ_init);
+
+    hls::stream<float> s_preprocessed_query_vectors;
+#pragma HLS stream variable=s_preprocessed_query_vectors depth=512
+// #pragma HLS resource variable=s_preprocessed_query_vectors core=FIFO_BRAM
+
+    OPQ_preprocessing<QUERY_NUM>(
+        s_OPQ_init,
+        s_query_vectors,
+        s_preprocessed_query_vectors);
+
+    hls::stream<float> s_preprocessed_query_vectors_lookup_PE;
+#pragma HLS stream variable=s_preprocessed_query_vectors_lookup_PE depth=512
+// #pragma HLS resource variable=s_preprocessed_query_vectors_lookup_PE core=FIFO_BRAM
+
+    hls::stream<float> s_preprocessed_query_vectors_distance_computation_PE;
+#pragma HLS stream variable=s_preprocessed_query_vectors_distance_computation_PE depth=512
+// #pragma HLS resource variable=s_preprocessed_query_vectors_distance_computation_PE core=FIFO_BRAM
+
+    broadcast_preprocessed_query_vectors<QUERY_NUM>(
+        s_preprocessed_query_vectors,
+        s_preprocessed_query_vectors_distance_computation_PE,
+        s_preprocessed_query_vectors_lookup_PE);
 
     ////////////////////      Center Distance Computation    ////////////////////
 
@@ -147,7 +206,11 @@ void vadd(
 #pragma HLS stream variable=s_merged_cell_distance depth=512
 // #pragma HLS resource variable=s_merged_cell_distance core=FIFO_BRAM
 
-<--stage_2_IVF_center_distance_computation-->
+
+    compute_cell_distance_wrapper<QUERY_NUM>(
+        s_center_vectors_init_distance_computation_PE, 
+        s_preprocessed_query_vectors_distance_computation_PE, 
+        s_merged_cell_distance);
 
     ////////////////////     Select Scanned Cells     ////////////////////    
 
@@ -249,7 +312,17 @@ void vadd(
 // #pragma HLS RESOURCE variable=s_single_PQ core=FIFO_SRL
 
     load_and_split_PQ_codes_wrapper<QUERY_NUM, NPROBE>(
-<--load_and_split_PQ_codes_wrapper_arg-->
+        HBM_in0,
+        HBM_in1,
+        HBM_in2,
+        HBM_in3,
+        HBM_in4,
+        HBM_in5,
+        HBM_in6,
+        HBM_in7,
+        HBM_in8,
+        HBM_in9,
+
         s_start_addr_every_cell,
         s_scanned_entries_every_cell_Load_unit,
         s_single_PQ);
@@ -275,7 +348,7 @@ void vadd(
         s_last_valid_channel,
         s_single_PQ_result);
 
-<--stage6_sort_reduction-->
+
 
     hls::stream<single_PQ_result> s_output; // the top 10 numbers
 #pragma HLS stream variable=s_output depth=512
@@ -283,7 +356,7 @@ void vadd(
 
     stage6_priority_queue_group_L2_wrapper<QUERY_NUM>(
         s_scanned_entries_per_query_Priority_queue, 
-<--stage6_priority_queue_group_L2_wrapper_arg-->
+        s_single_PQ_result,
         s_output);
 
     ////////////////////     Write Results     ////////////////////    

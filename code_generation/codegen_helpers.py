@@ -22,18 +22,12 @@ with open(template_dir) as f:
 template_fill_dict = dict()
 
 if config['SORT_GROUP_ENABLE']:
-    template_fill_dict["scan_controller_arg_s_scanned_entries_every_cell_Dummy"] = \
-    "    hls::stream<int> &s_scanned_entries_every_cell_Dummy,"
     template_fill_dict["scan_controller_arg_s_scanned_entries_per_query_Sort_and_reduction"] = \
     "    hls::stream<int> &s_scanned_entries_per_query_Sort_and_reduction,"
-    template_fill_dict["scan_controller_body_s_scanned_entries_every_cell_Dummy"] = \
-    "            s_scanned_entries_every_cell_Dummy.write(scanned_entries_every_cell_compute_unit);"
     template_fill_dict["scan_controller_body_s_scanned_entries_per_query_Sort_and_reduction"] = \
     "        s_scanned_entries_per_query_Sort_and_reduction.write(accumulated_scanned_entries_per_query);"
 else:
-    template_fill_dict["scan_controller_arg_s_scanned_entries_every_cell_Dummy"] = ""
     template_fill_dict["scan_controller_arg_s_scanned_entries_per_query_Sort_and_reduction"] = ""
-    template_fill_dict["scan_controller_body_s_scanned_entries_every_cell_Dummy"] = ""
     template_fill_dict["scan_controller_body_s_scanned_entries_per_query_Sort_and_reduction"] = ""
 
 for k in template_fill_dict:

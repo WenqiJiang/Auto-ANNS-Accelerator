@@ -39,8 +39,17 @@ Variable to be replaced (<--variable_name-->):
         M
 */
 
-    
-#include "host.hpp"
+#include "constants.hpp"
+#include "types.hpp"
+
+#include <algorithm>
+#include <vector>
+#include <unistd.h>
+#include <iostream>
+#include <fstream>
+
+#include "xcl2.hpp"
+
 
 #define BANK_NAME(n) n | XCL_MEM_TOPOLOGY
 /* for U280 specifically */
@@ -58,6 +67,52 @@ const int bank[40] = {
     /* 34 ~ 39 PLRAM */ 
     BANK_NAME(34), BANK_NAME(35), BANK_NAME(36), BANK_NAME(37), 
     BANK_NAME(38), BANK_NAME(39)};
+
+std::vector<cl::Device> get_devices(const std::string& vendor_name) {
+
+    size_t i;
+    cl_int err;
+    std::vector<cl::Platform> platforms;
+    OCL_CHECK(err, err = cl::Platform::get(&platforms));
+    cl::Platform platform;
+    for (i  = 0 ; i < platforms.size(); i++){
+        platform = platforms[i];
+        OCL_CHECK(err, std::string platformName = platform.getInfo<CL_PLATFORM_NAME>(&err));
+        if (platformName == vendor_name){
+            std::cout << "Found Platform" << std::endl;
+            std::cout << "Platform Name: " << platformName.c_str() << std::endl;
+            break;
+        }
+    }
+    if (i == platforms.size()) {
+        std::cout << "Error: Failed to find Xilinx platform" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+   
+    //Getting ACCELERATOR Devices and selecting 1st such device 
+    std::vector<cl::Device> devices;
+    OCL_CHECK(err, err = platform.getDevices(CL_DEVICE_TYPE_ACCELERATOR, &devices));
+    return devices;
+}
+   
+char* read_binary_file(const std::string &xclbin_file_name, unsigned &nb) 
+{
+    std::cout << "INFO: Reading " << xclbin_file_name << std::endl;
+
+	if(access(xclbin_file_name.c_str(), R_OK) != 0) {
+		printf("ERROR: %s xclbin not available please build\n", xclbin_file_name.c_str());
+		exit(EXIT_FAILURE);
+	}
+    //Loading XCL Bin into char buffer 
+    std::cout << "Loading: '" << xclbin_file_name.c_str() << "'\n";
+    std::ifstream bin_file(xclbin_file_name.c_str(), std::ifstream::binary);
+    bin_file.seekg (0, bin_file.end);
+    nb = bin_file.tellg();
+    bin_file.seekg (0, bin_file.beg);
+    char *buf = new char [nb];
+    bin_file.read(buf, nb);
+    return buf;
+}
 
 int main(int argc, char** argv)
 {
@@ -85,8 +140,10 @@ int main(int argc, char** argv)
 #endif
     size_t HBM_out_len = TOPK * query_num; 
 
-    size_t sw_result_vec_ID_len = <--QUERY_NUM--> * 10;
-    size_t sw_result_dist_len = <--QUERY_NUM--> * 10;
+    // the raw ground truth size is the same for idx_1M.ivecs, idx_10M.ivecs, idx_100M.ivecs
+    size_t raw_gt_vec_ID_len = 10000 * 1001; 
+    // recall counts the very first nearest neighbor only
+    size_t gt_vec_ID_len = 10000;
 
     // size = 101841920
 <--HBM_embedding_size-->
@@ -100,8 +157,11 @@ int main(int argc, char** argv)
     size_t HBM_OPQ_matrix_size = HBM_OPQ_matrix_len * sizeof(float);
     size_t HBM_out_size = HBM_out_len * sizeof(ap_uint64_t); 
 
-    size_t sw_result_vec_ID_size = sw_result_vec_ID_len * sizeof(int);
-    size_t sw_result_dist_size = sw_result_dist_len * sizeof(float);
+    // the raw ground truth size is the same for idx_1M.ivecs, idx_10M.ivecs, idx_100M.ivecs
+    size_t raw_gt_vec_ID_len = 10000 * 1001; 
+    // recall counts the very first nearest neighbor only
+    size_t gt_vec_ID_len = 10000;
+
 
 //////////////////////////////   TEMPLATE END  //////////////////////////////
 
@@ -123,8 +183,8 @@ int main(int argc, char** argv)
 #endif
     std::vector<ap_uint64_t, aligned_allocator<ap_uint64_t>> HBM_out(HBM_out_len, 0);
     
-    std::vector<int, aligned_allocator<int>> sw_result_vec_ID(sw_result_vec_ID_len, 0);
-    std::vector<float, aligned_allocator<float>> sw_result_dist(sw_result_dist_len, 0);
+    std::vector<int, aligned_allocator<int>> raw_gt_vec_ID(raw_gt_vec_ID_len, 0);
+    std::vector<int, aligned_allocator<int>> gt_vec_ID(gt_vec_ID_len, 0);
 
 //////////////////////////////   TEMPLATE END  //////////////////////////////
 
@@ -139,8 +199,7 @@ int main(int argc, char** argv)
     char* HBM_OPQ_matrix_char = (char*) malloc(HBM_OPQ_matrix_size);
 #endif
 
-    char* sw_result_vec_ID_char = (char*) malloc(sw_result_vec_ID_size);
-    char* sw_result_dist_char = (char*) malloc(sw_result_dist_size);
+    char* raw_gt_vec_ID_char = (char*) malloc(raw_gt_vec_ID_size);
 
 <--HBM_embedding_fstream-->
 
@@ -152,8 +211,7 @@ int main(int argc, char** argv)
 <--HBM_OPQ_matrix_fstream-->
 #endif
 
-<--sw_result_vec_ID_fstream-->
-<--sw_result_dist_fstream-->
+<--raw_gt_vec_ID_fstream-->
         
 <--HBM_embedding0_fstream_read-->
 
@@ -167,8 +225,7 @@ int main(int argc, char** argv)
     HBM_OPQ_matrix_fstream.read(HBM_OPQ_matrix_char, HBM_OPQ_matrix_size);
 #endif
 
-    sw_result_vec_ID_fstream.read(sw_result_vec_ID_char, sw_result_vec_ID_size);
-    sw_result_dist_fstream.read(sw_result_dist_char, sw_result_dist_size);
+    raw_gt_vec_ID_fstream.read(raw_gt_vec_ID_char, raw_gt_vec_ID_size);
 
     // std::cout << "HBM_query_vector_fstream read bytes: " << HBM_query_vector_fstream.gcount() << std::endl;
     // std::cout << "HBM_vector_quantizer_fstream read bytes: " << HBM_vector_quantizer_fstream.gcount() << std::endl;
@@ -188,8 +245,7 @@ int main(int argc, char** argv)
 
 <--HBM_centroid_vectors_memcpy-->
 
-    memcpy(&sw_result_vec_ID[0], sw_result_vec_ID_char, sw_result_vec_ID_size);
-    memcpy(&sw_result_dist[0], sw_result_dist_char, sw_result_dist_size);
+    memcpy(&raw_gt_vec_ID[0], raw_gt_vec_ID_char, raw_gt_vec_ID_size);
 
 <--HBM_embedding_char_free-->
 
@@ -201,8 +257,20 @@ int main(int argc, char** argv)
     free(HBM_OPQ_matrix_char);
 #endif
 
-    free(sw_result_vec_ID_char);
-    free(sw_result_dist_char);
+    free(raw_gt_vec_ID_char);
+    // free(sw_result_vec_ID_char);
+    // free(sw_result_dist_char);
+
+    // copy contents from raw ground truth to needed ones
+    // Format of ground truth (for 10000 query vectors):
+    //   1000(topK), [1000 ids]
+    //   1000(topK), [1000 ids]
+    //        ...     ...
+    //   1000(topK), [1000 ids]
+    // 10000 rows in total, 10000 * 1001 elements, 10000 * 1001 * 4 bytes
+    for (int i = 0; i < 10000; i++) {
+        gt_vec_ID[i] = raw_gt_vec_ID[i * 1001 + 1];
+    }
 
 // OPENCL HOST CODE AREA START
 	
@@ -394,21 +462,18 @@ int main(int argc, char** argv)
     std::cout << "Comparing Results..." << std::endl;
     bool match = true;
     int count = 0;
-    int mismatch_count = 0;
+    int match_count = 0;
 
 
     for (int query_id = 0; query_id < query_num; query_id++) {
 
-        std::vector<int> hw_result_vec_ID_partial(TOPK, 0);
-        std::vector<float> hw_result_dist_partial(TOPK, 0);
-
-        std::vector<int> sw_result_vec_ID_partial(TOPK, 0);
-        std::vector<float> sw_result_dist_partial(TOPK, 0);
+        std::vector<int> hw_result_vec_ID_partial(PRIORITY_QUEUE_LEN, 0);
+        std::vector<float> hw_result_dist_partial(PRIORITY_QUEUE_LEN, 0);
 
         // Load data
-        for (int k = 0; k < TOPK; k++) {
+        for (int k = 0; k < PRIORITY_QUEUE_LEN; k++) {
 
-            ap_uint<64> reg = HBM_out[query_id * TOPK + k];
+            ap_uint<64> reg = HBM_out[query_id * PRIORITY_QUEUE_LEN + k];
             ap_uint<32> raw_vec_ID = reg.range(31, 0); 
             ap_uint<32>  raw_dist = reg.range(63, 32);
             int vec_ID = *((int*) (&raw_vec_ID));
@@ -416,39 +481,20 @@ int main(int argc, char** argv)
             
             hw_result_vec_ID_partial[k] = vec_ID;
             hw_result_dist_partial[k] = dist;
-
-            sw_result_vec_ID_partial[k] = sw_result_vec_ID[query_id * TOPK + k];
-            sw_result_dist_partial[k] = sw_result_dist[query_id * TOPK + k];
         }
-
-        std::sort(hw_result_vec_ID_partial.begin(), hw_result_vec_ID_partial.end());
-        std::sort(hw_result_dist_partial.begin(), hw_result_dist_partial.end());
-
-        std::sort(sw_result_vec_ID_partial.begin(), sw_result_vec_ID_partial.end());
-        std::sort(sw_result_dist_partial.begin(), sw_result_dist_partial.end());
-
+        
         // Check correctness
-        for (int k = 0; k < TOPK; k++) {
-            count++;
-            if (hw_result_vec_ID_partial[k] != sw_result_vec_ID_partial[k]) {
-                printf("query_id: %d\tk: %d\thw vec_ID: %d\t sw vec_ID:%d\n",
-                    query_id, k, hw_result_vec_ID_partial[k], sw_result_vec_ID_partial[k]);
-		mismatch_count++;
+        count++;
+        for (int k = 0; k < PRIORITY_QUEUE_LEN; k++) {
+            if (hw_result_vec_ID_partial[k] == gt_vec_ID[query_id]) {
+                match_count++;
+                break;
             }
-//            if (hw_result_dist_partial[k] != sw_result_dist_partial[k]) {
-                //printf("query_id: %d\tk: %d\thw dist: %f\t sw dist:%f\n",
-                //    query_id, k, hw_result_vec_ID_partial[k], sw_result_vec_ID_partial[k]);
-//            }
         } 
     }
 
-    float mismatch_rate = ((float) mismatch_count / (float) count);
-    printf("mismatch rate with CPU results: %.8f\n", mismatch_rate);
-    if (mismatch_rate < 0.001) {
-	printf("TEST PASS\n");
-    } else {
-	printf("TEST FAIL\n");
-    }
+    float recall = ((float) match_count / (float) count);
+    printf("\n=====  Recall: %.8f  =====\n", recall);
 // ============================================================================
 // Step 3: Release Allocated Resources
 // ============================================================================

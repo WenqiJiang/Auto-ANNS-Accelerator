@@ -1,16 +1,3 @@
-/*
-Template inputs:
-    None, because the variables are defined in constants.hpp, e.g.,
-        #define PE_NUM_TABLE_CONSTRUCTION 6 // 2
-        #define PE_NUM_TABLE_CONSTRUCTION_LARGER 5 // 1
-        #define PE_NUM_TABLE_CONSTRUCTION_SMALLER 1
-        #define NPROBE_PER_TABLE_CONSTRUCTION_PE_LARGER 3 //9
-        #define NPROBE_PER_TABLE_CONSTRUCTION_PE_SMALLER 2 //8
-
-Variable to be replaced (<--variable_name-->):
-    None
-*/
-
 #pragma once 
 
 #include "constants.hpp"
@@ -65,7 +52,8 @@ void center_vectors_dispatcher(
 
 template<const int query_num, const int nprobe_per_PE>
 void gather_float_to_distance_LUT_PQ16(
-    hls::stream<float>& s_partial_result_table_construction_individual,
+    hls::stream<float>& s_partial_result_table_construction_individual_A,
+    hls::stream<float>& s_partial_result_table_construction_individual_B,
     hls::stream<distance_LUT_PQ16_t>& s_partial_result_table_construction_PE) {
 
     for (int query_id = 0; query_id < query_num; query_id++) {
@@ -74,23 +62,23 @@ void gather_float_to_distance_LUT_PQ16(
 
             distance_LUT_PQ16_t out;
             for (int k = 0; k < K; k++) {
-#pragma HLS pipeline II=16
-                out.dist_0 = s_partial_result_table_construction_individual.read();
-                out.dist_1 = s_partial_result_table_construction_individual.read();
-                out.dist_2 = s_partial_result_table_construction_individual.read();
-                out.dist_3 = s_partial_result_table_construction_individual.read();
-                out.dist_4 = s_partial_result_table_construction_individual.read();
-                out.dist_5 = s_partial_result_table_construction_individual.read();
-                out.dist_6 = s_partial_result_table_construction_individual.read();
-                out.dist_7 = s_partial_result_table_construction_individual.read();
-                out.dist_8 = s_partial_result_table_construction_individual.read();
-                out.dist_9 = s_partial_result_table_construction_individual.read();
-                out.dist_10 = s_partial_result_table_construction_individual.read();
-                out.dist_11 = s_partial_result_table_construction_individual.read();
-                out.dist_12 = s_partial_result_table_construction_individual.read();
-                out.dist_13 = s_partial_result_table_construction_individual.read();
-                out.dist_14 = s_partial_result_table_construction_individual.read();
-                out.dist_15 = s_partial_result_table_construction_individual.read();
+#pragma HLS pipeline II=8
+                out.dist_0 = s_partial_result_table_construction_individual_A.read();
+                out.dist_1 = s_partial_result_table_construction_individual_B.read();
+                out.dist_2 = s_partial_result_table_construction_individual_A.read();
+                out.dist_3 = s_partial_result_table_construction_individual_B.read();
+                out.dist_4 = s_partial_result_table_construction_individual_A.read();
+                out.dist_5 = s_partial_result_table_construction_individual_B.read();
+                out.dist_6 = s_partial_result_table_construction_individual_A.read();
+                out.dist_7 = s_partial_result_table_construction_individual_B.read();
+                out.dist_8 = s_partial_result_table_construction_individual_A.read();
+                out.dist_9 = s_partial_result_table_construction_individual_B.read();
+                out.dist_10 = s_partial_result_table_construction_individual_A.read();
+                out.dist_11 = s_partial_result_table_construction_individual_B.read();
+                out.dist_12 = s_partial_result_table_construction_individual_A.read();
+                out.dist_13 = s_partial_result_table_construction_individual_B.read();
+                out.dist_14 = s_partial_result_table_construction_individual_A.read();
+                out.dist_15 = s_partial_result_table_construction_individual_B.read();
 
                 s_partial_result_table_construction_PE.write(out);
             }
@@ -105,7 +93,8 @@ void lookup_table_construction_compute_head(
     hls::stream<float>& s_center_vectors_table_construction_PE_in,
     hls::stream<float>& s_query_vectors_table_construction_PE_in,
     hls::stream<float>& s_query_vectors_table_construction_PE_out,
-    hls::stream<float>& s_partial_result_table_construction_individual) {
+    hls::stream<float>& s_partial_result_table_construction_individual_A,
+    hls::stream<float>& s_partial_result_table_construction_individual_B) {
 
     /* output format:
      *   lookup table dim: (K x M)
@@ -114,18 +103,25 @@ void lookup_table_construction_compute_head(
      *   256 distance_LUT_PQ16_t is an entire lookup table
      */
 
-    // local alignment: 16-sub quantizers
+    // input data format: 16-sub quantizers
     //    each quantizer: 256 row, (128 / 16) col
     // [M][K][D/M] -> [16][256][8]
-    float sub_quantizer[M * K * (D / M)];
+    // local storage format (transform):
+    //    [K][M][[D/M], this allows better concurrent access for computation 
+    float sub_quantizer[K * D];
 #pragma HLS resource variable=sub_quantizer core=RAM_2P_URAM
 #pragma HLS array_partition variable=sub_quantizer cyclic factor=8 dim=1
 
     // DRAM PQ quantizer format: 16 (M) x 256 (K) x 8 (D/M)
-    for (int i = 0; i < M * K * D / M; i++) {
-        float reg = s_PQ_quantizer_init_in.read();
-        sub_quantizer[i] = reg;
-        s_PQ_quantizer_init_out.write(reg);
+    for (int m = 0; m < M; m++) {
+        for (int k = 0; k < K; k++) {
+            for (int b = 0; b < D / M; b++) {
+                float reg = s_PQ_quantizer_init_in.read();
+                // [k][m][b] = k * D + m * D / M + b
+                sub_quantizer[k * D + m * D / M + b] = reg;
+                s_PQ_quantizer_init_out.write(reg);
+            }
+        }
     }
 
     float query_vector_local[D];
@@ -158,31 +154,61 @@ void lookup_table_construction_compute_head(
             single_row_lookup_table_construction:
             for (int k = 0; k < K; k++) {
 
-                for (int m = 0; m < M; m++) {
+                // 16 multiplications per CC
+                for (int m = 0; m < M / 2; m++) {
 #pragma HLS pipeline II=1
 
                     // no need to init to 0, the following logic will overwrite them
-                    float L1_dist[D / M];
-#pragma HLS array_partition variable=L1_dist complete
+                    float L1_dist_A[D / M];
+#pragma HLS array_partition variable=L1_dist_A complete
+                    float L1_dist_B[D / M];
+#pragma HLS array_partition variable=L1_dist_B complete
                     for (int simd_i = 0; simd_i < D / M; simd_i++) {
 #pragma HLS UNROLL
-                        L1_dist[simd_i] = 
-                            residual_center_vector[m * (D / M) + simd_i] - 
-                            sub_quantizer[m * K * (D / M) + k * (D / M) + simd_i];
+                        L1_dist_A[simd_i] = 
+                            residual_center_vector[2 * m * (D / M) + simd_i] - 
+                            sub_quantizer[k * D + 2 * m * (D / M) + simd_i];
+                        L1_dist_B[simd_i] = 
+                            residual_center_vector[(2 * m + 1) * (D / M) + simd_i] - 
+                            sub_quantizer[k * D + (2 * m + 1) * (D / M) + simd_i];
                     }
-                    float LUT_val = 
-                    (L1_dist[0] * L1_dist[0]) + (L1_dist[1] * L1_dist[1]) +
-                    (L1_dist[2] * L1_dist[2]) + (L1_dist[3] * L1_dist[3]) +
-                    (L1_dist[4] * L1_dist[4]) + (L1_dist[5] * L1_dist[5]) + 
-                    (L1_dist[6] * L1_dist[6]) + (L1_dist[7] * L1_dist[7]);
+                    float LUT_val_A = 
+                    (L1_dist_A[0] * L1_dist_A[0]) + (L1_dist_A[1] * L1_dist_A[1]) +
+                    (L1_dist_A[2] * L1_dist_A[2]) + (L1_dist_A[3] * L1_dist_A[3]) +
+                    (L1_dist_A[4] * L1_dist_A[4]) + (L1_dist_A[5] * L1_dist_A[5]) + 
+                    (L1_dist_A[6] * L1_dist_A[6]) + (L1_dist_A[7] * L1_dist_A[7]);
+                    float LUT_val_B = 
+                    (L1_dist_B[0] * L1_dist_B[0]) + (L1_dist_B[1] * L1_dist_B[1]) +
+                    (L1_dist_B[2] * L1_dist_B[2]) + (L1_dist_B[3] * L1_dist_B[3]) +
+                    (L1_dist_B[4] * L1_dist_B[4]) + (L1_dist_B[5] * L1_dist_B[5]) + 
+                    (L1_dist_B[6] * L1_dist_B[6]) + (L1_dist_B[7] * L1_dist_B[7]);
                     
-                    s_partial_result_table_construction_individual.write(LUT_val);
+                    s_partial_result_table_construction_individual_A.write(LUT_val_A);
+                    s_partial_result_table_construction_individual_B.write(LUT_val_B);
                 }
             }
         }
     }
 }
 
+template<const int query_num, const int nprobe_per_PE>
+void extra_FIFO_head_PE(
+    hls::stream<distance_LUT_PQ16_t>& s_partial_result_table_construction_PE_in,
+    hls::stream<distance_LUT_PQ16_t>& s_partial_result_table_construction_PE_out) {
+    // Prevent compute stall:
+    //   make sure that the results of head PE can accumulate if later forward FIFO stalls
+        for (int query_id = 0; query_id < query_num; query_id++) {
+
+        for (int nprobe_id = 0; nprobe_id < nprobe_per_PE; nprobe_id++) {
+
+            for (int k = 0; k < K; k++) {
+#pragma HLS pipeline II=1
+                s_partial_result_table_construction_PE_out.write(
+                    s_partial_result_table_construction_PE_in.read());
+            }
+        }
+    }
+}
 
 template<const int query_num, const int nprobe_per_PE>
 void lookup_table_construction_head_PE(
@@ -195,8 +221,14 @@ void lookup_table_construction_head_PE(
 
 #pragma HLS dataflow
 
-    hls::stream<float> s_partial_result_table_construction_individual;
-#pragma HLS stream variable=s_partial_result_table_construction_individual depth=512
+    hls::stream<float> s_partial_result_table_construction_individual_A;
+#pragma HLS stream variable=s_partial_result_table_construction_individual_A depth=512
+    hls::stream<float> s_partial_result_table_construction_individual_B;
+#pragma HLS stream variable=s_partial_result_table_construction_individual_B depth=512
+
+    const int s_partial_result_table_construction_PE_extra_FIFO_depth = K * PE_NUM_TABLE_CONSTRUCTION_LARGER;
+    hls::stream<distance_LUT_PQ16_t> s_partial_result_table_construction_PE_extra_FIFO;
+#pragma HLS stream variable=s_partial_result_table_construction_PE depth=s_partial_result_table_construction_PE_extra_FIFO_depth
 
     lookup_table_construction_compute_head<query_num, nprobe_per_PE>(
         s_PQ_quantizer_init_in,
@@ -204,12 +236,17 @@ void lookup_table_construction_head_PE(
         s_center_vectors_table_construction_PE_in,
         s_query_vectors_table_construction_PE_in,
         s_query_vectors_table_construction_PE_out,
-        s_partial_result_table_construction_individual);
+        s_partial_result_table_construction_individual_A,
+        s_partial_result_table_construction_individual_B);
 
     gather_float_to_distance_LUT_PQ16<query_num, nprobe_per_PE>(
-        s_partial_result_table_construction_individual,
-        s_partial_result_table_construction_PE);
+        s_partial_result_table_construction_individual_A,
+        s_partial_result_table_construction_individual_B,
+        s_partial_result_table_construction_PE_extra_FIFO);
 
+    extra_FIFO_head_PE<query_num, nprobe_per_PE>(
+        s_partial_result_table_construction_PE_extra_FIFO,
+        s_partial_result_table_construction_PE);
 }
 
 template<const int query_num, const int nprobe_per_PE>
@@ -219,7 +256,8 @@ void lookup_table_construction_compute_midlle(
     hls::stream<float>& s_center_vectors_table_construction_PE_in,
     hls::stream<float>& s_query_vectors_table_construction_PE_in,
     hls::stream<float>& s_query_vectors_table_construction_PE_out,
-    hls::stream<float>& s_partial_result_table_construction_individual) {
+    hls::stream<float>& s_partial_result_table_construction_individual_A,
+    hls::stream<float>& s_partial_result_table_construction_individual_B) {
 
     /* output format:
      *   lookup table dim: (K x M)
@@ -228,18 +266,25 @@ void lookup_table_construction_compute_midlle(
      *   256 distance_LUT_PQ16_t is an entire lookup table
      */
 
-    // local alignment: 16-sub quantizers
+    // input data format: 16-sub quantizers
     //    each quantizer: 256 row, (128 / 16) col
     // [M][K][D/M] -> [16][256][8]
-    float sub_quantizer[M * K * (D / M)];
+    // local storage format (transform):
+    //    [K][M][[D/M], this allows better concurrent access for computation 
+    float sub_quantizer[K * D];
 #pragma HLS resource variable=sub_quantizer core=RAM_2P_URAM
 #pragma HLS array_partition variable=sub_quantizer cyclic factor=8 dim=1
 
     // DRAM PQ quantizer format: 16 (M) x 256 (K) x 8 (D/M)
-    for (int i = 0; i < M * K * D / M; i++) {
-        float reg = s_PQ_quantizer_init_in.read();
-        sub_quantizer[i] = reg;
-        s_PQ_quantizer_init_out.write(reg);
+    for (int m = 0; m < M; m++) {
+        for (int k = 0; k < K; k++) {
+            for (int b = 0; b < D / M; b++) {
+                float reg = s_PQ_quantizer_init_in.read();
+                // [k][m][b] = k * D + m * D / M + b
+                sub_quantizer[k * D + m * D / M + b] = reg;
+                s_PQ_quantizer_init_out.write(reg);
+            }
+        }
     }
 
 
@@ -272,25 +317,37 @@ void lookup_table_construction_compute_midlle(
             single_row_lookup_table_construction:
             for (int k = 0; k < K; k++) {
 
-                for (int m = 0; m < M; m++) {
+                // 16 multiplications per CC
+                for (int m = 0; m < M / 2; m++) {
 #pragma HLS pipeline II=1
 
                     // no need to init to 0, the following logic will overwrite them
-                    float L1_dist[D / M];
-#pragma HLS array_partition variable=L1_dist complete
+                    float L1_dist_A[D / M];
+#pragma HLS array_partition variable=L1_dist_A complete
+                    float L1_dist_B[D / M];
+#pragma HLS array_partition variable=L1_dist_B complete
                     for (int simd_i = 0; simd_i < D / M; simd_i++) {
 #pragma HLS UNROLL
-                        L1_dist[simd_i] = 
-                            residual_center_vector[m * (D / M) + simd_i] - 
-                            sub_quantizer[m * K * (D / M) + k * (D / M) + simd_i];
+                        L1_dist_A[simd_i] = 
+                            residual_center_vector[2 * m * (D / M) + simd_i] - 
+                            sub_quantizer[k * D + 2 * m * (D / M) + simd_i];
+                        L1_dist_B[simd_i] = 
+                            residual_center_vector[(2 * m + 1) * (D / M) + simd_i] - 
+                            sub_quantizer[k * D + (2 * m + 1) * (D / M) + simd_i];
                     }
-                    float LUT_val = 
-                    (L1_dist[0] * L1_dist[0]) + (L1_dist[1] * L1_dist[1]) +
-                    (L1_dist[2] * L1_dist[2]) + (L1_dist[3] * L1_dist[3]) +
-                    (L1_dist[4] * L1_dist[4]) + (L1_dist[5] * L1_dist[5]) + 
-                    (L1_dist[6] * L1_dist[6]) + (L1_dist[7] * L1_dist[7]);
+                    float LUT_val_A = 
+                    (L1_dist_A[0] * L1_dist_A[0]) + (L1_dist_A[1] * L1_dist_A[1]) +
+                    (L1_dist_A[2] * L1_dist_A[2]) + (L1_dist_A[3] * L1_dist_A[3]) +
+                    (L1_dist_A[4] * L1_dist_A[4]) + (L1_dist_A[5] * L1_dist_A[5]) + 
+                    (L1_dist_A[6] * L1_dist_A[6]) + (L1_dist_A[7] * L1_dist_A[7]);
+                    float LUT_val_B = 
+                    (L1_dist_B[0] * L1_dist_B[0]) + (L1_dist_B[1] * L1_dist_B[1]) +
+                    (L1_dist_B[2] * L1_dist_B[2]) + (L1_dist_B[3] * L1_dist_B[3]) +
+                    (L1_dist_B[4] * L1_dist_B[4]) + (L1_dist_B[5] * L1_dist_B[5]) + 
+                    (L1_dist_B[6] * L1_dist_B[6]) + (L1_dist_B[7] * L1_dist_B[7]);
                     
-                    s_partial_result_table_construction_individual.write(LUT_val);
+                    s_partial_result_table_construction_individual_A.write(LUT_val_A);
+                    s_partial_result_table_construction_individual_B.write(LUT_val_B);
                 }
             }
         }
@@ -349,11 +406,14 @@ void lookup_table_construction_middle_PE(
 
 #pragma HLS dataflow
 
-    hls::stream<float> s_partial_result_table_construction_individual;
-#pragma HLS stream variable=s_partial_result_table_construction_individual depth=512
+    hls::stream<float> s_partial_result_table_construction_individual_A;
+#pragma HLS stream variable=s_partial_result_table_construction_individual_A depth=512
+    hls::stream<float> s_partial_result_table_construction_individual_B;
+#pragma HLS stream variable=s_partial_result_table_construction_individual_B depth=512
 
+    const int s_partial_result_table_construction_PE_depth = K * PE_NUM_TABLE_CONSTRUCTION_LARGER;
     hls::stream<distance_LUT_PQ16_t> s_partial_result_table_construction_PE;
-#pragma HLS stream variable=s_partial_result_table_construction_PE depth=512
+#pragma HLS stream variable=s_partial_result_table_construction_PE depth=s_partial_result_table_construction_PE_depth
 
     lookup_table_construction_compute_midlle<query_num, nprobe_per_PE>(
         s_PQ_quantizer_init_in,
@@ -361,10 +421,12 @@ void lookup_table_construction_middle_PE(
         s_center_vectors_table_construction_PE_in,
         s_query_vectors_table_construction_PE_in,
         s_query_vectors_table_construction_PE_out,
-        s_partial_result_table_construction_individual);
+        s_partial_result_table_construction_individual_A,
+        s_partial_result_table_construction_individual_B);
 
     gather_float_to_distance_LUT_PQ16<query_num, nprobe_per_PE>(
-        s_partial_result_table_construction_individual,
+        s_partial_result_table_construction_individual_A,
+        s_partial_result_table_construction_individual_B,
         s_partial_result_table_construction_PE);
 
     lookup_table_construction_forward_middle<query_num>(
@@ -379,7 +441,8 @@ void lookup_table_construction_compute_tail(
     hls::stream<float>& s_PQ_quantizer_init_in,
     hls::stream<float>& s_center_vectors_table_construction_PE_in,
     hls::stream<float>& s_query_vectors_table_construction_PE_in,
-    hls::stream<float>& s_partial_result_table_construction_individual) {
+    hls::stream<float>& s_partial_result_table_construction_individual_A,
+    hls::stream<float>& s_partial_result_table_construction_individual_B) {
 
     /* output format:
      *   lookup table dim: (K x M)
@@ -388,17 +451,24 @@ void lookup_table_construction_compute_tail(
      *   256 distance_LUT_PQ16_t is an entire lookup table
      */
 
-    // local alignment: 16-sub quantizers
+    // input data format: 16-sub quantizers
     //    each quantizer: 256 row, (128 / 16) col
     // [M][K][D/M] -> [16][256][8]
-    float sub_quantizer[M * K * (D / M)];
+    // local storage format (transform):
+    //    [K][M][[D/M], this allows better concurrent access for computation 
+    float sub_quantizer[K * D];
 #pragma HLS resource variable=sub_quantizer core=RAM_2P_URAM
 #pragma HLS array_partition variable=sub_quantizer cyclic factor=8 dim=1
 
     // DRAM PQ quantizer format: 16 (M) x 256 (K) x 8 (D/M)
-    for (int i = 0; i < M * K * D / M; i++) {
-        float reg = s_PQ_quantizer_init_in.read();
-        sub_quantizer[i] = reg;
+    for (int m = 0; m < M; m++) {
+        for (int k = 0; k < K; k++) {
+            for (int b = 0; b < D / M; b++) {
+                float reg = s_PQ_quantizer_init_in.read();
+                // [k][m][b] = k * D + m * D / M + b
+                sub_quantizer[k * D + m * D / M + b] = reg;
+            }
+        }
     }
 
 
@@ -430,25 +500,37 @@ void lookup_table_construction_compute_tail(
             single_row_lookup_table_construction:
             for (int k = 0; k < K; k++) {
 
-                for (int m = 0; m < M; m++) {
+                // 16 multiplications per CC
+                for (int m = 0; m < M / 2; m++) {
 #pragma HLS pipeline II=1
 
                     // no need to init to 0, the following logic will overwrite them
-                    float L1_dist[D / M];
-#pragma HLS array_partition variable=L1_dist complete
+                    float L1_dist_A[D / M];
+#pragma HLS array_partition variable=L1_dist_A complete
+                    float L1_dist_B[D / M];
+#pragma HLS array_partition variable=L1_dist_B complete
                     for (int simd_i = 0; simd_i < D / M; simd_i++) {
 #pragma HLS UNROLL
-                        L1_dist[simd_i] = 
-                            residual_center_vector[m * (D / M) + simd_i] - 
-                            sub_quantizer[m * K * (D / M) + k * (D / M) + simd_i];
+                        L1_dist_A[simd_i] = 
+                            residual_center_vector[2 * m * (D / M) + simd_i] - 
+                            sub_quantizer[k * D + 2 * m * (D / M) + simd_i];
+                        L1_dist_B[simd_i] = 
+                            residual_center_vector[(2 * m + 1) * (D / M) + simd_i] - 
+                            sub_quantizer[k * D + (2 * m + 1) * (D / M) + simd_i];
                     }
-                    float LUT_val = 
-                    (L1_dist[0] * L1_dist[0]) + (L1_dist[1] * L1_dist[1]) +
-                    (L1_dist[2] * L1_dist[2]) + (L1_dist[3] * L1_dist[3]) +
-                    (L1_dist[4] * L1_dist[4]) + (L1_dist[5] * L1_dist[5]) + 
-                    (L1_dist[6] * L1_dist[6]) + (L1_dist[7] * L1_dist[7]);
+                    float LUT_val_A = 
+                    (L1_dist_A[0] * L1_dist_A[0]) + (L1_dist_A[1] * L1_dist_A[1]) +
+                    (L1_dist_A[2] * L1_dist_A[2]) + (L1_dist_A[3] * L1_dist_A[3]) +
+                    (L1_dist_A[4] * L1_dist_A[4]) + (L1_dist_A[5] * L1_dist_A[5]) + 
+                    (L1_dist_A[6] * L1_dist_A[6]) + (L1_dist_A[7] * L1_dist_A[7]);
+                    float LUT_val_B = 
+                    (L1_dist_B[0] * L1_dist_B[0]) + (L1_dist_B[1] * L1_dist_B[1]) +
+                    (L1_dist_B[2] * L1_dist_B[2]) + (L1_dist_B[3] * L1_dist_B[3]) +
+                    (L1_dist_B[4] * L1_dist_B[4]) + (L1_dist_B[5] * L1_dist_B[5]) + 
+                    (L1_dist_B[6] * L1_dist_B[6]) + (L1_dist_B[7] * L1_dist_B[7]);
                     
-                    s_partial_result_table_construction_individual.write(LUT_val);
+                    s_partial_result_table_construction_individual_A.write(LUT_val_A);
+                    s_partial_result_table_construction_individual_B.write(LUT_val_B);
                 }
             }
         }
@@ -502,20 +584,25 @@ void lookup_table_construction_tail_PE(
 
 #pragma HLS dataflow
 
-    hls::stream<float> s_partial_result_table_construction_individual;
-#pragma HLS stream variable=s_partial_result_table_construction_individual depth=512
+    hls::stream<float> s_partial_result_table_construction_individual_A;
+#pragma HLS stream variable=s_partial_result_table_construction_individual_A depth=512
+    hls::stream<float> s_partial_result_table_construction_individual_B;
+#pragma HLS stream variable=s_partial_result_table_construction_individual_B depth=512
 
+    const int s_partial_result_table_construction_PE_depth = K * NPROBE_PER_TABLE_CONSTRUCTION_PE_SMALLER;
     hls::stream<distance_LUT_PQ16_t> s_partial_result_table_construction_PE;
-#pragma HLS stream variable=s_partial_result_table_construction_PE depth=512
+#pragma HLS stream variable=s_partial_result_table_construction_PE depth=s_partial_result_table_construction_PE_depth
 
     lookup_table_construction_compute_tail<query_num, nprobe_per_PE_tail>(
         s_PQ_quantizer_init_in,
         s_center_vectors_table_construction_PE_in,
         s_query_vectors_table_construction_PE_in,
-        s_partial_result_table_construction_individual);
+        s_partial_result_table_construction_individual_A,
+        s_partial_result_table_construction_individual_B);
 
     gather_float_to_distance_LUT_PQ16<query_num, nprobe_per_PE_tail>(
-        s_partial_result_table_construction_individual,
+        s_partial_result_table_construction_individual_A,
+        s_partial_result_table_construction_individual_B,
         s_partial_result_table_construction_PE);
 
     lookup_table_construction_forward_tail<query_num>(

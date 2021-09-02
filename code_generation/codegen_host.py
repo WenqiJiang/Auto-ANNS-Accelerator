@@ -106,16 +106,11 @@ for i in range(config["HBM_CHANNEL_NUM"]):
         "{DATA_DIR}/OPQ_matrix_float32_{D}_{D}_raw", 
         std::ios::in | std::ios::binary);\n'''.format(
                 DATA_DIR=config["DATA_DIR"], D=config["D"])
-    template_fill_dict["sw_result_vec_ID_fstream"] = \
-        '''    std::ifstream sw_result_vec_ID_fstream(
-        "{DATA_DIR}/result_nprobe_{NPROBE}_index_int32_{QUERY_NUM}_10_raw", 
-        std::ios::in | std::ios::binary);\n'''.format(
-                DATA_DIR=config["DATA_DIR"], NPROBE=config["NPROBE"], QUERY_NUM=config["QUERY_NUM"])
-    template_fill_dict["sw_result_dist_fstream"] = \
-        '''    std::ifstream sw_result_dist_fstream(
-        "{DATA_DIR}/result_nprobe_{NPROBE}_distance_float32_{QUERY_NUM}_10_raw", 
-        std::ios::in | std::ios::binary);\n'''.format(
-                DATA_DIR=config["DATA_DIR"], NPROBE=config["NPROBE"], QUERY_NUM=config["QUERY_NUM"])
+    template_fill_dict["raw_gt_vec_ID_fstream"] = '''
+    std::ifstream raw_gt_vec_ID_fstream(
+        "{}" 
+        std::ios::in | std::ios::binary);'''.format(
+            os.path.join(config["GT_DIR"], "idx_{}.ivecs".format(config["DB_SCALE"])))
 
 centroids_per_partition_even = int(np.ceil(
     config["NLIST"] / config["PE_NUM_CENTER_DIST_COMP"]))
