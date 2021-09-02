@@ -5,6 +5,7 @@
 #include "priority_queue_vector_quantizer.hpp"
 
 ////////////////////     Function to call in top-level     ////////////////////
+template<const int level_num, const int L1_queue_num>
 void select_Voronoi_cell(
     hls::stream<dist_cell_ID_t> &s_distance_cell_ID,
     hls::stream<dist_cell_ID_t> &s_selected_distance_cell_ID);
@@ -39,12 +40,6 @@ void merge_distance_cell_ID_level_A(
         }
     }
 }
-
-template<const int level_num, const int L1_queue_num>
-void select_Voronoi_cell(
-    hls::stream<dist_cell_ID_t> &s_distance_cell_ID,
-    hls::stream<dist_cell_ID_t> &s_selected_distance_cell_ID);
-
 
 template<>
 void select_Voronoi_cell<1, 1>(
