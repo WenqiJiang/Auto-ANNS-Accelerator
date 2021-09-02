@@ -6,7 +6,7 @@ Variable to be replaced (<--variable_name-->):
     D
     M
     K
-    PRIORITY_QUEUE_LEN
+    TOPK
 
     QUERY_NUM
 
@@ -41,7 +41,7 @@ Variable to be replaced (<--variable_name-->):
 #define D 128
 #define M 16
 #define K 256
-#define PRIORITY_QUEUE_LEN 100
+#define TOPK 100
 
 #define QUERY_NUM 10000
 

@@ -27,7 +27,7 @@ template<const int query_num, const int stream_num>
 void split_single_PQ_result_wrapper(
     hls::stream<single_PQ_result> (&s_input)[stream_num], 
     hls::stream<int> &s_scanned_entries_per_query_In_Priority_queue,
-    hls::stream<int> (&s_scanned_entries_every_cell_Out_priority_queue)[2 * stream_num],
+    hls::stream<int> (&s_scanned_entries_every_cell_Out_priority_queue_L1)[2 * stream_num],
     hls::stream<single_PQ_result> (&s_single_PQ_result_splitted)[2 * stream_num]);
 
 template<const int query_num, const int iter_num_per_query>
@@ -115,7 +115,7 @@ template<const int query_num, const int stream_num>
 void split_single_PQ_result_wrapper(
     hls::stream<single_PQ_result> (&s_input)[stream_num], 
     hls::stream<int> &s_scanned_entries_per_query_In_Priority_queue,
-    hls::stream<int> (&s_scanned_entries_every_cell_Out_priority_queue)[2 * stream_num],
+    hls::stream<int> (&s_scanned_entries_every_cell_Out_priority_queue_L1)[2 * stream_num],
     hls::stream<single_PQ_result> (&s_single_PQ_result_splitted)[2 * stream_num]) {
     
 #pragma HLS inline
@@ -137,8 +137,8 @@ void split_single_PQ_result_wrapper(
         split_single_stream<query_num>(
             s_input[i], 
             s_scanned_entries_every_cell_Replicated[i],
-            s_scanned_entries_every_cell_Out_priority_queue[2 * i],
-            s_scanned_entries_every_cell_Out_priority_queue[2 * i + 1],
+            s_scanned_entries_every_cell_Out_priority_queue_L1[2 * i],
+            s_scanned_entries_every_cell_Out_priority_queue_L1[2 * i + 1],
             s_single_PQ_result_splitted[2 * i], 
             s_single_PQ_result_splitted[2 * i + 1]);
     }
@@ -168,15 +168,17 @@ void merge_streams(
     }
 }
 
+
 template<const int query_num>
-void stage6_priority_queue_group_L2_wrapper( 
+void stage6_priority_queue_group_L3_wrapper( 
     hls::stream<int> &s_scanned_entries_per_query_Priority_queue,
     hls::stream<single_PQ_result> (&s_input)[STAGE5_COMP_PE_NUM], 
     hls::stream<single_PQ_result> &output_stream) {
-
-    // Given 16 input stream (last 6 streams are discarded), redirect them to 
-    // 20 priority queues (because 2 CC per insertion), and then insert them to a final
-    // priority queue, return the results of top 10
+    // L1 queue num = 2 * STAGE5_COMP_PE_NUM
+    // L2 queue num < L1 queue num, each of the first (STAGE_6_PRIORITY_QUEUE_L2_NUM - 1) queues
+    //   takes care of a streams from L1 per queue , while the last queue takes care of
+    //   b streams. (STAGE_6_PRIORITY_QUEUE_L2_NUM - 1) * a + b = STAGE_6_PRIORITY_QUEUE_L1_NUM = 2 * stream_num
+    // L3 has only 1 queue
 #pragma HLS inline
 
     hls::stream<int> s_insertion_per_queue_L1[STAGE_6_PRIORITY_QUEUE_L1_NUM];
@@ -189,20 +191,24 @@ void stage6_priority_queue_group_L2_wrapper(
 #pragma HLS array_partition variable=s_single_PQ_result_splitted complete
 // #pragma HLS RESOURCE variable=s_single_PQ_result_splitted core=FIFO_SRL
 
-    hls::stream<single_PQ_result> intermediate_result[STAGE_6_PRIORITY_QUEUE_L1_NUM];
-#pragma HLS stream variable=intermediate_result depth=8
-#pragma HLS array_partition variable=intermediate_result complete
-// #pragma HLS RESOURCE variable=intermediate_result core=FIFO_SRL
+    hls::stream<single_PQ_result> intermediate_result_L1_major_groups[STAGE_6_PRIORITY_QUEUE_L2_NUM - 1][STAGE_6_STREAM_PER_L2_QUEUE_LARGER];
+#pragma HLS stream variable=intermediate_result_L1_major_groups depth=8
+#pragma HLS array_partition variable=intermediate_result_L1_major_groups complete
+// #pragma HLS RESOURCE variable=intermediate_result_L1_major_groups core=FIFO_SRL
+
+    hls::stream<single_PQ_result> intermediate_result_L1_final_group[STAGE_6_STREAM_PER_L2_QUEUE_SMALLER];
+#pragma HLS stream variable=intermediate_result_L1_final_group depth=8
+#pragma HLS array_partition variable=intermediate_result_L1_final_group complete
+// #pragma HLS RESOURCE variable=intermediate_result_L1_final_group core=FIFO_SRL
 
     // collecting results from multiple sources need deeper FIFO
-    const int intermediate_result_depth = STAGE_6_PRIORITY_QUEUE_L1_NUM * TOPK;
-    hls::stream<single_PQ_result> merged_intermediate_result;
-#pragma HLS stream variable=merged_intermediate_result depth=intermediate_result_depth
+    const int intermediate_result_L1_depth = STAGE_6_STREAM_PER_L2_QUEUE_LARGER * TOPK;
+    hls::stream<single_PQ_result> merged_intermediate_result_L1[STAGE_6_PRIORITY_QUEUE_L2_NUM];
+#pragma HLS stream variable=merged_intermediate_result_L1 depth=intermediate_result_L1_depth
+#pragma HLS array_partition variable=merged_intermediate_result_L1 complete
 
-    // WENQI: Here, the number of priority queue must be a constant passed by macro,
-    //   I have tried to use the template argument, i.e., STAGE_6_PRIORITY_QUEUE_L1_NUM, but HLS has bug on it
-    Priority_queue<single_PQ_result, TOPK, Collect_smallest> priority_queue_intermediate[STAGE_6_PRIORITY_QUEUE_L1_NUM];
-#pragma HLS array_partition variable=priority_queue_intermediate complete
+    Priority_queue<single_PQ_result, TOPK, Collect_smallest> priority_queue_L1[STAGE_6_PRIORITY_QUEUE_L1_NUM];
+#pragma HLS array_partition variable=priority_queue_L1 complete
 
     ////////////////////         Priority Queue Level 1          ////////////////////
     split_single_PQ_result_wrapper<query_num, STAGE5_COMP_PE_NUM>(
@@ -212,28 +218,86 @@ void stage6_priority_queue_group_L2_wrapper(
         s_single_PQ_result_splitted); 
 
     // 2 CC per insertion
-    for (int i = 0; i < STAGE_6_PRIORITY_QUEUE_L1_NUM; i++) {
+    for (int i = 0; i < STAGE_6_PRIORITY_QUEUE_L2_NUM - 1; i++) {
+#pragma HLS UNROLL
+        for (int j = 0; j < STAGE_6_STREAM_PER_L2_QUEUE_LARGER; j++) {
+#pragma HLS UNROLL
+            // for each individual query, output intermediate_result
+            priority_queue_L1[i * STAGE_6_STREAM_PER_L2_QUEUE_LARGER + j].insert_wrapper<query_num>(
+                s_insertion_per_queue_L1[i * STAGE_6_STREAM_PER_L2_QUEUE_LARGER + j], 
+                s_single_PQ_result_splitted[i * STAGE_6_STREAM_PER_L2_QUEUE_LARGER + j], 
+                intermediate_result_L1_major_groups[i][j]);
+        }
+    }
+    for (int j = 0; j < STAGE_6_STREAM_PER_L2_QUEUE_SMALLER; j++) {
 #pragma HLS UNROLL
         // for each individual query, output intermediate_result
-        priority_queue_intermediate[i].insert_wrapper<query_num>(
-            s_insertion_per_queue_L1[i], 
-            s_single_PQ_result_splitted[i], intermediate_result[i]);
+        priority_queue_L1[(STAGE_6_PRIORITY_QUEUE_L2_NUM - 1) * STAGE_6_STREAM_PER_L2_QUEUE_LARGER + j].insert_wrapper<query_num>(
+            s_insertion_per_queue_L1[(STAGE_6_PRIORITY_QUEUE_L2_NUM - 1) * STAGE_6_STREAM_PER_L2_QUEUE_LARGER + j], 
+            s_single_PQ_result_splitted[(STAGE_6_PRIORITY_QUEUE_L2_NUM - 1) * STAGE_6_STREAM_PER_L2_QUEUE_LARGER + j], 
+            intermediate_result_L1_final_group[j]);
     }
 
-    merge_streams<query_num, TOPK, STAGE_6_PRIORITY_QUEUE_L1_NUM>(
-        intermediate_result, merged_intermediate_result);
+    for (int i = 0; i < STAGE_6_PRIORITY_QUEUE_L2_NUM - 1; i++) {
+#pragma HLS UNROLL
+        merge_streams<query_num, TOPK, STAGE_6_STREAM_PER_L2_QUEUE_LARGER>(
+            intermediate_result_L1_major_groups[i], 
+            merged_intermediate_result_L1[i]);
+    }
+    merge_streams<query_num, TOPK, STAGE_6_STREAM_PER_L2_QUEUE_SMALLER>(
+        intermediate_result_L1_final_group,
+        merged_intermediate_result_L1[STAGE_6_PRIORITY_QUEUE_L2_NUM - 1]);
 
     ////////////////////         Priority Queue Level 2          ////////////////////
 
-    hls::stream<int> s_insertion_per_queue_L2;
+    hls::stream<int> s_insertion_per_queue_L2[STAGE_6_PRIORITY_QUEUE_L2_NUM];
 #pragma HLS stream variable=s_insertion_per_queue_L2 depth=8
+#pragma HLS array_partition variable=s_insertion_per_queue_L2 complete
 // #pragma HLS RESOURCE variable=s_insertion_per_queue_L2 core=FIFO_SRL
 
-    Priority_queue<single_PQ_result, TOPK, Collect_smallest> priority_queue_final;
+    hls::stream<single_PQ_result> intermediate_result_L2[STAGE_6_PRIORITY_QUEUE_L2_NUM];
+#pragma HLS stream variable=intermediate_result_L2 depth=8
+#pragma HLS array_partition variable=intermediate_result_L2 complete
+// #pragma HLS RESOURCE variable=intermediate_result_L2 core=FIFO_SRL
 
-    send_iter_num<query_num, STAGE_6_PRIORITY_QUEUE_L1_NUM * TOPK>(s_insertion_per_queue_L2);
+    const int intermediate_result_L2_depth = STAGE_6_PRIORITY_QUEUE_L2_NUM * TOPK;
+    hls::stream<single_PQ_result> merged_intermediate_result_L2;
+#pragma HLS stream variable=merged_intermediate_result_L2 depth=intermediate_result_L2_depth
+
+    Priority_queue<single_PQ_result, TOPK, Collect_smallest> priority_queue_L2[STAGE_6_PRIORITY_QUEUE_L2_NUM];
+#pragma HLS array_partition variable=priority_queue_L2 complete
+
+    for (int i = 0; i < STAGE_6_PRIORITY_QUEUE_L2_NUM - 1; i++) {
+#pragma HLS UNROLL
+        send_iter_num<query_num, STAGE_6_STREAM_PER_L2_QUEUE_LARGER * TOPK>(
+            s_insertion_per_queue_L2[i]);
+    }
+    send_iter_num<query_num, STAGE_6_STREAM_PER_L2_QUEUE_SMALLER * TOPK>(
+        s_insertion_per_queue_L2[STAGE_6_PRIORITY_QUEUE_L2_NUM - 1]);
+
+    for (int i = 0; i < STAGE_6_PRIORITY_QUEUE_L2_NUM; i++) {
+#pragma HLS UNROLL
+        // for each individual query, output intermediate_result
+        priority_queue_L2[i].insert_wrapper<query_num>(
+            s_insertion_per_queue_L2[i], 
+            merged_intermediate_result_L1[i], 
+            intermediate_result_L2[i]);
+    }
+
+    merge_streams<query_num, TOPK, STAGE_6_PRIORITY_QUEUE_L2_NUM>(
+        intermediate_result_L2, merged_intermediate_result_L2);
+
+    ////////////////////         Priority Queue Level 3          ////////////////////
+
+    hls::stream<int> s_insertion_per_queue_L3;
+#pragma HLS stream variable=s_insertion_per_queue_L3 depth=8
+// #pragma HLS RESOURCE variable=s_insertion_per_queue_L3 core=FIFO_SRL
+
+    Priority_queue<single_PQ_result, TOPK, Collect_smallest> priority_queue_final;
+    // depth is 20 * 10 
+    send_iter_num<query_num, STAGE_6_PRIORITY_QUEUE_L2_NUM * TOPK>(s_insertion_per_queue_L3);
     priority_queue_final.insert_wrapper<query_num>(
-            s_insertion_per_queue_L2,
-            merged_intermediate_result, 
+            s_insertion_per_queue_L3,
+            merged_intermediate_result_L2, 
             output_stream); 
 }

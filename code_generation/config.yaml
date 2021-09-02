@@ -5,7 +5,7 @@
   D: 128
   M: 16
   K: 256
-  PRIORITY_QUEUE_LEN: 10
+  TOPK: 10
 
   QUERY_NUM: 10000
 
@@ -47,18 +47,27 @@
   # e.g., merge content of 1 HBM channel to 1 PQ code stream -> STAGE5_COMP_PE_NUM = HBM_CHANNEL_NUM
   # e.g., merge content of 2 HBM channels to 1 PQ code stream -> STAGE5_COMP_PE_NUM = HBM_CHANNEL_NUM / 2
   HBM_CHANNEL_NUM: 10 # PQ code stream num = 3 * HBM_CHANNEL_NUM
-  STAGE5_COMP_PE_NUM: 5
+  STAGE5_COMP_PE_NUM: 10
 
   # stage 6
   # there could be a sorting network before the priority queue group (SORT_GROUP_ENABLE)
-  #   if not, set SORT_GROUP_ENABLE to False, and SORT_GROUP_NUM to 0
+  #   if not, set SORT_GROUP_ENABLE to False, and SORT_GROUP_NUM to 0 or None
   # number of 16 outputs per cycle, e.g., HBM channel num = 10, comp PE num = 30, then 
   #   SORT_GROUP_NUM = 2; if HBM channel = 12, PE_num = 36, then SORT_GROUP_NUM = 3
   SORT_GROUP_ENABLE: False
   SORT_GROUP_NUM: 0
   # SORT_GROUP_ENABLE: True
   # SORT_GROUP_NUM: 2
+  STAGE_6_PRIORITY_QUEUE_LEVEL: 3 # supported level num: 2 or 3
+  # only fill STAGE_6_PRIORITY_QUEUE_L2_NUM, STAGE_6_STREAM_PER_L2_QUEUE_LARGER, STAGE_6_STREAM_PER_L2_QUEUE_SMALLER
+  #   when STAGE_6_PRIORITY_QUEUE_LEVEL = 3, else left them blank
+  # Must subject to: L1 stream num = STAGE5_COMP_PE_NUM * 2 = 
+  # (STAGE_6_PRIORITY_QUEUE_L2_NUM - 1) * STAGE_6_STREAM_PER_L2_QUEUE_LARGER + STAGE_6_STREAM_PER_L2_QUEUE_SMALLER
+  STAGE_6_PRIORITY_QUEUE_L2_NUM: 3
+  STAGE_6_STREAM_PER_L2_QUEUE_LARGER: 7
+  STAGE_6_STREAM_PER_L2_QUEUE_SMALLER: 6
 
+  # Dataset config
   DB_SCALE: "100M" # 1M to 1000M
   # DB size in bytes, the contents will be evenly distributed to all bank
   DB_BYTES: 2135895680

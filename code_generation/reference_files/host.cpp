@@ -134,14 +134,14 @@ int main(int argc, char** argv)
     size_t HBM_vector_quantizer_len = 8192 * 128;
     size_t HBM_product_quantizer_len = 16 * 256 * (128 / 16);
     size_t HBM_OPQ_matrix_len = 128 * 128;
-    size_t HBM_out_len = PRIORITY_QUEUE_LEN * query_num; 
+    size_t HBM_out_len = TOPK * query_num; 
 
     // the raw ground truth size is the same for idx_1M.ivecs, idx_10M.ivecs, idx_100M.ivecs
     size_t raw_gt_vec_ID_len = 10000 * 1001; 
     // recall counts the very first nearest neighbor only
     size_t gt_vec_ID_len = 10000;
-    // size_t sw_result_vec_ID_len = 10000 * PRIORITY_QUEUE_LEN;
-    // size_t sw_result_dist_len = 10000 * PRIORITY_QUEUE_LEN;
+    // size_t sw_result_vec_ID_len = 10000 * TOPK;
+    // size_t sw_result_dist_len = 10000 * TOPK;
 
     // size = 101841920
     size_t HBM_embedding0_size =  HBM_embedding0_len * sizeof(ap_uint512_t);
@@ -637,13 +637,13 @@ int main(int argc, char** argv)
 
     for (int query_id = 0; query_id < query_num; query_id++) {
 
-        std::vector<int> hw_result_vec_ID_partial(PRIORITY_QUEUE_LEN, 0);
-        std::vector<float> hw_result_dist_partial(PRIORITY_QUEUE_LEN, 0);
+        std::vector<int> hw_result_vec_ID_partial(TOPK, 0);
+        std::vector<float> hw_result_dist_partial(TOPK, 0);
 
         // Load data
-        for (int k = 0; k < PRIORITY_QUEUE_LEN; k++) {
+        for (int k = 0; k < TOPK; k++) {
 
-            ap_uint<64> reg = HBM_out[query_id * PRIORITY_QUEUE_LEN + k];
+            ap_uint<64> reg = HBM_out[query_id * TOPK + k];
             ap_uint<32> raw_vec_ID = reg.range(31, 0); 
             ap_uint<32>  raw_dist = reg.range(63, 32);
             int vec_ID = *((int*) (&raw_vec_ID));
@@ -661,7 +661,7 @@ int main(int argc, char** argv)
 
         // Check correctness
         count++;
-        for (int k = 0; k < PRIORITY_QUEUE_LEN; k++) {
+        for (int k = 0; k < TOPK; k++) {
             if (hw_result_vec_ID_partial[k] == gt_vec_ID[query_id]) {
                 match_count++;
                 break;

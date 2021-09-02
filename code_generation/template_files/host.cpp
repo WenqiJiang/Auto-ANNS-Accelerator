@@ -83,7 +83,7 @@ int main(int argc, char** argv)
 #ifdef OPQ_ENABLE
     size_t HBM_OPQ_matrix_len = <--D--> * <--D-->;
 #endif
-    size_t HBM_out_len = PRIORITY_QUEUE_LEN * query_num; 
+    size_t HBM_out_len = TOPK * query_num; 
 
     size_t sw_result_vec_ID_len = <--QUERY_NUM--> * 10;
     size_t sw_result_dist_len = <--QUERY_NUM--> * 10;
@@ -399,16 +399,16 @@ int main(int argc, char** argv)
 
     for (int query_id = 0; query_id < query_num; query_id++) {
 
-        std::vector<int> hw_result_vec_ID_partial(PRIORITY_QUEUE_LEN, 0);
-        std::vector<float> hw_result_dist_partial(PRIORITY_QUEUE_LEN, 0);
+        std::vector<int> hw_result_vec_ID_partial(TOPK, 0);
+        std::vector<float> hw_result_dist_partial(TOPK, 0);
 
-        std::vector<int> sw_result_vec_ID_partial(PRIORITY_QUEUE_LEN, 0);
-        std::vector<float> sw_result_dist_partial(PRIORITY_QUEUE_LEN, 0);
+        std::vector<int> sw_result_vec_ID_partial(TOPK, 0);
+        std::vector<float> sw_result_dist_partial(TOPK, 0);
 
         // Load data
-        for (int k = 0; k < PRIORITY_QUEUE_LEN; k++) {
+        for (int k = 0; k < TOPK; k++) {
 
-            ap_uint<64> reg = HBM_out[query_id * PRIORITY_QUEUE_LEN + k];
+            ap_uint<64> reg = HBM_out[query_id * TOPK + k];
             ap_uint<32> raw_vec_ID = reg.range(31, 0); 
             ap_uint<32>  raw_dist = reg.range(63, 32);
             int vec_ID = *((int*) (&raw_vec_ID));
@@ -417,8 +417,8 @@ int main(int argc, char** argv)
             hw_result_vec_ID_partial[k] = vec_ID;
             hw_result_dist_partial[k] = dist;
 
-            sw_result_vec_ID_partial[k] = sw_result_vec_ID[query_id * PRIORITY_QUEUE_LEN + k];
-            sw_result_dist_partial[k] = sw_result_dist[query_id * PRIORITY_QUEUE_LEN + k];
+            sw_result_vec_ID_partial[k] = sw_result_vec_ID[query_id * TOPK + k];
+            sw_result_dist_partial[k] = sw_result_dist[query_id * TOPK + k];
         }
 
         std::sort(hw_result_vec_ID_partial.begin(), hw_result_vec_ID_partial.end());
@@ -428,7 +428,7 @@ int main(int argc, char** argv)
         std::sort(sw_result_dist_partial.begin(), sw_result_dist_partial.end());
 
         // Check correctness
-        for (int k = 0; k < PRIORITY_QUEUE_LEN; k++) {
+        for (int k = 0; k < TOPK; k++) {
             count++;
             if (hw_result_vec_ID_partial[k] != sw_result_vec_ID_partial[k]) {
                 printf("query_id: %d\tk: %d\thw vec_ID: %d\t sw vec_ID:%d\n",

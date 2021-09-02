@@ -44,6 +44,26 @@ if config["STAGE2_ON_CHIP"]:
 else:
     template_fill_dict["STAGE2_ON_CHIP"] = ""
 
+# stage 5
+template_fill_dict["PQ_CODE_CHANNELS_PER_STREAM"] = int(config["HBM_CHANNEL_NUM"] * 3 / config["STAGE5_COMP_PE_NUM"])
+
+# stage 6
+if not config["SORT_GROUP_ENABLE"]:
+    template_fill_dict["SORT_GROUP_NUM"] = 0
+template_fill_dict["STAGE_6_PRIORITY_QUEUE_L1_NUM"] = 2 * config["STAGE5_COMP_PE_NUM"]
+if config["STAGE_6_PRIORITY_QUEUE_LEVEL"] == 3:
+    assert config["STAGE5_COMP_PE_NUM"] * 2 == \
+        (config["STAGE_6_PRIORITY_QUEUE_L2_NUM"] - 1) * config["STAGE_6_STREAM_PER_L2_QUEUE_LARGER"] + \
+        config["STAGE_6_STREAM_PER_L2_QUEUE_SMALLER"],  "ERROR! 3-level priority group config numbers are wrong"
+    template_fill_dict["STAGE_6_L3_MACRO"] = \
+"""#define STAGE_6_PRIORITY_QUEUE_L2_NUM {}
+#define STAGE_6_STREAM_PER_L2_QUEUE_LARGER {}
+#define STAGE_6_STREAM_PER_L2_QUEUE_SMALLER {}""".format(
+        config["STAGE_6_PRIORITY_QUEUE_L2_NUM"],
+        config["STAGE_6_STREAM_PER_L2_QUEUE_LARGER"],
+        config["STAGE_6_STREAM_PER_L2_QUEUE_SMALLER"])
+
+
 for k in template_fill_dict:
     template_str = template_str.replace("<--{}-->".format(k), str(template_fill_dict[k]))
 output_str = template_str

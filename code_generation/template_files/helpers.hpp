@@ -407,7 +407,7 @@ void write_result(
     hls::stream<single_PQ_result> &output_stream, 
     ap_uint64_t* output) {
 
-    for (int i = 0; i < query_num * PRIORITY_QUEUE_LEN; i++) {
+    for (int i = 0; i < query_num * TOPK; i++) {
 #pragma HLS pipeline II=1
         single_PQ_result raw_output = output_stream.read();
         ap_uint<64> reg;
