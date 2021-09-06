@@ -3,8 +3,8 @@
 Final Version
 
 * Template
-  * on-chip IVF index: distance_computation_PE_systolic_optimized_perfect_loop
-  * off-chip IVF index: off_chip_distance_computation_PE_systolic_optimized_perfect_loop
+  * on-chip IVF index: distance_computation_PE_systolic_optimized_perfect_loop_2
+  * off-chip IVF index: off_chip_distance_computation_PE_systolic_optimized_perfect_loop_2
 * FANNS: distance_computation_PE_systolic_optimized
 
 
@@ -33,7 +33,142 @@ For the case of using multiple PEs (16384), simply multiple the resource consump
 For the case of using float at URAM type, the effective URAM size is reduced by half, thus can only choose nlist < 8192 as the option.
 
 
+## distance_computation_PE_systolic_optimized_perfect_loop_2
+
+Similar to distance_computation_PE_systolic_optimized_perfect_loop, just reducing the performance by half to decrease DSP usage per PE.
+
+Note: this implementation only supports the case when PE_NUM <= 16 (compute per vector takes 8 CC), otherwise the computation will be faster than result forwarding, unless we implement additional FIFOs.
+
+4 components: component A~C for computation, component D for forwarding
+
+Here we use 1000 queries, 6 PEs for 8192 centroids, thus each PE computes ceil(8192 / 6) = 1366 rows.
+
+Performance Model
+
+Assume computation cycle >> systolic array query propagation delay.
+
+total CC = query_num * (L_load_query + (L_compute_A + N_compute * II_compute)) + L_compute_B + L_compute_C ~= query_num * (L_load_query + (L_compute_A + N_compute * II_compute))
+
+L_load_query = 128, L_compute_A = 10, II_compute = 2, N_compute = centroid_per_PE * 8 (unroll factor = 16, D = 128, thus need 128 / 16 = 8 iterations to compute one value)
+
+we have estimated total CC = 1000 * (128 + 10 + 1366 * 8 * 2) = 21,994,000, very close to the real CC 22,980,579
+
+Top-level performance:
+
+```
++ Timing: 
+    * Summary: 
+    +--------+---------+----------+------------+
+    |  Clock |  Target | Estimated| Uncertainty|
+    +--------+---------+----------+------------+
+    |ap_clk  |  7.14 ns|  5.214 ns|     1.93 ns|
+    +--------+---------+----------+------------+
+
++ Latency: 
+    * Summary: 
+    +----------+----------+-----------+-----------+----------+----------+----------+
+    |   Latency (cycles)  |   Latency (absolute)  |       Interval      | Pipeline |
+    |    min   |    max   |    min    |    max    |    min   |    max   |   Type   |
+    +----------+----------+-----------+-----------+----------+----------+----------+
+    |  23044622|  23044622|  0.165 sec|  0.165 sec|  23044580|  23044580|  dataflow|
+    +----------+----------+-----------+-----------+----------+----------+----------+
+
+    + Detail: 
+        * Instance: 
+        +---------------------------------------------------------+------------------------------------------------------+----------+----------+-----------+-----------+----------+----------+----------+
+        |                                                         |                                                      |   Latency (cycles)  |   Latency (absolute)  |       Interval      | Pipeline |
+        |                         Instance                        |                        Module                        |    min   |    max   |    min    |    max    |    min   |    max   |   Type   |
+        +---------------------------------------------------------+------------------------------------------------------+----------+----------+-----------+-----------+----------+----------+----------+
+        |compute_cell_distance_tail_PE_1000_1366_1362_8192_35_U0  |compute_cell_distance_tail_PE_1000_1366_1362_8192_35  |  22980579|  22980579|  0.164 sec|  0.164 sec|  22980580|  22980580|  dataflow|
+        |compute_cell_distance_middle_PE_1000_1366_8192_33_U0     |compute_cell_distance_middle_PE_1000_1366_8192_33     |  23044579|  23044579|  0.165 sec|  0.165 sec|  23044580|  23044580|  dataflow|
+        |compute_cell_distance_middle_PE_1000_1366_8192_34_U0     |compute_cell_distance_middle_PE_1000_1366_8192_34     |  23044579|  23044579|  0.165 sec|  0.165 sec|  23044580|  23044580|  dataflow|
+        |compute_cell_distance_middle_PE_1000_1366_8192_31_U0     |compute_cell_distance_middle_PE_1000_1366_8192_31     |  23044579|  23044579|  0.165 sec|  0.165 sec|  23044580|  23044580|  dataflow|
+        |compute_cell_distance_middle_PE_1000_1366_8192_32_U0     |compute_cell_distance_middle_PE_1000_1366_8192_32     |  23044579|  23044579|  0.165 sec|  0.165 sec|  23044580|  23044580|  dataflow|
+        |compute_cell_distance_head_PE_1000_1366_8192_U0          |compute_cell_distance_head_PE_1000_1366_8192_s        |  23044579|  23044579|  0.165 sec|  0.165 sec|  23044580|  23044580|  dataflow|
+        |write_result_8192000_U0                                  |write_result_8192000_s                                |   8192008|   8192008|  58.516 ms|  58.516 ms|   8192008|   8192008|      none|
+        |broadcast_init_centroid_vectors_U0                       |broadcast_init_centroid_vectors                       |   1048586|   1048586|   7.490 ms|   7.490 ms|   1048586|   1048586|      none|
+        |broadcast_query_vector_1000_U0                           |broadcast_query_vector_1000_s                         |    128010|    128010|   0.914 ms|   0.914 ms|    128010|    128010|      none|
+        |vadd_entry74_U0                                          |vadd_entry74                                          |         0|         0|       0 ns|       0 ns|         0|         0|      none|
+        +---------------------------------------------------------+------------------------------------------------------+----------+----------+-----------+-----------+----------+----------+----------+
+
+        * Loop: 
+        N/A
+```
+
+Single middle PE:
+
+```
+    + Detail: 
+        * Instance: 
+        +---------------------------------------------------------------+------------------------------------------------------------+----------+----------+-----------+-----------+----------+----------+---------+
+        |                                                               |                                                            |   Latency (cycles)  |   Latency (absolute)  |       Interval      | Pipeline|
+        |                            Instance                           |                           Module                           |    min   |    max   |    min    |    max    |    min   |    max   |   Type  |
+        +---------------------------------------------------------------+------------------------------------------------------------+----------+----------+-----------+-----------+----------+----------+---------+
+        |compute_cell_distance_middle_component_A_1000_1366_8192_48_U0  |compute_cell_distance_middle_component_A_1000_1366_8192_48  |  23044579|  23044579|  0.165 sec|  0.165 sec|  23044579|  23044579|     none|
+        |compute_cell_distance_component_B_1000_1366_49_U0              |compute_cell_distance_component_B_1000_1366_49              |  21856062|  21856062|  0.156 sec|  0.156 sec|  21856062|  21856062|     none|
+        |compute_cell_distance_component_C_1000_1366_150_U0             |compute_cell_distance_component_C_1000_1366_150             |  21856019|  21856019|  0.156 sec|  0.156 sec|  21856019|  21856019|     none|
+        |forward_cell_distance_middle_1000_1366_51_U0                   |forward_cell_distance_middle_1000_1366_51                   |   6830002|   6830002|  48.787 ms|  48.787 ms|   6830002|   6830002|     none|
+        +---------------------------------------------------------------+------------------------------------------------------------+----------+----------+-----------+-----------+----------+----------+---------+
+```
+
+Component A, the most intensive compute part of a single PE (latency in inner loop):
+
+```
+        * Loop: 
+        +--------------------------------------+----------+----------+----------+-----------+-----------+--------+----------+
+        |                                      |   Latency (cycles)  | Iteration|  Initiation Interval  |  Trip  |          |
+        |               Loop Name              |    min   |    max   |  Latency |  achieved |   target  |  Count | Pipelined|
+        +--------------------------------------+----------+----------+----------+-----------+-----------+--------+----------+
+        |- VITIS_LOOP_239_1_VITIS_LOOP_240_2   |   1048576|   1048576|         3|          2|          1|  524288|       yes|
+        |- VITIS_LOOP_257_3                    |  21996000|  21996000|     21996|          -|          -|    1000|        no|
+        | + VITIS_LOOP_260_4                   |       128|       128|         2|          1|          1|     128|       yes|
+        | + VITIS_LOOP_268_5_VITIS_LOOP_273_6  |     21863|     21863|        10|          2|          2|   10928|       yes|
+        +--------------------------------------+----------+----------+----------+-----------+-----------+--------+----------+
+
+```
+
+
+Resource Consumption of an entire PE (component A~C + forward):
+
+It has been verifiied in distance_computation_PE_systolic_optimized_perfect_loop_2 that Vivado consumption & HLS estimation are pretty close, so I just use the HLS estimation.
+
+HLS: 
+
+```
+================================================================
+== Utilization Estimates
+================================================================
+* Summary: 
++---------------------+---------+------+---------+---------+-----+
+|         Name        | BRAM_18K|  DSP |    FF   |   LUT   | URAM|
++---------------------+---------+------+---------+---------+-----+
+|DSP                  |        -|     -|        -|        -|    -|
+|Expression           |        -|     -|        0|        6|    -|
+|FIFO                 |        0|     -|     1562|      901|    -|
+|Instance             |        0|    58|     9942|     8030|   24|
+|Memory               |        -|     -|        -|        -|    -|
+|Multiplexer          |        -|     -|        -|        9|    -|
+|Register             |        -|     -|        1|        -|    -|
++---------------------+---------+------+---------+---------+-----+
+|Total                |        0|    58|    11505|     8946|   24|
++---------------------+---------+------+---------+---------+-----+
+|Available SLR        |     1344|  3008|   869120|   434560|  320|
++---------------------+---------+------+---------+---------+-----+
+|Utilization SLR (%)  |        0|     1|        1|        2|    7|
++---------------------+---------+------+---------+---------+-----+
+|Available            |     4032|  9024|  2607360|  1303680|  960|
++---------------------+---------+------+---------+---------+-----+
+|Utilization (%)      |        0|    ~0|       ~0|       ~0|    2|
++---------------------+---------+------+---------+---------+-----+
+```
+
+## off_chip_distance_computation_PE_systolic_optimized_perfect_loop_2
+
+Performannce & Resource refer to distance_computation_PE_systolic_optimized_perfect_loop_2. Performance is completely the same. Resource difference is the extra interface to HBM (AXI consumption & memory controller consumption).
+
 ## distance_computation_PE_systolic_optimized_perfect_loop
+
+Note: this version consumes 112 DSP per PE, leading to routing errors in some cases.
 
 Note: this implementation only supports the case when PE_NUM <= 8 (compute per vector takes 8 CC), otherwise the computation will be faster than result forwarding, unless we implement additional FIFOs.
 
@@ -242,6 +377,8 @@ HLS:
 ```
 
 ## off_chip_distance_computation_PE_systolic_optimized_perfect_loop
+
+Note: this version consumes 112 DSP per PE, leading to routing errors in some cases.
 
 (Same as on-chip version, just replace URAM with HBM channel)
 

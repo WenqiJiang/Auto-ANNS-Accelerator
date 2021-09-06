@@ -1,3 +1,9 @@
+/*
+Variable to be replaced (<--variable_name-->):
+    compute_cell_distance_wrapper_arguments
+    compute_cell_distance_wrapper_func_body
+*/
+
 #pragma once 
 
 #include "constants.hpp"
@@ -6,13 +12,7 @@
 ////////////////////     Function to call in top-level     ////////////////////
 template<const int query_num>
 void compute_cell_distance_wrapper(
-    const ap_uint512_t* HBM_centroid_vectors_0,
-    const ap_uint512_t* HBM_centroid_vectors_1,
-    const ap_uint512_t* HBM_centroid_vectors_2,
-    const ap_uint512_t* HBM_centroid_vectors_3,
-    const ap_uint512_t* HBM_centroid_vectors_4,
-    const ap_uint512_t* HBM_centroid_vectors_5,
-
+<--compute_cell_distance_wrapper_arguments-->
     hls::stream<float> &s_query_vectors,
     hls::stream<dist_cell_ID_t> &s_cell_distance);
 
@@ -21,9 +21,9 @@ void compute_cell_distance_wrapper(
 //////////////////////////////////////////////////////////////////////////////////////////
 //                    ARCHITECTURE DESIGN 
 // Each PE in the systolic array contains 3~4 components
-//  component A -> output compute 16 numbers per CC
+//  component A -> output compute 16 numbers per 2 CC
 //  component B -> reduction 16 numbers per CC -> output 1 number per CC
-//  component C -> consume 8 (D=128/M=16) numbers in 8 cycles, do reduction sum, and output
+//  component C -> consume 8 (D=128/M=16) numbers in 16 cycles, do reduction sum, and output
 //  (optional) forward -> forward the result of the previous PE to the next PE
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -61,7 +61,7 @@ void compute_cell_distance_head_component_A(
 
             // Manually unroll 16, auto-unroll doesn't work well
             for (int d = 0; d < D / 16; d++) {
-#pragma HLS pipeline II=1
+#pragma HLS pipeline II=2
 
                 int addr_HBM = c * 8 + d; // each 512-bit = 16 numbers, 1 vec=8 addresses
                 ap_uint512_t cell_centroids_uint = HBM_centroid_vectors[addr_HBM];
@@ -204,7 +204,7 @@ void compute_cell_distance_middle_component_A(
 
             // Manually unroll 16, auto-unroll doesn't work well
             for (int d = 0; d < D / 16; d++) {
-#pragma HLS pipeline II=1
+#pragma HLS pipeline II=2
 
                 int addr_HBM = c * 8 + d; // each 512-bit = 16 numbers, 1 vec=8 addresses
                 ap_uint512_t cell_centroids_uint = HBM_centroid_vectors[addr_HBM];
@@ -349,7 +349,7 @@ void compute_cell_distance_tail_component_A(
 
             // Manually unroll 16, auto-unroll doesn't work well
             for (int d = 0; d < D / 16; d++) {
-#pragma HLS pipeline II=1
+#pragma HLS pipeline II=2
 
                 int addr_HBM = c * 8 + d; // each 512-bit = 16 numbers, 1 vec=8 addresses
                 ap_uint512_t cell_centroids_uint = HBM_centroid_vectors[addr_HBM];
@@ -476,7 +476,7 @@ void compute_cell_distance_component_B(
 
             // Manually unroll 16, auto-unroll doesn't work well
             for (int d = 0; d < D / 16; d++) {
-#pragma HLS pipeline II=1
+#pragma HLS pipeline II=2
 
                 // pack 16 square distances, and send it to the next sub-PE component
                 ap_uint512_t square_dist_pack = s_square_dist_pack.read();
@@ -535,7 +535,7 @@ void compute_cell_distance_component_C(
 
         // compute distance and write results out
         for (int c = 0; c < centroids_per_partition; c++) {
-#pragma HLS pipeline II=8 // match the speed of component A & B
+#pragma HLS pipeline II=16 // match the speed of component A & B
 
             float distances[D / 16];
 #pragma HLS array_partition variable=distances complete
@@ -747,13 +747,7 @@ void compute_cell_distance_tail_PE(
 
 template<const int query_num>
 void compute_cell_distance_wrapper(
-    const ap_uint512_t* HBM_centroid_vectors_0,
-    const ap_uint512_t* HBM_centroid_vectors_1,
-    const ap_uint512_t* HBM_centroid_vectors_2,
-    const ap_uint512_t* HBM_centroid_vectors_3,
-    const ap_uint512_t* HBM_centroid_vectors_4,
-    const ap_uint512_t* HBM_centroid_vectors_5,
-
+<--compute_cell_distance_wrapper_arguments-->
     hls::stream<float> &s_query_vectors,
     hls::stream<dist_cell_ID_t> &s_cell_distance) {
 #pragma HLS inline
@@ -772,45 +766,6 @@ void compute_cell_distance_wrapper(
         s_query_vectors_forward[0],
         s_partial_cell_distance_forward[0]); 
 
-    // middle 
-    compute_cell_distance_middle_PE<QUERY_NUM, CENTROIDS_PER_PARTITION_EVEN, NLIST>(
-        1,
-        HBM_centroid_vectors_1,
-        s_query_vectors_forward[1 - 1],
-        s_query_vectors_forward[1],
-        s_partial_cell_distance_forward[1 - 1],
-        s_partial_cell_distance_forward[1]);
-       
-    compute_cell_distance_middle_PE<QUERY_NUM, CENTROIDS_PER_PARTITION_EVEN, NLIST>(
-        2,
-        HBM_centroid_vectors_2,
-        s_query_vectors_forward[2 - 1],
-        s_query_vectors_forward[2],
-        s_partial_cell_distance_forward[2 - 1],
-        s_partial_cell_distance_forward[2]);
-       
-    compute_cell_distance_middle_PE<QUERY_NUM, CENTROIDS_PER_PARTITION_EVEN, NLIST>(
-        3,
-        HBM_centroid_vectors_3,
-        s_query_vectors_forward[3 - 1],
-        s_query_vectors_forward[3],
-        s_partial_cell_distance_forward[3 - 1],
-        s_partial_cell_distance_forward[3]);
+<--compute_cell_distance_wrapper_func_body-->
 
-    compute_cell_distance_middle_PE<QUERY_NUM, CENTROIDS_PER_PARTITION_EVEN, NLIST>(
-        4,
-        HBM_centroid_vectors_4,
-        s_query_vectors_forward[4 - 1],
-        s_query_vectors_forward[4],
-        s_partial_cell_distance_forward[4 - 1],
-        s_partial_cell_distance_forward[4]);
-         
-
-    // tail
-    compute_cell_distance_tail_PE<QUERY_NUM, CENTROIDS_PER_PARTITION_EVEN, CENTROIDS_PER_PARTITION_LAST_PE, NLIST>(
-        PE_NUM_CENTER_DIST_COMP_EVEN,
-        HBM_centroid_vectors_5,
-        s_query_vectors_forward[PE_NUM_CENTER_DIST_COMP_EVEN - 1],
-        s_partial_cell_distance_forward[PE_NUM_CENTER_DIST_COMP_EVEN - 1],
-        s_cell_distance);
 }

@@ -46,7 +46,7 @@ SYSROOT :=
 # be overridden through the make command line
 #+-------------------------------------------------------------------------------
 
-PROFILE := no
+PROFILE := yes
 
 #Generates profile summary report
 ifeq ($(PROFILE), yes)

@@ -15,9 +15,9 @@ void compute_cell_distance_wrapper(
 //////////////////////////////////////////////////////////////////////////////////////////
 //                    ARCHITECTURE DESIGN 
 // Each PE in the systolic array contains 3~4 components
-//  component A -> output compute 16 numbers per CC
-//  component B -> reduction 16 numbers per CC -> output 1 number per CC
-//  component C -> consume 8 (D=128/M=16) numbers in 8 cycles, do reduction sum, and output
+//  component A -> output compute 16 numbers per 2 CC
+//  component B -> reduction 16 numbers per 2 CC -> output 1 number per 2 CC
+//  component C -> consume 8 (D=128/M=16) numbers in 16 cycles, do reduction sum, and output
 //  (optional) forward -> forward the result of the previous PE to the next PE
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -85,7 +85,7 @@ void compute_cell_distance_head_component_A(
 
             // Manually unroll 16, auto-unroll doesn't work well
             for (int d = 0; d < D / 16; d++) {
-#pragma HLS pipeline II=1
+#pragma HLS pipeline II=2
             //#pragma HLS UNROLL factor=16
                 ap_uint<64> tmp_0 = cell_centroids_partition[(c * D + d * 16) / 2 + 0];
                 ap_uint<64> tmp_1 = cell_centroids_partition[(c * D + d * 16) / 2 + 1];
@@ -271,7 +271,7 @@ void compute_cell_distance_middle_component_A(
 
             // Manually unroll 16, auto-unroll doesn't work well
             for (int d = 0; d < D / 16; d++) {
-#pragma HLS pipeline II=1
+#pragma HLS pipeline II=2
                 ap_uint<64> tmp_0 = cell_centroids_partition[(c * D + d * 16) / 2 + 0];
                 ap_uint<64> tmp_1 = cell_centroids_partition[(c * D + d * 16) / 2 + 1];
                 ap_uint<64> tmp_2 = cell_centroids_partition[(c * D + d * 16) / 2 + 2];
@@ -453,7 +453,7 @@ void compute_cell_distance_tail_component_A(
 
             // Manually unroll 16, auto-unroll doesn't work well
             for (int d = 0; d < D / 16; d++) {
-#pragma HLS pipeline II=1
+#pragma HLS pipeline II=2
             //#pragma HLS UNROLL factor=16
                 ap_uint<64> tmp_0 = cell_centroids_partition[(c * D + d * 16) / 2 + 0];
                 ap_uint<64> tmp_1 = cell_centroids_partition[(c * D + d * 16) / 2 + 1];
@@ -586,7 +586,7 @@ void compute_cell_distance_component_B(
 
             // Manually unroll 16, auto-unroll doesn't work well
             for (int d = 0; d < D / 16; d++) {
-#pragma HLS pipeline II=1
+#pragma HLS pipeline II=2
 
                 // pack 16 square distances, and send it to the next sub-PE component
                 ap_uint512_t square_dist_pack = s_square_dist_pack.read();
@@ -645,7 +645,7 @@ void compute_cell_distance_component_C(
 
         // compute distance and write results out
         for (int c = 0; c < centroids_per_partition; c++) {
-#pragma HLS pipeline II=8 // match the speed of component A & B
+#pragma HLS pipeline II=16 // match the speed of component A & B
 
             float distances[D / 16];
 #pragma HLS array_partition variable=distances complete
