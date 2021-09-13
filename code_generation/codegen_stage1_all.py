@@ -21,10 +21,6 @@ if config["OPQ_ENABLE"]:
         os.system("cp {} {}".format(
             os.path.join(args.input_dir, "OPQ_preprocessing_unroll_8.hpp"), 
             os.path.join(args.output_dir, "OPQ_preprocessing.hpp")))
-    elif config["OPQ_UNROLL_FACTOR"] == 16:
-        os.system("cp {} {}".format(
-            os.path.join(args.input_dir, "OPQ_preprocessing_unroll_16.hpp"), 
-            os.path.join(args.output_dir, "OPQ_preprocessing.hpp")))
     else:
         print("ERROR! OPQ_UNROLL_FACTOR wrong, should be 4 or 8 or 16")
         raise ValueError

@@ -8,6 +8,8 @@ Another try is when we use the large unoptimized version multiple_lookup_table_c
 
 ## multiple_lookup_table_construction_PEs_optimized_version4_systolic
 
+Note: the PE number is limited to forwarding speed, i.e., compute LUTs per PE (nprobe_per_PE * (L_load_and_compute_residual + L_compute + N_comupte * II_compute)) must be slower than forwarding (nprobe * K = nprobe * 256).
+
 I use two dataflow functions for LUT table construction and resource gathering, thus making a perfect nested loop. To be more specific, each row contains 16 values, and all of them must be gathered to pass as result. In this implementation, I use one function computing the 16 values per row, with a pipeline of 1 CC per value, and another function to gather 16 numbers as a wide data type. By doing this, FF / LUT usage is reduced by 2~3x compared to the unoptimized version.
 
 This version is also interconnected by systolic array, avoiding the high-fanout problem.
