@@ -1,7 +1,7 @@
 from constants import * 
 
 """ Basic building blocks, i.e., priority queue and sorting network """
-def get_priority_queue_info(queue_len, N_insertion):
+def get_priority_queue_info(queue_len, N_insertion, FREQ):
     
     """ Return a single result (no multiple options) """
 
@@ -41,7 +41,7 @@ def get_priority_queue_info(queue_len, N_insertion):
 
     return perf_resource_obj
     
-def get_bitonic_sort_16_info(N_insertion):
+def get_bitonic_sort_16_info(N_insertion, FREQ):
 
     """ Return a single result (no multiple options) """
 
@@ -75,7 +75,7 @@ def get_bitonic_sort_16_info(N_insertion):
     return perf_resource_obj
 
 
-def get_parallel_merge_32_to_16_info(N_insertion):
+def get_parallel_merge_32_to_16_info(N_insertion, FREQ):
 
     """ Return a single result (no multiple options) """
 

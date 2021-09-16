@@ -1,13 +1,14 @@
+""" The 6 Stages (optional preprocessing + 5 stages) """
+
 import numpy as np
+import copy
 
 from constants import * 
 from common import *
 from queue_and_sorting import * 
 from utils import * 
 
-""" The 6 Stages (optional preprocessing + 5 stages) """
-
-def get_options_stage_1_OPQ():
+def get_options_stage_1_OPQ(FREQ):
     
     option_list = []
 
@@ -63,7 +64,7 @@ def get_options_stage_1_OPQ():
 
     return option_list
 
-def get_options_stage_2_cluster_distance_computation(nlist):
+def get_options_stage_2_cluster_distance_computation(nlist, FREQ, MAX_URAM):
     
     """ The performance / resource of a single PE
         currently only the most optimized option is included:
@@ -72,8 +73,9 @@ def get_options_stage_2_cluster_distance_computation(nlist):
     option_list = []
 
     """ Systolic array, currently support up to 16 PEs (otherwise communication is the bottleneck) """
+    MIN_PE_NUM = 1 
     MAX_PE_NUM = 16
-    for PE_num in range(1, MAX_PE_NUM):
+    for PE_num in range(MIN_PE_NUM, MAX_PE_NUM):
 
         perf_resource_obj = Resource_Performance_Stage2()
         perf_resource_obj.PE_NUM_CENTER_DIST_COMP = PE_num
@@ -101,8 +103,8 @@ def get_options_stage_2_cluster_distance_computation(nlist):
 
         # on-chip or off-chip storage given different nlist size
         i = np.ceil(centroids_Per_PE / 512) # centroids_Per_PE <= 512, URAM = 8
-        perf_resource_obj_on_chip = perf_resource_obj
-        perf_resource_obj_off_chip = perf_resource_obj
+        perf_resource_obj_on_chip = copy.deepcopy(perf_resource_obj)
+        perf_resource_obj_off_chip = copy.deepcopy(perf_resource_obj)
         if i * 8 * PE_num < MAX_URAM: # on-chip option available 
             perf_resource_obj_on_chip.STAGE2_ON_CHIP = True
             #####  HLS Prediction & Vivado Measured #####
@@ -118,7 +120,7 @@ def get_options_stage_2_cluster_distance_computation(nlist):
 
     return option_list
 
-def get_options_stage_3_select_Voronoi_cells(nlist, nprobe):
+def get_options_stage_3_select_Voronoi_cells(nlist, nprobe, FREQ):
     
     """ 
     Insertion_per_cycle should equal to the PE num of stage 2, suppose
@@ -132,10 +134,11 @@ def get_options_stage_3_select_Voronoi_cells(nlist, nprobe):
     """ Option 1: single priority queue """
     perf_resource_obj = Resource_Performance_Stage3()
     perf_resource_obj.STAGE_3_PRIORITY_QUEUE_LEVEL = 1
+    perf_resource_obj.STAGE_3_PRIORITY_QUEUE_L1_NUM = 1
 
     queue_size = nprobe
     N_insertion_per_queue = nlist
-    priority_queue_perf_resource_obj = get_priority_queue_info(queue_size, N_insertion_per_queue)
+    priority_queue_perf_resource_obj = get_priority_queue_info(queue_size, N_insertion_per_queue, FREQ)
     perf_resource_obj.copy_from_Performance_Resource(priority_queue_perf_resource_obj)
     #####   FIFO Consumption (Vivado Measured)   #####
     perf_resource_obj.add_resource(resource_FIFO_d512_w32, num=1)
@@ -146,7 +149,7 @@ def get_options_stage_3_select_Voronoi_cells(nlist, nprobe):
     # Up to 16 priority queues in Level A, but can be further increased (probably not useful)
     for insertion_per_cycle in range(1, 8 + 1):
         perf_resource_obj = Resource_Performance_Stage3()
-        perf_resource_obj.STAGE_3_PRIORITY_QUEUE_LEVEL = 1
+        perf_resource_obj.STAGE_3_PRIORITY_QUEUE_LEVEL = 2
 
         queue_size_level_A = nprobe
         queue_size_level_B = nprobe
@@ -159,8 +162,8 @@ def get_options_stage_3_select_Voronoi_cells(nlist, nprobe):
         N_insertion_per_queue_level_A = int(nlist / queue_num_level_A)
         N_insertion_level_B = int(queue_num_level_A * queue_size_level_A)
 
-        perf_resource_obj_level_A = get_priority_queue_info(queue_size_level_A, N_insertion_per_queue_level_A)
-        perf_resource_obj_level_B = get_priority_queue_info(queue_size_level_B, N_insertion_level_B)
+        perf_resource_obj_level_A = get_priority_queue_info(queue_size_level_A, N_insertion_per_queue_level_A, FREQ)
+        perf_resource_obj_level_B = get_priority_queue_info(queue_size_level_B, N_insertion_level_B, FREQ)
 
         if perf_resource_obj_level_A.cycles_per_query > perf_resource_obj_level_B.cycles_per_query:
             perf_resource_obj.cycles_per_query = perf_resource_obj_level_A.cycles_per_query 
@@ -178,7 +181,7 @@ def get_options_stage_3_select_Voronoi_cells(nlist, nprobe):
 
     return option_list
 
-def get_options_stage_4_distance_LUT_construction(nlist, nprobe):
+def get_options_stage_4_distance_LUT_construction(nlist, nprobe, FREQ):
     
     """ Now we only use the most optimized version, i.e.,
           multiple_lookup_table_construction_PEs_optimized_version4_systolic """
@@ -229,8 +232,8 @@ def get_options_stage_4_distance_LUT_construction(nlist, nprobe):
         perf_resource_obj.add_resource(resource_FIFO_d512_w512, num=PE_num * int(nprobe_per_PE_max / 2))
 
         # extra storage for vector quantizer storage, on-chip or off-chip
-        perf_resource_obj_on_chip = perf_resource_obj
-        perf_resource_obj_off_chip = perf_resource_obj
+        perf_resource_obj_on_chip = copy.deepcopy(perf_resource_obj)
+        perf_resource_obj_off_chip = copy.deepcopy(perf_resource_obj)
         if nlist <= 1024:
             #####  HLS Prediction & Vivado Measured #####
             perf_resource_obj_on_chip.HBM_bank = 0
@@ -269,7 +272,7 @@ def get_options_stage_4_distance_LUT_construction(nlist, nprobe):
 
     return option_list
 
-def get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, OPQ_enable=True):
+def get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, FREQ, MAX_HBM_bank, TOTAL_VECTORS, scan_ratio_with_OPQ, scan_ratio_without_OPQ, OPQ_enable=True):
     
     """ this function returns a list of the performance and resource consumption of
           the entire systolic array """
@@ -289,11 +292,13 @@ def get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, OPQ_enable=Tru
         if HBM_bank % 4 == 0:
             PE_num_list.append(HBM_bank / 4)
         
-        for PE_num in stage_5_PE_num_list:
+        for PE_num in PE_num_list:
 
             perf_resource_obj = Resource_Performance_Stage5()
             perf_resource_obj.HBM_CHANNEL_NUM = HBM_bank
             perf_resource_obj.STAGE5_COMP_PE_NUM = PE_num
+
+            perf_resource_obj.HBM_bank = HBM_bank
 
             if OPQ_enable:
                 N_compute_per_nprobe = int(scan_ratio_with_OPQ[nlist] * TOTAL_VECTORS / nlist / PE_num) + 1
@@ -313,12 +318,12 @@ def get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, OPQ_enable=Tru
             perf_resource_obj.QPS = QPS
 
             #####  HLS Prediction #####
-            # perf_resource_obj["HBM_bank"] = 0 * PE_num 
-            # perf_resource_obj["BRAM_18K"] = 16 * PE_num
-            # perf_resource_obj["DSP48E"] = 30 * PE_num
-            # perf_resource_obj["FF"] = 5437 * PE_num
-            # perf_resource_obj["LUT"] = 5329 * PE_num
-            # perf_resource_obj["URAM"] = 0 * PE_num
+            # perf_resource_obj.HBM_bank = 0 * PE_num 
+            # perf_resource_obj.BRAM_18K = 16 * PE_num
+            # perf_resource_obj.DSP48E = 30 * PE_num
+            # perf_resource_obj.FF = 5437 * PE_num
+            # perf_resource_obj.LUT = 5329 * PE_num
+            # perf_resource_obj.URAM = 0 * PE_num
 
             #####   Vivado Measured   #####
             perf_resource_obj.LUT = 3937 * PE_num
@@ -326,7 +331,6 @@ def get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, OPQ_enable=Tru
             perf_resource_obj.BRAM_18K = 2 * 8 * PE_num
             perf_resource_obj.URAM = 0 * PE_num
             perf_resource_obj.DSP48E = 30 * PE_num
-            perf_resource_obj.HBM_bank = 0 * PE_num
 
             #####   FIFO Consumption (Vivado Measured)   #####
             perf_resource_obj.add_resource(resource_FIFO_d2_w8, num=16 * PE_num)
@@ -341,7 +345,6 @@ def get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, OPQ_enable=Tru
             perf_resource_obj.BRAM_18K += 2 * 7.5 * (PE_num / 3)
             perf_resource_obj.URAM += 0 * (PE_num / 3)
             perf_resource_obj.DSP48E += 0 * (PE_num / 3)
-            perf_resource_obj.HBM_bank += 1 * (PE_num / 3)
 
             # Type conversion (axi512 -> tuples paser)
             perf_resource_obj.LUT += 290 * (PE_num / 3)
@@ -349,14 +352,13 @@ def get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, OPQ_enable=Tru
             perf_resource_obj.BRAM_18K += 2 * 0 * (PE_num / 3)
             perf_resource_obj.URAM += 0 * (PE_num / 3)
             perf_resource_obj.DSP48E += 0 * (PE_num / 3)
-            perf_resource_obj.HBM_bank += 0 * (PE_num / 3)
 
             option_list.append(perf_resource_obj)
 
     return option_list
 
 
-def get_options_stage6_sort_reduction(input_stream_num, N_insertion_per_stream, topK):
+def get_options_stage6_select_topK(input_stream_num, N_insertion_per_stream, topK, FREQ):
 
     """
         input_stream_num === stage 5 PE num
@@ -370,15 +372,15 @@ def get_options_stage6_sort_reduction(input_stream_num, N_insertion_per_stream, 
     queue_num_level_A = int(input_stream_num * 2)
     N_insertion_per_stream_level_A = int(N_insertion_per_stream / 2)
     perf_resource_obj_level_A = get_priority_queue_info(
-        queue_len=topK, N_insertion=N_insertion_per_stream_level_A)
+        queue_len=topK, N_insertion=N_insertion_per_stream_level_A, FREQ=FREQ)
 
     def find_num_queues(cycles_per_query_upper_level, N_insertion_total_level, upper_level_queue_num):
         """ find an option that the lower level can match the upper level's performance """
         queue_num_level_N = 1
         for i in range(1, upper_level_queue_num):
             perf_resource_obj_level_N = get_priority_queue_info(
-                queue_len=topK, N_insertion=int(N_insertion_total_level / queue_num_level_N))
-            if perf_resource_obj_level_N["cycles_per_query"] > cycles_per_query_upper_level:
+                queue_len=topK, N_insertion=int(N_insertion_total_level / queue_num_level_N), FREQ=FREQ)
+            if perf_resource_obj_level_N.cycles_per_query > cycles_per_query_upper_level:
                 queue_num_level_N = queue_num_level_N + 1
             else:
                 return (queue_num_level_N, perf_resource_obj_level_N)
@@ -397,7 +399,7 @@ def get_options_stage6_sort_reduction(input_stream_num, N_insertion_per_stream, 
                 return [1]
             else: 
                 queue_num_array = find_hierachical_queue_structure_recursive(
-                    cycles_per_query_upper_level=perf_resource_obj_level_N["cycles_per_query"],
+                    cycles_per_query_upper_level=perf_resource_obj_level_N.cycles_per_query,
                     N_insertion_total_level=int(queue_num_level_N * topK),
                     upper_level_queue_num=queue_num_level_N)
                 if queue_num_array:
@@ -411,7 +413,7 @@ def get_options_stage6_sort_reduction(input_stream_num, N_insertion_per_stream, 
     # if lower level cannot reduce the number of queues used to match upper level, 
     #   then hierarchical priority queue is not an option
     queue_num_array = find_hierachical_queue_structure_recursive(
-        cycles_per_query_upper_level=perf_resource_obj_level_A["cycles_per_query"], 
+        cycles_per_query_upper_level=perf_resource_obj_level_A.cycles_per_query, 
         N_insertion_total_level=int(queue_num_level_A * topK),
         upper_level_queue_num=queue_num_level_A)
 
@@ -423,46 +425,49 @@ def get_options_stage6_sort_reduction(input_stream_num, N_insertion_per_stream, 
         queue_num_array.append(queue_num_level_A)
         total_priority_queue_num = np.sum(np.array(queue_num_array))
         
+        solution_exist = True
         if len(queue_num_array) == 2:
             perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
         elif len(queue_num_array) == 3:
             perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 3
             perf_resource_obj.STAGE_6_PRIORITY_QUEUE_L2_NUM = queue_num_array[1]
             STAGE_6_STREAM_PER_L2_QUEUE_LARGER = int(np.ceil(queue_num_level_A / perf_resource_obj.STAGE_6_PRIORITY_QUEUE_L2_NUM))
-            STAGE_6_STREAM_PER_L2_QUEUE_SMALLER = queue_num_level_A - 
+            STAGE_6_STREAM_PER_L2_QUEUE_SMALLER = queue_num_level_A - \
                 STAGE_6_STREAM_PER_L2_QUEUE_LARGER * (perf_resource_obj.STAGE_6_PRIORITY_QUEUE_L2_NUM - 1)
             perf_resource_obj.STAGE_6_STREAM_PER_L2_QUEUE_LARGER = STAGE_6_STREAM_PER_L2_QUEUE_LARGER
             perf_resource_obj.STAGE_6_STREAM_PER_L2_QUEUE_SMALLER = STAGE_6_STREAM_PER_L2_QUEUE_SMALLER
         else:
             # currently does not support #Level >= 4
-            break
+            solution_exist = False
 
-        # all levels use the same priority queue of depth=topK
-        perf_resource_obj.add_resource(perf_resource_obj_level_A, total_priority_queue_num)
+        if solution_exist:
+            # all levels use the same priority queue of depth=topK
+            perf_resource_obj.add_resource(perf_resource_obj_level_A, total_priority_queue_num)
 
-        # lower level is faster than upper level
-        perf_resource_obj.cycles_per_query = perf_resource_obj_level_A.cycles_per_query
-        perf_resource_obj.QPS = 1 / (perf_resource_obj.cycles_per_query / FREQ)
-   
-        #####   FIFO Consumption (Vivado Measured)   #####
-        # Note I use depth=512 here, in practical it could be smaller but will consume more LUT/FF
-        perf_resource_obj.add_resource(resource_FIFO_d512_w32, np.sum(queue_num_array) * 2)
+            # lower level is faster than upper level
+            perf_resource_obj.cycles_per_query = perf_resource_obj_level_A.cycles_per_query
+            perf_resource_obj.QPS = 1 / (perf_resource_obj.cycles_per_query / FREQ)
+    
+            #####   FIFO Consumption (Vivado Measured)   #####
+            # Note I use depth=512 here, in practical it could be smaller but will consume more LUT/FF
+            perf_resource_obj.add_resource(resource_FIFO_d512_w32, np.sum(queue_num_array) * 2)
 
-        option_list.append(perf_resource_obj) 
+            option_list.append(perf_resource_obj) 
 
     """ Option 2: sort reduction network """
     if input_stream_num > topK:
 
         perf_resource_obj_bitonic_sort_16 = \
-            get_bitonic_sort_16_info(N_insertion=N_insertion_per_stream)
+            get_bitonic_sort_16_info(N_insertion=N_insertion_per_stream, FREQ=FREQ)
         perf_resource_obj_parallel_merge_32_to_16 = \
-            get_parallel_merge_32_to_16_info(N_insertion=N_insertion_per_stream)
+            get_parallel_merge_32_to_16_info(N_insertion=N_insertion_per_stream, FREQ=FREQ)
 
         if input_stream_num <= 16:
 
             perf_resource_obj = Resource_Performance_Stage6()
             perf_resource_obj.SORT_GROUP_ENABLE = True
             perf_resource_obj.SORT_GROUP_NUM = 1
+            perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
 
             perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
             perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=1)
@@ -482,6 +487,7 @@ def get_options_stage6_sort_reduction(input_stream_num, N_insertion_per_stream, 
             perf_resource_obj = Resource_Performance_Stage6()
             perf_resource_obj.SORT_GROUP_ENABLE = True
             perf_resource_obj.SORT_GROUP_NUM = 2
+            perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
 
             perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
             perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=2)
@@ -501,6 +507,7 @@ def get_options_stage6_sort_reduction(input_stream_num, N_insertion_per_stream, 
             perf_resource_obj = Resource_Performance_Stage6()
             perf_resource_obj.SORT_GROUP_ENABLE = True
             perf_resource_obj.SORT_GROUP_NUM = 3
+            perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
 
             perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
             perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=3)
@@ -520,6 +527,7 @@ def get_options_stage6_sort_reduction(input_stream_num, N_insertion_per_stream, 
             perf_resource_obj = Resource_Performance_Stage6()
             perf_resource_obj.SORT_GROUP_ENABLE = True
             perf_resource_obj.SORT_GROUP_NUM = 4
+            perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
 
             perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
             perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=4)
@@ -539,6 +547,7 @@ def get_options_stage6_sort_reduction(input_stream_num, N_insertion_per_stream, 
             perf_resource_obj = Resource_Performance_Stage6()
             perf_resource_obj.SORT_GROUP_ENABLE = True
             perf_resource_obj.SORT_GROUP_NUM = 5
+            perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
 
             perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
             perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=5)
@@ -558,6 +567,7 @@ def get_options_stage6_sort_reduction(input_stream_num, N_insertion_per_stream, 
             perf_resource_obj = Resource_Performance_Stage6()
             perf_resource_obj.SORT_GROUP_ENABLE = True
             perf_resource_obj.SORT_GROUP_NUM = 6
+            perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
 
             perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
             perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=6)
