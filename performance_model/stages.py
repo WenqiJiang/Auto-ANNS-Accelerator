@@ -272,14 +272,14 @@ def get_options_stage_4_distance_LUT_construction(nlist, nprobe, FREQ):
 
     return option_list
 
-def get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, FREQ, MAX_HBM_bank, TOTAL_VECTORS, scan_ratio_with_OPQ, scan_ratio_without_OPQ, OPQ_enable=True):
+def get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, FREQ, MIN_HBM_bank, MAX_HBM_bank, TOTAL_VECTORS, scan_ratio_with_OPQ, scan_ratio_without_OPQ, OPQ_enable=True):
     
     """ this function returns a list of the performance and resource consumption of
           the entire systolic array """
 
     option_list = []
 
-    for HBM_bank in range(1, MAX_HBM_bank + 1):
+    for HBM_bank in range(MIN_HBM_bank, MAX_HBM_bank + 1):
 
         # several options: 1 HBM = 3 streams; 1 HBM = 1 streams; 2 HBM = 1 stream; 3 HBM = 1 stream; 4 HBM = 1 stream
         PE_num_list = []

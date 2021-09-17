@@ -135,31 +135,31 @@ int main(int argc, char** argv)
 //////////////////////////////   TEMPLATE START  //////////////////////////////
     
     std::ifstream HBM_embedding0_fstream(
-        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_HBM_9_banks/HBM_bank_0_raw", 
+        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_9_banks/HBM_bank_0_raw", 
         std::ios::in | std::ios::binary);
     std::ifstream HBM_embedding1_fstream(
-        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_HBM_9_banks/HBM_bank_1_raw", 
+        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_9_banks/HBM_bank_1_raw", 
         std::ios::in | std::ios::binary);
     std::ifstream HBM_embedding2_fstream(
-        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_HBM_9_banks/HBM_bank_2_raw", 
+        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_9_banks/HBM_bank_2_raw", 
         std::ios::in | std::ios::binary);
     std::ifstream HBM_embedding3_fstream(
-        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_HBM_9_banks/HBM_bank_3_raw", 
+        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_9_banks/HBM_bank_3_raw", 
         std::ios::in | std::ios::binary);
     std::ifstream HBM_embedding4_fstream(
-        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_HBM_9_banks/HBM_bank_4_raw", 
+        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_9_banks/HBM_bank_4_raw", 
         std::ios::in | std::ios::binary);
     std::ifstream HBM_embedding5_fstream(
-        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_HBM_9_banks/HBM_bank_5_raw", 
+        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_9_banks/HBM_bank_5_raw", 
         std::ios::in | std::ios::binary);
     std::ifstream HBM_embedding6_fstream(
-        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_HBM_9_banks/HBM_bank_6_raw", 
+        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_9_banks/HBM_bank_6_raw", 
         std::ios::in | std::ios::binary);
     std::ifstream HBM_embedding7_fstream(
-        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_HBM_9_banks/HBM_bank_7_raw", 
+        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_9_banks/HBM_bank_7_raw", 
         std::ios::in | std::ios::binary);
     std::ifstream HBM_embedding8_fstream(
-        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_HBM_9_banks/HBM_bank_8_raw", 
+        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_9_banks/HBM_bank_8_raw", 
         std::ios::in | std::ios::binary);
 
 
@@ -290,24 +290,24 @@ int main(int argc, char** argv)
     char* raw_gt_vec_ID_char = (char*) malloc(raw_gt_vec_ID_size);
 
     std::ifstream HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_fstream(
-        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_HBM_9_banks/HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_3_by_1024_raw", 
+        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_9_banks/HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_3_by_1024_raw", 
         std::ios::in | std::ios::binary);
 
     std::ifstream HBM_query_vector_fstream(
-        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_HBM_9_banks/query_vectors_float32_10000_128_raw", 
+        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_9_banks/query_vectors_float32_10000_128_raw", 
         std::ios::in | std::ios::binary);
 
     std::ifstream HBM_vector_quantizer_fstream(
-        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_HBM_9_banks/vector_quantizer_float32_1024_128_raw", 
+        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_9_banks/vector_quantizer_float32_1024_128_raw", 
         std::ios::in | std::ios::binary);
 
     std::ifstream HBM_product_quantizer_fstream(
-        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_HBM_9_banks/product_quantizer_float32_16_256_8_raw", 
+        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_9_banks/product_quantizer_float32_16_256_8_raw", 
         std::ios::in | std::ios::binary);
 
 #ifdef OPQ_ENABLE
     std::ifstream HBM_OPQ_matrix_fstream(
-        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_HBM_9_banks/OPQ_matrix_float32_128_128_raw", 
+        "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF1024,PQ16_9_banks/OPQ_matrix_float32_128_128_raw", 
         std::ios::in | std::ios::binary);
 
 #endif

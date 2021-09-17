@@ -196,6 +196,32 @@ elif args.device == 'U50':
         raise ValueError
 
     #####     Shell     #####
+    resource_network_kernel = Resource()
+    resource_network_kernel.LUT = 126540
+    resource_network_kernel.FF = 197124
+    resource_network_kernel.BRAM_18K = 2 * 430
+    resource_network_kernel.URAM = 9
+    resource_network_kernel.DSP48E = 0
+    resource_network_kernel.HBM_bank = 0
+
+    resource_network_user_kernel_functions = Resource()
+    resource_network_user_kernel_functions.LUT = 11242
+    resource_network_user_kernel_functions.FF = 5124
+    resource_network_user_kernel_functions.BRAM_18K = 2 * 0.5
+    resource_network_user_kernel_functions.URAM = 0
+    resource_network_user_kernel_functions.DSP48E = 0
+    resource_network_user_kernel_functions.HBM_bank = 0
+    resource_network_user_kernel_functions.add_resource(resource_FIFO_d2_w32, num=21)
+    resource_network_user_kernel_functions.add_resource(resource_FIFO_d512_w32, num=32)
+
+    resource_cmac_kernel = Resource()
+    resource_cmac_kernel.LUT = 17256
+    resource_cmac_kernel.FF = 58280
+    resource_cmac_kernel.BRAM_18K = 2 * 18
+    resource_cmac_kernel.URAM = 9
+    resource_cmac_kernel.DSP48E = 0
+    resource_cmac_kernel.HBM_bank = 0
+
     resourece_dynamic_region = Resource()
     resourece_dynamic_region.LUT = 92244
     resourece_dynamic_region.FF = 175459
@@ -212,7 +238,8 @@ elif args.device == 'U50':
     resourece_static_region.DSP48E = 4
     resourece_static_region.HBM_bank = 0
 
-    component_list_shell = [resourece_dynamic_region, resourece_static_region]
+    component_list_shell = [resource_network_kernel, resource_network_user_kernel_functions, resource_cmac_kernel, resourece_dynamic_region, resourece_static_region]
+    # component_list_shell = [resourece_dynamic_region, resourece_static_region]
     shell_consumption = sum_resource(component_list_shell)
 
 elif args.device == 'U250':
@@ -280,7 +307,7 @@ def get_best_hardware(nlist, nprobe, OPQ_enable=True):
         get_options_stage_2_cluster_distance_computation(nlist, FREQ, MAX_URAM)
     options_stage_3_select_Voronoi_cells = get_options_stage_3_select_Voronoi_cells(nlist, nprobe, FREQ)
     options_stage_4_distance_LUT_construction = get_options_stage_4_distance_LUT_construction(nlist, nprobe, FREQ)
-    options_stage_5_distance_estimation_by_LUT = get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, FREQ, MAX_HBM_bank, TOTAL_VECTORS, scan_ratio_with_OPQ, scan_ratio_without_OPQ, OPQ_enable)
+    options_stage_5_distance_estimation_by_LUT = get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, FREQ, MIN_HBM_bank, MAX_HBM_bank, TOTAL_VECTORS, scan_ratio_with_OPQ, scan_ratio_without_OPQ, OPQ_enable)
 
     if OPQ_enable:
 
@@ -439,7 +466,7 @@ if __name__ == "__main__":
 
     print("\n\n======== Result =========\n")
     print("best option name", best_solution_name)
-    print("nprobe: {}".format(nprobe = d_nprobes[args.dbname][best_solution_name][topK][recall_goal]))
+    print("nprobe: {}".format(d_nprobes[args.dbname][best_solution_name][topK][recall_goal]))
     print("QPS", best_solution_QPS)
     print("stage_option_list")
     for option in best_solution_stage_option_list:

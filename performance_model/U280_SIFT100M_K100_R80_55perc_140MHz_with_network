@@ -36,7 +36,7 @@ Stage 3:
 QPS: 67895.24733268672
 Cycles per query: 2062
 STAGE_3_PRIORITY_QUEUE_LEVEL: 1
-STAGE_3_PRIORITY_QUEUE_L1_NUM: None
+STAGE_3_PRIORITY_QUEUE_L1_NUM: 1
 Stage 4:
 
         HBM_bank: 0
@@ -51,7 +51,7 @@ Cycles per query: 17184
 PE_NUM_TABLE_CONSTRUCTION: 1
 Stage 5:
 
-        HBM_bank: 2.0
+        HBM_bank: 12.0
         BRAM_18K: 126.0
         URAM: 0.0
         FF: 35286.0
@@ -59,9 +59,9 @@ Stage 5:
         DSP48E: 180.0
         
 QPS: 1915.918546091526
-Cycles per query: 73072
-HBM_CHANNEL_NUM: 2
-STAGE5_COMP_PE_NUM: 6
+Cycles per query: 73072.0
+HBM_CHANNEL_NUM: 12
+STAGE5_COMP_PE_NUM: 6.0
 Stage 6:
 
         HBM_bank: 0
@@ -111,7 +111,7 @@ Stage 3:
 QPS: 34063.2603406326
 Cycles per query: 4110
 STAGE_3_PRIORITY_QUEUE_LEVEL: 1
-STAGE_3_PRIORITY_QUEUE_L1_NUM: None
+STAGE_3_PRIORITY_QUEUE_L1_NUM: 1
 Stage 4:
 
         HBM_bank: 0
@@ -126,7 +126,7 @@ Cycles per query: 17184
 PE_NUM_TABLE_CONSTRUCTION: 1
 Stage 5:
 
-        HBM_bank: 2.0
+        HBM_bank: 12.0
         BRAM_18K: 126.0
         URAM: 0.0
         FF: 35286.0
@@ -134,9 +134,9 @@ Stage 5:
         DSP48E: 180.0
         
 QPS: 3692.762186115214
-Cycles per query: 37912
-HBM_CHANNEL_NUM: 2
-STAGE5_COMP_PE_NUM: 6
+Cycles per query: 37912.0
+HBM_CHANNEL_NUM: 12
+STAGE5_COMP_PE_NUM: 6.0
 Stage 6:
 
         HBM_bank: 0
@@ -186,7 +186,7 @@ Stage 3:
 QPS: 17056.53021442495
 Cycles per query: 8208
 STAGE_3_PRIORITY_QUEUE_LEVEL: 1
-STAGE_3_PRIORITY_QUEUE_L1_NUM: None
+STAGE_3_PRIORITY_QUEUE_L1_NUM: 1
 Stage 4:
 
         HBM_bank: 0
@@ -201,7 +201,7 @@ Cycles per query: 25712
 PE_NUM_TABLE_CONSTRUCTION: 1
 Stage 5:
 
-        HBM_bank: 2.0
+        HBM_bank: 12.0
         BRAM_18K: 126.0
         URAM: 0.0
         FF: 35286.0
@@ -209,9 +209,9 @@ Stage 5:
         DSP48E: 180.0
         
 QPS: 4765.7952069716775
-Cycles per query: 29376
-HBM_CHANNEL_NUM: 2
-STAGE5_COMP_PE_NUM: 6
+Cycles per query: 29376.0
+HBM_CHANNEL_NUM: 12
+STAGE5_COMP_PE_NUM: 6.0
 Stage 6:
 
         HBM_bank: 0
@@ -261,7 +261,7 @@ Stage 3:
 QPS: 8536.064874093043
 Cycles per query: 16401
 STAGE_3_PRIORITY_QUEUE_LEVEL: 1
-STAGE_3_PRIORITY_QUEUE_L1_NUM: None
+STAGE_3_PRIORITY_QUEUE_L1_NUM: 1
 Stage 4:
 
         HBM_bank: 0
@@ -276,7 +276,7 @@ Cycles per query: 17184
 PE_NUM_TABLE_CONSTRUCTION: 2
 Stage 5:
 
-        HBM_bank: 5.0
+        HBM_bank: 10.0
         BRAM_18K: 105.0
         URAM: 0.0
         FF: 29405.0
@@ -284,9 +284,9 @@ Stage 5:
         DSP48E: 150.0
         
 QPS: 6453.694740238787
-Cycles per query: 21693
-HBM_CHANNEL_NUM: 5
-STAGE5_COMP_PE_NUM: 5
+Cycles per query: 21693.0
+HBM_CHANNEL_NUM: 10
+STAGE5_COMP_PE_NUM: 5.0
 Stage 6:
 
         HBM_bank: 0
@@ -351,7 +351,7 @@ Cycles per query: 12920
 PE_NUM_TABLE_CONSTRUCTION: 3
 Stage 5:
 
-        HBM_bank: 4.0
+        HBM_bank: 12.0
         BRAM_18K: 84.0
         URAM: 0.0
         FF: 23524.0
@@ -359,9 +359,9 @@ Stage 5:
         DSP48E: 120.0
         
 QPS: 7467.8615245105875
-Cycles per query: 18747
-HBM_CHANNEL_NUM: 4
-STAGE5_COMP_PE_NUM: 4
+Cycles per query: 18747.0
+HBM_CHANNEL_NUM: 12
+STAGE5_COMP_PE_NUM: 4.0
 Stage 6:
 
         HBM_bank: 0
@@ -426,28 +426,28 @@ Cycles per query: 25712
 PE_NUM_TABLE_CONSTRUCTION: 2
 Stage 5:
 
-        HBM_bank: 2.0
-        BRAM_18K: 42.0
+        HBM_bank: 9.0
+        BRAM_18K: 63.0
         URAM: 0.0
-        FF: 11762.0
-        LUT: 10942.666666666666
-        DSP48E: 60.0
+        FF: 17643.0
+        LUT: 16414.0
+        DSP48E: 90.0
         
-QPS: 6154.387198874626
-Cycles per query: 22748
-HBM_CHANNEL_NUM: 2
-STAGE5_COMP_PE_NUM: 2
+QPS: 8559.026716390536
+Cycles per query: 16357.0
+HBM_CHANNEL_NUM: 9
+STAGE5_COMP_PE_NUM: 3.0
 Stage 6:
 
         HBM_bank: 0
-        BRAM_18K: 10.0
+        BRAM_18K: 14.0
         URAM: 0
-        FF: 98985.0
-        LUT: 108285.0
+        FF: 138579.0
+        LUT: 151599.0
         DSP48E: 0
         
-QPS: 7247.877407330711
-Cycles per query: 19316
+QPS: 10840.947808579836
+Cycles per query: 12914
 
 SORT_GROUP_ENABLE: False
 SORT_GROUP_NUM: None
@@ -501,28 +501,28 @@ Cycles per query: 59824
 PE_NUM_TABLE_CONSTRUCTION: 1
 Stage 5:
 
-        HBM_bank: 1.0
-        BRAM_18K: 21.0
+        HBM_bank: 9.0
+        BRAM_18K: 63.0
         URAM: 0.0
-        FF: 5881.0
-        LUT: 5471.333333333333
-        DSP48E: 30.0
+        FF: 17643.0
+        LUT: 16414.0
+        DSP48E: 90.0
         
-QPS: 4847.309743092584
-Cycles per query: 28882
-HBM_CHANNEL_NUM: 1
-STAGE5_COMP_PE_NUM: 1
+QPS: 11061.946902654867
+Cycles per query: 12656.0
+HBM_CHANNEL_NUM: 9
+STAGE5_COMP_PE_NUM: 3.0
 Stage 6:
 
         HBM_bank: 0
-        BRAM_18K: 6.0
+        BRAM_18K: 14.0
         URAM: 0
-        FF: 59391.0
-        LUT: 64971.0
+        FF: 138579.0
+        LUT: 151599.0
         DSP48E: 0
         
-QPS: 5714.752224671402
-Cycles per query: 24498
+QPS: 16982.04754973314
+Cycles per query: 8244
 
 SORT_GROUP_ENABLE: False
 SORT_GROUP_NUM: None
@@ -576,28 +576,28 @@ Cycles per query: 81144
 PE_NUM_TABLE_CONSTRUCTION: 1
 Stage 5:
 
-        HBM_bank: 1.0
-        BRAM_18K: 21.0
+        HBM_bank: 9.0
+        BRAM_18K: 63.0
         URAM: 0.0
-        FF: 5881.0
-        LUT: 5471.333333333333
-        DSP48E: 30.0
+        FF: 17643.0
+        LUT: 16414.0
+        DSP48E: 90.0
         
-QPS: 6155.740227762389
-Cycles per query: 22743
-HBM_CHANNEL_NUM: 1
-STAGE5_COMP_PE_NUM: 1
+QPS: 11981.172443303381
+Cycles per query: 11685.0
+HBM_CHANNEL_NUM: 9
+STAGE5_COMP_PE_NUM: 3.0
 Stage 6:
 
         HBM_bank: 0
-        BRAM_18K: 6.0
+        BRAM_18K: 14.0
         URAM: 0
-        FF: 59391.0
-        LUT: 64971.0
+        FF: 138579.0
+        LUT: 151599.0
         DSP48E: 0
         
-QPS: 8356.213441566193
-Cycles per query: 16754
+QPS: 24743.725698126545
+Cycles per query: 5658
 
 SORT_GROUP_ENABLE: False
 SORT_GROUP_NUM: None
@@ -651,28 +651,28 @@ Cycles per query: 106728
 PE_NUM_TABLE_CONSTRUCTION: 1
 Stage 5:
 
-        HBM_bank: 1.0
-        BRAM_18K: 21.0
+        HBM_bank: 9.0
+        BRAM_18K: 63.0
         URAM: 0.0
-        FF: 5881.0
-        LUT: 5471.333333333333
-        DSP48E: 30.0
+        FF: 17643.0
+        LUT: 16414.0
+        DSP48E: 90.0
         
-QPS: 7349.081364829396
-Cycles per query: 19050
-HBM_CHANNEL_NUM: 1
-STAGE5_COMP_PE_NUM: 1
+QPS: 11914.893617021276
+Cycles per query: 11750.0
+HBM_CHANNEL_NUM: 9
+STAGE5_COMP_PE_NUM: 3.0
 Stage 6:
 
         HBM_bank: 0
-        BRAM_18K: 6.0
+        BRAM_18K: 14.0
         URAM: 0
-        FF: 59391.0
-        LUT: 64971.0
+        FF: 138579.0
+        LUT: 151599.0
         DSP48E: 0
         
-QPS: 12574.097359439555
-Cycles per query: 11134
+QPS: 36997.885835095134
+Cycles per query: 3784
 
 SORT_GROUP_ENABLE: False
 SORT_GROUP_NUM: None
@@ -724,7 +724,7 @@ Stage 3:
 QPS: 67895.24733268672
 Cycles per query: 2062
 STAGE_3_PRIORITY_QUEUE_LEVEL: 1
-STAGE_3_PRIORITY_QUEUE_L1_NUM: None
+STAGE_3_PRIORITY_QUEUE_L1_NUM: 1
 Stage 4:
 
         HBM_bank: 0
@@ -739,7 +739,7 @@ Cycles per query: 17184
 PE_NUM_TABLE_CONSTRUCTION: 1
 Stage 5:
 
-        HBM_bank: 2.0
+        HBM_bank: 12.0
         BRAM_18K: 126.0
         URAM: 0.0
         FF: 35286.0
@@ -747,9 +747,9 @@ Stage 5:
         DSP48E: 180.0
         
 QPS: 1915.6039625636254
-Cycles per query: 73084
-HBM_CHANNEL_NUM: 2
-STAGE5_COMP_PE_NUM: 6
+Cycles per query: 73084.0
+HBM_CHANNEL_NUM: 12
+STAGE5_COMP_PE_NUM: 6.0
 Stage 6:
 
         HBM_bank: 0
@@ -812,7 +812,7 @@ Stage 3:
 QPS: 34063.2603406326
 Cycles per query: 4110
 STAGE_3_PRIORITY_QUEUE_LEVEL: 1
-STAGE_3_PRIORITY_QUEUE_L1_NUM: None
+STAGE_3_PRIORITY_QUEUE_L1_NUM: 1
 Stage 4:
 
         HBM_bank: 0
@@ -827,7 +827,7 @@ Cycles per query: 17184
 PE_NUM_TABLE_CONSTRUCTION: 1
 Stage 5:
 
-        HBM_bank: 2.0
+        HBM_bank: 12.0
         BRAM_18K: 126.0
         URAM: 0.0
         FF: 35286.0
@@ -835,9 +835,9 @@ Stage 5:
         DSP48E: 180.0
         
 QPS: 3692.3726131448466
-Cycles per query: 37916
-HBM_CHANNEL_NUM: 2
-STAGE5_COMP_PE_NUM: 6
+Cycles per query: 37916.0
+HBM_CHANNEL_NUM: 12
+STAGE5_COMP_PE_NUM: 6.0
 Stage 6:
 
         HBM_bank: 0
@@ -900,7 +900,7 @@ Stage 3:
 QPS: 17056.53021442495
 Cycles per query: 8208
 STAGE_3_PRIORITY_QUEUE_LEVEL: 1
-STAGE_3_PRIORITY_QUEUE_L1_NUM: None
+STAGE_3_PRIORITY_QUEUE_L1_NUM: 1
 Stage 4:
 
         HBM_bank: 0
@@ -915,7 +915,7 @@ Cycles per query: 25712
 PE_NUM_TABLE_CONSTRUCTION: 1
 Stage 5:
 
-        HBM_bank: 2.0
+        HBM_bank: 12.0
         BRAM_18K: 126.0
         URAM: 0.0
         FF: 35286.0
@@ -923,9 +923,9 @@ Stage 5:
         DSP48E: 180.0
         
 QPS: 4765.7952069716775
-Cycles per query: 29376
-HBM_CHANNEL_NUM: 2
-STAGE5_COMP_PE_NUM: 6
+Cycles per query: 29376.0
+HBM_CHANNEL_NUM: 12
+STAGE5_COMP_PE_NUM: 6.0
 Stage 6:
 
         HBM_bank: 0
@@ -988,7 +988,7 @@ Stage 3:
 QPS: 8536.064874093043
 Cycles per query: 16401
 STAGE_3_PRIORITY_QUEUE_LEVEL: 1
-STAGE_3_PRIORITY_QUEUE_L1_NUM: None
+STAGE_3_PRIORITY_QUEUE_L1_NUM: 1
 Stage 4:
 
         HBM_bank: 0
@@ -1003,7 +1003,7 @@ Cycles per query: 17184
 PE_NUM_TABLE_CONSTRUCTION: 2
 Stage 5:
 
-        HBM_bank: 5.0
+        HBM_bank: 10.0
         BRAM_18K: 105.0
         URAM: 0.0
         FF: 29405.0
@@ -1011,9 +1011,9 @@ Stage 5:
         DSP48E: 150.0
         
 QPS: 6453.694740238787
-Cycles per query: 21693
-HBM_CHANNEL_NUM: 5
-STAGE5_COMP_PE_NUM: 5
+Cycles per query: 21693.0
+HBM_CHANNEL_NUM: 10
+STAGE5_COMP_PE_NUM: 5.0
 Stage 6:
 
         HBM_bank: 0
@@ -1091,7 +1091,7 @@ Cycles per query: 12920
 PE_NUM_TABLE_CONSTRUCTION: 3
 Stage 5:
 
-        HBM_bank: 4.0
+        HBM_bank: 12.0
         BRAM_18K: 84.0
         URAM: 0.0
         FF: 23524.0
@@ -1099,9 +1099,9 @@ Stage 5:
         DSP48E: 120.0
         
 QPS: 7467.8615245105875
-Cycles per query: 18747
-HBM_CHANNEL_NUM: 4
-STAGE5_COMP_PE_NUM: 4
+Cycles per query: 18747.0
+HBM_CHANNEL_NUM: 12
+STAGE5_COMP_PE_NUM: 4.0
 Stage 6:
 
         HBM_bank: 0
@@ -1179,28 +1179,28 @@ Cycles per query: 25712
 PE_NUM_TABLE_CONSTRUCTION: 2
 Stage 5:
 
-        HBM_bank: 2.0
-        BRAM_18K: 42.0
+        HBM_bank: 9.0
+        BRAM_18K: 63.0
         URAM: 0.0
-        FF: 11762.0
-        LUT: 10942.666666666666
-        DSP48E: 60.0
+        FF: 17643.0
+        LUT: 16414.0
+        DSP48E: 90.0
         
-QPS: 6154.387198874626
-Cycles per query: 22748
-HBM_CHANNEL_NUM: 2
-STAGE5_COMP_PE_NUM: 2
+QPS: 8559.026716390536
+Cycles per query: 16357.0
+HBM_CHANNEL_NUM: 9
+STAGE5_COMP_PE_NUM: 3.0
 Stage 6:
 
         HBM_bank: 0
-        BRAM_18K: 10.0
+        BRAM_18K: 14.0
         URAM: 0
-        FF: 98985.0
-        LUT: 108285.0
+        FF: 138579.0
+        LUT: 151599.0
         DSP48E: 0
         
-QPS: 7247.877407330711
-Cycles per query: 19316
+QPS: 10840.947808579836
+Cycles per query: 12914
 
 SORT_GROUP_ENABLE: False
 SORT_GROUP_NUM: None
@@ -1267,28 +1267,28 @@ Cycles per query: 64088
 PE_NUM_TABLE_CONSTRUCTION: 1
 Stage 5:
 
-        HBM_bank: 1.0
-        BRAM_18K: 21.0
+        HBM_bank: 9.0
+        BRAM_18K: 63.0
         URAM: 0.0
-        FF: 5881.0
-        LUT: 5471.333333333333
-        DSP48E: 30.0
+        FF: 17643.0
+        LUT: 16414.0
+        DSP48E: 90.0
         
-QPS: 4524.1557602197445
-Cycles per query: 30945
-HBM_CHANNEL_NUM: 1
-STAGE5_COMP_PE_NUM: 1
+QPS: 10324.48377581121
+Cycles per query: 13560.0
+HBM_CHANNEL_NUM: 9
+STAGE5_COMP_PE_NUM: 3.0
 Stage 6:
 
         HBM_bank: 0
-        BRAM_18K: 6.0
+        BRAM_18K: 14.0
         URAM: 0
-        FF: 59391.0
-        LUT: 64971.0
+        FF: 138579.0
+        LUT: 151599.0
         DSP48E: 0
         
-QPS: 5335.365853658536
-Cycles per query: 26240
+QPS: 15865.820489573889
+Cycles per query: 8824
 
 SORT_GROUP_ENABLE: False
 SORT_GROUP_NUM: None
@@ -1355,28 +1355,28 @@ Cycles per query: 81144
 PE_NUM_TABLE_CONSTRUCTION: 1
 Stage 5:
 
-        HBM_bank: 1.0
-        BRAM_18K: 21.0
+        HBM_bank: 9.0
+        BRAM_18K: 63.0
         URAM: 0.0
-        FF: 5881.0
-        LUT: 5471.333333333333
-        DSP48E: 30.0
+        FF: 17643.0
+        LUT: 16414.0
+        DSP48E: 90.0
         
-QPS: 6155.740227762389
-Cycles per query: 22743
-HBM_CHANNEL_NUM: 1
-STAGE5_COMP_PE_NUM: 1
+QPS: 11981.172443303381
+Cycles per query: 11685.0
+HBM_CHANNEL_NUM: 9
+STAGE5_COMP_PE_NUM: 3.0
 Stage 6:
 
         HBM_bank: 0
-        BRAM_18K: 6.0
+        BRAM_18K: 14.0
         URAM: 0
-        FF: 59391.0
-        LUT: 64971.0
+        FF: 138579.0
+        LUT: 151599.0
         DSP48E: 0
         
-QPS: 8356.213441566193
-Cycles per query: 16754
+QPS: 24743.725698126545
+Cycles per query: 5658
 
 SORT_GROUP_ENABLE: False
 SORT_GROUP_NUM: None
@@ -1443,28 +1443,28 @@ Cycles per query: 106728
 PE_NUM_TABLE_CONSTRUCTION: 1
 Stage 5:
 
-        HBM_bank: 1.0
-        BRAM_18K: 21.0
+        HBM_bank: 9.0
+        BRAM_18K: 63.0
         URAM: 0.0
-        FF: 5881.0
-        LUT: 5471.333333333333
-        DSP48E: 30.0
+        FF: 17643.0
+        LUT: 16414.0
+        DSP48E: 90.0
         
-QPS: 7349.081364829396
-Cycles per query: 19050
-HBM_CHANNEL_NUM: 1
-STAGE5_COMP_PE_NUM: 1
+QPS: 11914.893617021276
+Cycles per query: 11750.0
+HBM_CHANNEL_NUM: 9
+STAGE5_COMP_PE_NUM: 3.0
 Stage 6:
 
         HBM_bank: 0
-        BRAM_18K: 6.0
+        BRAM_18K: 14.0
         URAM: 0
-        FF: 59391.0
-        LUT: 64971.0
+        FF: 138579.0
+        LUT: 151599.0
         DSP48E: 0
         
-QPS: 12574.097359439555
-Cycles per query: 11134
+QPS: 36997.885835095134
+Cycles per query: 3784
 
 SORT_GROUP_ENABLE: False
 SORT_GROUP_NUM: None
@@ -1522,7 +1522,7 @@ Cycles per query: 12920
 PE_NUM_TABLE_CONSTRUCTION: 3
 Stage 5:
 
-        HBM_bank: 4.0
+        HBM_bank: 12.0
         BRAM_18K: 84.0
         URAM: 0.0
         FF: 23524.0
@@ -1530,9 +1530,9 @@ Stage 5:
         DSP48E: 120.0
         
 QPS: 7467.8615245105875
-Cycles per query: 18747
-HBM_CHANNEL_NUM: 4
-STAGE5_COMP_PE_NUM: 4
+Cycles per query: 18747.0
+HBM_CHANNEL_NUM: 12
+STAGE5_COMP_PE_NUM: 4.0
 Stage 6:
 
         HBM_bank: 0
@@ -1552,10 +1552,10 @@ STAGE_6_PRIORITY_QUEUE_L2_NUM: None
 STAGE_6_STREAM_PER_L2_QUEUE_LARGER: None
 STAGE_6_STREAM_PER_L2_QUEUE_SMALLER: None
         
-total_valid_design: 3121437
+total_valid_design: 537852
 Total resource consumption:
 
-        HBM_bank: 5.0
+        HBM_bank: 13.0
         BRAM_18K: 1599.0
         URAM: 354.0
         FF: 975225.89
