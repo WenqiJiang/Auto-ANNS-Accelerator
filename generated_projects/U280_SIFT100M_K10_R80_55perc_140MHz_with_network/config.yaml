@@ -1,62 +1,75 @@
 ---
-# U280_SIFT100M_K10_R60_55perc_140MHz_with_network
+# U280_SIFT100M_K10_R80_55perc_140MHz_with_network
 
-# best option name IVF4096,PQ16
-# nprobe: 3
-# QPS 30381.94444444444
+# best option name OPQ16,IVF8192,PQ16
+# nprobe: 17
+# QPS 9522.513943681131
 # stage_option_list
+# Stage 1:
+
+#         HBM_bank: 0
+#         BRAM_18K: 37
+#         URAM: 0
+#         FF: 2659
+#         LUT: 2152
+#         DSP48E: 20
+        
+# QPS: 32014.635261833984
+# Cycles per query: 4373.0
+# OPQ_ENABLE: True
+# OPQ_UNROLL_FACTOR: 4
 # Stage 2:
 
 #         HBM_bank: 0
 #         BRAM_18K: 1.0
-#         URAM: 120.0
-#         FF: 172694
-#         LUT: 134364
-#         DSP48E: 870
+#         URAM: 144.0
+#         FF: 103664
+#         LUT: 80688
+#         DSP48E: 522
         
-# QPS: 31055.900621118017
-# Cycles per query: 4508
+# QPS: 9522.513943681131
+# Cycles per query: 14702
 # STAGE2_ON_CHIP: True
 # STAGE2_OFF_CHIP_START_CHANNEL:None
-# PE_NUM_CENTER_DIST_COMP: 15
+# PE_NUM_CENTER_DIST_COMP: 9
 # Stage 3:
 
 #         HBM_bank: 0
 #         BRAM_18K: 6.0
 #         URAM: 0
-#         FF: 2334.63
-#         LUT: 2263.41
+#         FF: 10569.57
+#         LUT: 11313.99
 #         DSP48E: 0
         
-# QPS: 34071.550255536626
-# Cycles per query: 4109
+# QPS: 17033.702396885266
+# Cycles per query: 8219
 # STAGE_3_PRIORITY_QUEUE_LEVEL: 2
 # STAGE_3_PRIORITY_QUEUE_L1_NUM: 2
 # Stage 4:
 
 #         HBM_bank: 0
-#         BRAM_18K: 73.0
-#         URAM: 88
-#         FF: 25583
-#         LUT: 20487
-#         DSP48E: 162
+#         BRAM_18K: 226.0
+#         URAM: 176
+#         FF: 58766
+#         LUT: 45294
+#         DSP48E: 324
         
-# QPS: 31876.138433515483
-# Cycles per query: 4392
-# PE_NUM_TABLE_CONSTRUCTION: 3
+# QPS: 10835.913312693498
+# Cycles per query: 12920
+# PE_NUM_TABLE_CONSTRUCTION: 6
 # Stage 5:
 
-#         HBM_bank: 23.0
-#         BRAM_18K: 483.0
+#         HBM_bank: 9.0
+#         BRAM_18K: 567.0
 #         URAM: 0.0
-#         FF: 135263.0
-#         LUT: 125840.66666666667
-#         DSP48E: 690.0
+#         FF: 158787.0
+#         LUT: 147726.0
+#         DSP48E: 810.0
         
-# QPS: 30381.94444444444
-# Cycles per query: 4608
-# HBM_CHANNEL_NUM: 23
-# STAGE5_COMP_PE_NUM: 23
+# QPS: 9564.801530368246
+# Cycles per query: 14637
+# HBM_CHANNEL_NUM: 9
+# STAGE5_COMP_PE_NUM: 27
 # Stage 6:
 
 #         HBM_bank: 0
@@ -66,8 +79,8 @@
 #         LUT: 77874.9
 #         DSP48E: 0
         
-# QPS: 39117.071807767534
-# Cycles per query: 3579
+# QPS: 16021.972991531242
+# Cycles per query: 8738
 
 # SORT_GROUP_ENABLE: True
 # SORT_GROUP_NUM: 2
@@ -76,22 +89,22 @@
 # STAGE_6_STREAM_PER_L2_QUEUE_LARGER: None
 # STAGE_6_STREAM_PER_L2_QUEUE_SMALLER: None
         
-# total_valid_design: 15710875
+# total_valid_design: 10103210
 # Total resource consumption:
 
-#         HBM_bank: 23.0
-#         BRAM_18K: 1934.0
-#         URAM: 226.0
-#         FF: 1006869.3300000001
-#         LUT: 711986.9766666667
-#         DSP48E: 1726.0
+#         HBM_bank: 9.0
+#         BRAM_18K: 2208.0
+#         URAM: 338.0
+#         FF: 1005440.27
+#         LUT: 716205.89
+#         DSP48E: 1680.0
         
 # Utilization rate:
-# {'BRAM_18K': '47.96626984126984%', 'DSP48E': '19.12677304964539%', 'FF': '38.61642926178204%', 'LUT': '54.61363038987073%', 'URAM': '23.541666666666668%'}
+# {'BRAM_18K': '54.761904761904766%', 'DSP48E': '18.617021276595743%', 'FF': '38.56162056639666%', 'LUT': '54.937246103338246%', 'URAM': '35.208333333333336%'}
 
   # Constants
-  NLIST: 4096
-  NPROBE: 3
+  NLIST: 8192
+  NPROBE: 17
   D: 128
   M: 16
   K: 256
@@ -101,7 +114,7 @@
 
   LARGE_NUM: 99999999 # used to init the heap
   # stage 1
-  OPQ_ENABLE: False
+  OPQ_ENABLE: True
   OPQ_UNROLL_FACTOR: 4 # 4 or 8, the larger the better performance, left None if OPQ_ENABLE=False, only used when OPQ_ENABLE=True
 
   # stage 2
@@ -111,7 +124,7 @@
   #   while the last constructs 534: 14 * 547 + 534 = 8192
   STAGE2_ON_CHIP: True
   STAGE2_OFF_CHIP_START_CHANNEL: None # Only used when STAGE2_ON_CHIP = True
-  PE_NUM_CENTER_DIST_COMP: 15
+  PE_NUM_CENTER_DIST_COMP: 9
 
   # stage 3
   STAGE_3_PRIORITY_QUEUE_LEVEL: 2 # support 1 or 2
@@ -121,15 +134,15 @@
   # except last PE: construct more tables per query, last one construct less
   # e.g., nprobe = 17, PE num = 6, each of the first 5 PEs construct 3 tables, 
   #   while the last constructs 2: 5 * 3 + 2 = 17
-  PE_NUM_TABLE_CONSTRUCTION: 3
+  PE_NUM_TABLE_CONSTRUCTION: 6
 
   # stage 5
   # (HBM_CHANNEL_NUM * 3 / STAGE5_COMP_PE_NUM) must be integar
   # e.g., default 1 HBM channel -> 3 PQ code streams -> STAGE5_COMP_PE_NUM = 3 * HBM_CHANNEL_NUM
   # e.g., merge content of 1 HBM channel to 1 PQ code stream -> STAGE5_COMP_PE_NUM = HBM_CHANNEL_NUM
   # e.g., merge content of 2 HBM channels to 1 PQ code stream -> STAGE5_COMP_PE_NUM = HBM_CHANNEL_NUM / 2
-  HBM_CHANNEL_NUM: 23 # PQ code stream num = 3 * HBM_CHANNEL_NUM
-  STAGE5_COMP_PE_NUM: 23
+  HBM_CHANNEL_NUM: 9 # PQ code stream num = 3 * HBM_CHANNEL_NUM
+  STAGE5_COMP_PE_NUM: 27
 
   # stage 6
   # there could be a sorting network before the priority queue group (SORT_GROUP_ENABLE)
@@ -155,7 +168,7 @@
   #   e.g., dir=/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_HBM_10_banks, 
   #     then the content for HBM0 is:
   #     /home/wejiang/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_HBM_10_banks/HBM_bank_0_raw
-  DATA_DIR: "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF4096,PQ16_23_banks"
+  DATA_DIR: "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_9_banks"
   GT_DIR: "/mnt/scratch/wenqi/saved_npy_data/gnd/"
 
   # FPGA Settings

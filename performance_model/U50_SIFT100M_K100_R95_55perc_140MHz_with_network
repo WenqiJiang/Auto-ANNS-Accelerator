@@ -1,0 +1,85 @@
+
+Arguments:
+    dbname: SIFT100M
+    topK: 100
+    device: U50
+    max_utilization_rate: 55%
+    freq: 140 MHz
+
+IVF1024,PQ16 1024 12 False
+index key IVF1024,PQ16
+QPS 0
+stage_option_list
+IVF2048,PQ16 2048 15 False
+index key IVF2048,PQ16
+QPS 0
+stage_option_list
+IVF4096,PQ16 4096 20 False
+index key IVF4096,PQ16
+QPS 0
+stage_option_list
+IVF8192,PQ16 8192 26 False
+index key IVF8192,PQ16
+QPS 0
+stage_option_list
+IVF16384,PQ16 16384 35 False
+index key IVF16384,PQ16
+QPS 0
+stage_option_list
+IVF32768,PQ16 32768 49 False
+index key IVF32768,PQ16
+QPS 0
+stage_option_list
+IVF65536,PQ16 65536 65 False
+index key IVF65536,PQ16
+QPS 0
+stage_option_list
+IVF131072,PQ16 131072 84 False
+index key IVF131072,PQ16
+QPS 0
+stage_option_list
+IVF262144,PQ16 262144 115 False
+index key IVF262144,PQ16
+QPS 0
+stage_option_list
+OPQ16,IVF1024,PQ16 1024 11 True
+index key OPQ16,IVF1024,PQ16
+QPS 0
+stage_option_list
+OPQ16,IVF2048,PQ16 2048 14 True
+index key OPQ16,IVF2048,PQ16
+QPS 0
+stage_option_list
+OPQ16,IVF4096,PQ16 4096 19 True
+index key OPQ16,IVF4096,PQ16
+QPS 0
+stage_option_list
+OPQ16,IVF8192,PQ16 8192 25 True
+index key OPQ16,IVF8192,PQ16
+QPS 0
+stage_option_list
+OPQ16,IVF16384,PQ16 16384 33 True
+index key OPQ16,IVF16384,PQ16
+QPS 0
+stage_option_list
+OPQ16,IVF32768,PQ16 32768 47 True
+index key OPQ16,IVF32768,PQ16
+QPS 0
+stage_option_list
+OPQ16,IVF65536,PQ16 65536 64 True
+index key OPQ16,IVF65536,PQ16
+QPS 0
+stage_option_list
+OPQ16,IVF131072,PQ16 131072 79 True
+index key OPQ16,IVF131072,PQ16
+QPS 0
+stage_option_list
+OPQ16,IVF262144,PQ16 262144 116 True
+index key OPQ16,IVF262144,PQ16
+QPS 0
+stage_option_list
+
+
+======== Result =========
+
+best option name None
