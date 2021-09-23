@@ -101,7 +101,7 @@
 
   LARGE_NUM: 99999999 # used to init the heap
   # stage 1
-  OPQ_ENABLE: False
+  OPQ_ENABLE: True
   OPQ_UNROLL_FACTOR: 4 # 4 or 8, the larger the better performance, left None if OPQ_ENABLE=False, only used when OPQ_ENABLE=True
 
   # stage 2

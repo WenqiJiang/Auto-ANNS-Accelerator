@@ -3,7 +3,7 @@ Input a set of hardware settings (config.yaml), predict the performance and reso
     consumption by the performance  model.
 
 Example usage:
-    python get_performance.py > out
+    python get_hardware_performance.py > out
 """
 
 import numpy as np
