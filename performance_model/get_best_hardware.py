@@ -1,6 +1,9 @@
 """
+Given a database, an FPGA device, a resource constraint, and a frequency setting,
+    search the parameter space (nlist, nprobe, OPQ_enable) and find the best
+    hardware solution
 Example usage:
-    python performance_model.py --dbname SIFT100M --topK 10 --recall_goal 0.8 --nprobe_dict_dir './recall_info/cpu_recall_index_nprobe_pairs_SIFT100M.pkl' --device U280 --max_utilization_rate 80 --freq 140 > out
+    python get_best_hardware.py --dbname SIFT100M --topK 10 --recall_goal 0.8 --nprobe_dict_dir './recall_info/cpu_recall_index_nprobe_pairs_SIFT100M.pkl' --device U280 --max_utilization_rate 80 --freq 140 > out
 """
 
 import numpy as np
