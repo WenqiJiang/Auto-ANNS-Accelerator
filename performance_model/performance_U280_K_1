@@ -1,0 +1,416 @@
+======== Parameters ========
+topK: 1
+recall_goal=0.3
+FREQ: 140000000.0 Hz
+
+
+
+=================
+
+IVF1024,PQ16 1024 4 False
+FIND SOLUTION
+QPS 8073.817762399077
+stage_option_list
+QPS: 106870.22900763359
+Cycles per query: 1310
+QPS: 134874.7591522158
+Cycles per query: 1038
+QPS: 31876.138433515483
+Cycles per query: 4392
+QPS: 8073.817762399077
+Cycles per query: 17340
+QPS: 8770.281275449477
+Cycles per query: 15963
+=================
+
+Total resource consumption:
+
+        HBM_bank: 9.0
+        BRAM_18K: 2202.0
+        URAM: 202.0
+        FF: 989637.69
+        LUT: 691653.8300000001
+        DSP48E: 2004.0
+        
+Utilization rate:
+{'BRAM_18K': '54.613095238095234%', 'DSP48E': '22.20744680851064%', 'FF': '37.95554468888071%', 'LUT': '53.05395725945018%', 'URAM': '21.041666666666668%'}
+
+
+=================
+
+IVF2048,PQ16 2048 4 False
+FIND SOLUTION
+QPS 14699.706005879882
+stage_option_list
+QPS: 56451.61290322581
+Cycles per query: 2480
+QPS: 67895.24733268672
+Cycles per query: 2062
+QPS: 31876.138433515483
+Cycles per query: 4392
+QPS: 14699.706005879882
+Cycles per query: 9524
+QPS: 17184.239597397816
+Cycles per query: 8147
+=================
+
+Total resource consumption:
+
+        HBM_bank: 9.0
+        BRAM_18K: 2202.0
+        URAM: 218.0
+        FF: 989637.69
+        LUT: 691653.8300000001
+        DSP48E: 2004.0
+        
+Utilization rate:
+{'BRAM_18K': '54.613095238095234%', 'DSP48E': '22.20744680851064%', 'FF': '37.95554468888071%', 'LUT': '53.05395725945018%', 'URAM': '22.708333333333332%'}
+
+
+=================
+
+IVF4096,PQ16 4096 5 False
+FIND SOLUTION
+QPS 20542.920029347028
+stage_option_list
+QPS: 29045.64315352697
+Cycles per query: 4820
+QPS: 34054.97445876915
+Cycles per query: 4111
+QPS: 31876.138433515483
+Cycles per query: 4392
+QPS: 20542.920029347028
+Cycles per query: 6815
+QPS: 27499.508937340404
+Cycles per query: 5091
+=================
+
+Total resource consumption:
+
+        HBM_bank: 9.0
+        BRAM_18K: 2202.0
+        URAM: 250.0
+        FF: 990225.8999999999
+        LUT: 692300.3
+        DSP48E: 2004.0
+        
+Utilization rate:
+{'BRAM_18K': '54.613095238095234%', 'DSP48E': '22.20744680851064%', 'FF': '37.97810428939617%', 'LUT': '53.1035453485518%', 'URAM': '26.041666666666668%'}
+
+
+=================
+
+IVF8192,PQ16 8192 5 False
+FIND SOLUTION
+QPS 14733.740265207323
+stage_option_list
+QPS: 14733.740265207323
+Cycles per query: 9502
+QPS: 17058.60850493481
+Cycles per query: 8207
+QPS: 31876.138433515483
+Cycles per query: 4392
+QPS: 32520.32520325203
+Cycles per query: 4305
+QPS: 54242.54165052305
+Cycles per query: 2581
+=================
+
+Total resource consumption:
+
+        HBM_bank: 9.0
+        BRAM_18K: 2202.0
+        URAM: 426.0
+        FF: 990225.8999999999
+        LUT: 692300.3
+        DSP48E: 2004.0
+        
+Utilization rate:
+{'BRAM_18K': '54.613095238095234%', 'DSP48E': '22.20744680851064%', 'FF': '37.97810428939617%', 'LUT': '53.1035453485518%', 'URAM': '44.375%'}
+
+
+=================
+
+IVF16384,PQ16 16384 5 False
+FIND SOLUTION
+QPS 7421.543681085666
+stage_option_list
+QPS: 7421.543681085666
+Cycles per query: 18864
+QPS: 8537.105921092749
+Cycles per query: 16399
+QPS: 31876.138433515483
+Cycles per query: 4392
+QPS: 46052.63157894737
+Cycles per query: 3040
+QPS: 106463.8783269962
+Cycles per query: 1315
+=================
+
+Total resource consumption:
+
+        HBM_bank: 9.0
+        BRAM_18K: 2202.0
+        URAM: 666.0
+        FF: 990225.8999999999
+        LUT: 692300.3
+        DSP48E: 2004.0
+        
+Utilization rate:
+{'BRAM_18K': '54.613095238095234%', 'DSP48E': '22.20744680851064%', 'FF': '37.97810428939617%', 'LUT': '53.1035453485518%', 'URAM': '69.375%'}
+
+
+=================
+
+OPQ16,IVF1024,PQ16 1024 3 True
+FIND SOLUTION
+QPS 10765.090349865437
+stage_option_list
+QPS: 32014.635261833984
+Cycles per query: 4373.0
+QPS: 106870.22900763359
+Cycles per query: 1310
+QPS: 135004.82160077145
+Cycles per query: 1037
+QPS: 31876.138433515483
+Cycles per query: 4392
+QPS: 10765.090349865437
+Cycles per query: 13005
+QPS: 11691.022964509393
+Cycles per query: 11975
+=================
+
+Total resource consumption:
+
+        HBM_bank: 9.0
+        BRAM_18K: 2239.0
+        URAM: 202.0
+        FF: 991708.48
+        LUT: 693159.3600000001
+        DSP48E: 2024.0
+        
+Utilization rate:
+{'BRAM_18K': '55.53075396825397%', 'DSP48E': '22.429078014184398%', 'FF': '38.034965635738835%', 'LUT': '53.169440353460985%', 'URAM': '21.041666666666668%'}
+
+
+=================
+
+OPQ16,IVF2048,PQ16 2048 4 True
+FIND SOLUTION
+QPS 14699.706005879882
+stage_option_list
+QPS: 32014.635261833984
+Cycles per query: 4373.0
+QPS: 56451.61290322581
+Cycles per query: 2480
+QPS: 67895.24733268672
+Cycles per query: 2062
+QPS: 31876.138433515483
+Cycles per query: 4392
+QPS: 14699.706005879882
+Cycles per query: 9524
+QPS: 17184.239597397816
+Cycles per query: 8147
+=================
+
+Total resource consumption:
+
+        HBM_bank: 9.0
+        BRAM_18K: 2239.0
+        URAM: 218.0
+        FF: 992296.69
+        LUT: 693805.8300000001
+        DSP48E: 2024.0
+        
+Utilization rate:
+{'BRAM_18K': '55.53075396825397%', 'DSP48E': '22.429078014184398%', 'FF': '38.05752523625429%', 'LUT': '53.219028442562596%', 'URAM': '22.708333333333332%'}
+
+
+=================
+
+OPQ16,IVF4096,PQ16 4096 4 True
+FIND SOLUTION
+QPS 25678.650036683786
+stage_option_list
+QPS: 32014.635261833984
+Cycles per query: 4373.0
+QPS: 29045.64315352697
+Cycles per query: 4820
+QPS: 34063.2603406326
+Cycles per query: 4110
+QPS: 31876.138433515483
+Cycles per query: 4392
+QPS: 25678.650036683786
+Cycles per query: 5452
+QPS: 34355.82822085889
+Cycles per query: 4075
+=================
+
+Total resource consumption:
+
+        HBM_bank: 9.0
+        BRAM_18K: 2239.0
+        URAM: 250.0
+        FF: 992296.69
+        LUT: 693805.8300000001
+        DSP48E: 2024.0
+        
+Utilization rate:
+{'BRAM_18K': '55.53075396825397%', 'DSP48E': '22.429078014184398%', 'FF': '38.05752523625429%', 'LUT': '53.219028442562596%', 'URAM': '26.041666666666668%'}
+
+
+=================
+
+OPQ16,IVF8192,PQ16 8192 4 True
+FIND SOLUTION
+QPS 14733.740265207323
+stage_option_list
+QPS: 32014.635261833984
+Cycles per query: 4373.0
+QPS: 14733.740265207323
+Cycles per query: 9502
+QPS: 17060.687301974165
+Cycles per query: 8206
+QPS: 31876.138433515483
+Cycles per query: 4392
+QPS: 40650.40650406504
+Cycles per query: 3444
+QPS: 67731.01112723754
+Cycles per query: 2067
+=================
+
+Total resource consumption:
+
+        HBM_bank: 9.0
+        BRAM_18K: 2239.0
+        URAM: 426.0
+        FF: 992296.69
+        LUT: 693805.8300000001
+        DSP48E: 2024.0
+        
+Utilization rate:
+{'BRAM_18K': '55.53075396825397%', 'DSP48E': '22.429078014184398%', 'FF': '38.05752523625429%', 'LUT': '53.219028442562596%', 'URAM': '44.375%'}
+
+
+=================
+
+OPQ16,IVF16384,PQ16 16384 4 True
+FIND SOLUTION
+QPS 7421.543681085666
+stage_option_list
+QPS: 32014.635261833984
+Cycles per query: 4373.0
+QPS: 7421.543681085666
+Cycles per query: 18864
+QPS: 8537.62653982193
+Cycles per query: 16398
+QPS: 31876.138433515483
+Cycles per query: 4392
+QPS: 57565.789473684206
+Cycles per query: 2432
+QPS: 132701.42180094786
+Cycles per query: 1055
+=================
+
+Total resource consumption:
+
+        HBM_bank: 9.0
+        BRAM_18K: 2239.0
+        URAM: 666.0
+        FF: 992296.69
+        LUT: 693805.8300000001
+        DSP48E: 2024.0
+        
+Utilization rate:
+{'BRAM_18K': '55.53075396825397%', 'DSP48E': '22.429078014184398%', 'FF': '38.05752523625429%', 'LUT': '53.219028442562596%', 'URAM': '69.375%'}
+
+
+===== Best Option =====
+OPQ16,IVF4096,PQ16, nprobe=4
+QPS: 25678.650036683786
+
+
+Stage 1:
+
+        HBM_bank: 0
+        BRAM_18K: 37
+        URAM: 0
+        FF: 2659
+        LUT: 2152
+        DSP48E: 20
+        
+QPS: 32014.635261833984
+Cycles per query: 4373.0
+OPQ_ENABLE: True
+OPQ_UNROLL_FACTOR: 4
+Stage 2:
+
+        HBM_bank: 0
+        BRAM_18K: 1.0
+        URAM: 112.0
+        FF: 161189
+        LUT: 125418
+        DSP48E: 812
+        
+QPS: 29045.64315352697
+Cycles per query: 4820
+STAGE2_ON_CHIP: True
+STAGE2_OFF_CHIP_START_CHANNEL:None
+PE_NUM_CENTER_DIST_COMP: 14
+Stage 3:
+
+        HBM_bank: 0
+        BRAM_18K: 6.0
+        URAM: 0
+        FF: 2922.84
+        LUT: 2909.88
+        DSP48E: 0
+        
+QPS: 34063.2603406326
+Cycles per query: 4110
+STAGE_3_PRIORITY_QUEUE_LEVEL: 2
+STAGE_3_PRIORITY_QUEUE_L1_NUM: 2
+Stage 4:
+
+        HBM_bank: 0
+        BRAM_18K: 149.0
+        URAM: 120
+        FF: 57667
+        LUT: 46651
+        DSP48E: 378
+        
+QPS: 31876.138433515483
+Cycles per query: 4392
+PE_NUM_TABLE_CONSTRUCTION: 7
+Stage 5:
+
+        HBM_bank: 9.0
+        BRAM_18K: 567.0
+        URAM: 0.0
+        FF: 158787.0
+        LUT: 147726.0
+        DSP48E: 810.0
+        
+QPS: 25678.650036683786
+Cycles per query: 5452
+HBM_CHANNEL_NUM: 9
+STAGE5_COMP_PE_NUM: 27
+Stage 6:
+
+        HBM_bank: 0
+        BRAM_18K: 110.0
+        URAM: 0
+        FF: 21233.85
+        LUT: 17791.95
+        DSP48E: 0
+        
+QPS: 34355.82822085889
+Cycles per query: 4075
+
+SORT_GROUP_ENABLE: False
+SORT_GROUP_NUM: None
+STAGE_6_PRIORITY_QUEUE_LEVEL: 2
+STAGE_6_PRIORITY_QUEUE_L2_NUM: None
+STAGE_6_STREAM_PER_L2_QUEUE_LARGER: None
+STAGE_6_STREAM_PER_L2_QUEUE_SMALLER: None
+        

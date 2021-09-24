@@ -3,7 +3,7 @@ Input a set of hardware settings (config.yaml), predict the performance and reso
     consumption by the performance  model.
 
 Example usage:
-    python get_hardware_performance.py > out
+    python get_hardware_performance.py --config_dir './config.yaml' > out
 """
 
 import numpy as np
@@ -16,8 +16,15 @@ from queue_and_sorting import *
 from stages import *
 from utils import *
 
+import argparse 
+
+parser = argparse.ArgumentParser()
+# DB-related parameters
+parser.add_argument('--config_dir', type=str, default='./config.yaml', help="input config dir")
+args = parser.parse_args()
+
 # Load YAML configurations
-config_file = open("config.yaml", "r")
+config_file = open(args.config_dir, "r")
 config = yaml.load(config_file)
 
 nlist = config["NLIST"]

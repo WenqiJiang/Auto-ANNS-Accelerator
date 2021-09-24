@@ -3,7 +3,7 @@ Input a set of hardware settings (config.yaml), predict the performance and reso
     consumption by the performance  model.
 
 Example usage:
-    python get_hardware_performance_on_paramater_space.py --topK 10 --recall_goal 0.8 --nprobe_dict_dir './recall_info/cpu_recall_index_nprobe_pairs_SIFT100M.pkl' > out
+    python get_hardware_performance_on_paramater_space.py --topK 10 --recall_goal 0.8 --nprobe_dict_dir './recall_info/cpu_recall_index_nprobe_pairs_SIFT100M.pkl' --config_dir './config.yaml' > out
 """
 
 import numpy as np
@@ -22,12 +22,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--topK', type=int, default=10, help="return the topK results")
 parser.add_argument('--recall_goal', type=float, default=0.8, help="recall goal, e.g., 0.8 (80%)")
 parser.add_argument('--nprobe_dict_dir', type=str, default='./recall_info/cpu_recall_index_nprobe_pairs_SIFT100M.pkl', help="a dictionary of d[dbname][index_key][topK][recall_goal] -> nprobe")
+parser.add_argument('--config_dir', type=str, default='./config.yaml', help="input config dir")
 
 args = parser.parse_args()
 recall_goal = args.recall_goal
 
 # Load YAML configurations
-config_file = open("config.yaml", "r")
+config_file = open(args.config_dir, "r")
 config = yaml.load(config_file)
 
 assert args.topK == config["TOPK"], "input argument and template argument should be consistent"
@@ -42,7 +43,7 @@ device = config["DEVICE"]
 MAX_UTIL_PERC = 1 # no resource constraint applied herer
 
 print("======== Parameters ========")
-print("topK: {topK}\nrecall_goal={recall_goal}\nFREQ: {FREQ} MHz\n".format(
+print("topK: {topK}\nrecall_goal={recall_goal}\nFREQ: {FREQ} Hz\n".format(
     topK=topK, recall_goal=recall_goal, FREQ=FREQ))
 
 d_nprobes = None
@@ -392,8 +393,11 @@ def get_hardware_performance_resource(config, nlist, nprobe, OPQ_enable):
     option_stage_6 = None
     for option in options_stage_6_sort_reduction:
         if option.SORT_GROUP_ENABLE == config["SORT_GROUP_ENABLE"] and \
-            option.SORT_GROUP_NUM == config["SORT_GROUP_NUM"] and \
             option.STAGE_6_PRIORITY_QUEUE_LEVEL == config["STAGE_6_PRIORITY_QUEUE_LEVEL"]:
+
+            if option.SORT_GROUP_ENABLE:
+                if not option.SORT_GROUP_NUM == config["SORT_GROUP_NUM"]:
+                    continue
 
             if option.STAGE_6_PRIORITY_QUEUE_LEVEL == 2:
                 option_stage_6 = option
@@ -415,7 +419,11 @@ def get_hardware_performance_resource(config, nlist, nprobe, OPQ_enable):
     return accelerator_QPS, stage_option_list, PE_num_list
 
 if __name__ == "__main__":
-
+    
+    best_QPS = 0
+    best_solution_index_key = None
+    best_solution_nprobe = None
+    best_solution_stage_option_list = None
 
     for i, index_key in enumerate(d_nprobes[dbname]):
 
@@ -457,24 +465,36 @@ if __name__ == "__main__":
             option.print_performance()
         print("=================\n")
         
-        if i == 0:
-            total_consumption_obj = get_resource_consumption(
-                stage_option_list, 
-                TOTAL_BRAM_18K, 
-                TOTAL_DSP48E, 
-                TOTAL_FF, 
-                TOTAL_LUT, 
-                TOTAL_URAM,
-                PE_num_list=PE_num_list, 
-                shell_consumption=shell_consumption,
-                count_shell=True)
-            print("Total resource consumption:")
-            total_consumption_obj.print_resource()
-            print("Utilization rate:\n{}".format(get_utilization_rate(
-                total_consumption_obj,
-                TOTAL_BRAM_18K, 
-                TOTAL_DSP48E, 
-                TOTAL_FF, 
-                TOTAL_LUT, 
-                TOTAL_URAM)))
+        if accelerator_QPS > best_QPS:
+            best_QPS = accelerator_QPS
+            best_solution_index_key = index_key
+            best_solution_nprobe = nprobe
+            best_solution_stage_option_list = stage_option_list
+
+        total_consumption_obj = get_resource_consumption(
+            stage_option_list, 
+            TOTAL_BRAM_18K, 
+            TOTAL_DSP48E, 
+            TOTAL_FF, 
+            TOTAL_LUT, 
+            TOTAL_URAM,
+            PE_num_list=PE_num_list, 
+            shell_consumption=shell_consumption,
+            count_shell=True)
+        print("Total resource consumption:")
+        total_consumption_obj.print_resource()
+        print("Utilization rate:\n{}".format(get_utilization_rate(
+            total_consumption_obj,
+            TOTAL_BRAM_18K, 
+            TOTAL_DSP48E, 
+            TOTAL_FF, 
+            TOTAL_LUT, 
+            TOTAL_URAM)))
+    
+    print("\n\n===== Best Option =====")
+    print("{}, nprobe={}".format(best_solution_index_key, best_solution_nprobe))
+    print("QPS: {}\n\n".format(best_QPS))
+    best_QPS = accelerator_QPS
+    for option in best_solution_stage_option_list:
+        option.print_attributes()
         

@@ -75,7 +75,7 @@ def get_options_stage_2_cluster_distance_computation(nlist, FREQ, MAX_URAM):
     """ Systolic array, currently support up to 16 PEs (otherwise communication is the bottleneck) """
     MIN_PE_NUM = 1 
     MAX_PE_NUM = 16
-    for PE_num in range(MIN_PE_NUM, MAX_PE_NUM):
+    for PE_num in range(MIN_PE_NUM, MAX_PE_NUM + 1):
 
         perf_resource_obj = Resource_Performance_Stage2()
         perf_resource_obj.PE_NUM_CENTER_DIST_COMP = PE_num
