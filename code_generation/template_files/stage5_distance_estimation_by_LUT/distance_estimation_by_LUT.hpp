@@ -9,8 +9,9 @@ Variable to be replaced (<--variable_name-->):
 #include "constants.hpp"
 #include "types.hpp"
 
-template<const int query_num, const int nprobe, const int stream_num, const int PQ_code_channels_per_stream>
+template<const int query_num, const int stream_num, const int PQ_code_channels_per_stream>
 void PQ_lookup_computation_wrapper(
+    const int nprobe, 
     hls::stream<single_PQ> (&s_single_PQ)[stream_num], 
     hls::stream<distance_LUT_PQ16_t>& s_distance_LUT,
     hls::stream<int>& s_scanned_entries_every_cell_PQ_lookup_computation, 
@@ -18,8 +19,9 @@ void PQ_lookup_computation_wrapper(
 <--PQ_lookup_computation_wrapper_arguments-->);
 
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void dummy_distance_LUT_sender(
+    const int nprobe,
     hls::stream<distance_LUT_PQ16_t>& s_distance_LUT) {
 
     distance_LUT_PQ16_t dist_row;
@@ -55,8 +57,9 @@ void dummy_distance_LUT_sender(
     
 }
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void PQ_lookup_computation(
+    const int nprobe,
     // input streams
     hls::stream<distance_LUT_PQ16_t>& s_distance_LUT_in,
     hls::stream<single_PQ>& s_single_PQ,
@@ -146,8 +149,9 @@ void PQ_lookup_computation(
 }
 
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void dummy_PQ_result_sender(
+    const int nprobe,
     hls::stream<int>& s_scanned_entries_every_cell_Dummy,
     hls::stream<single_PQ_result> &s_single_PQ_result) {
 
@@ -170,8 +174,9 @@ void dummy_PQ_result_sender(
     }
 }
 
-template<const int query_num, const int nprobe, const int stream_num>
+template<const int query_num, const int stream_num>
 void replicate_s_scanned_entries_every_cell_PQ_lookup_computation(
+    const int nprobe,
     hls::stream<int>& s_scanned_entries_every_cell_PQ_lookup_computation,
     hls::stream<int> (&s_scanned_entries_every_cell_PQ_lookup_computation_replicated)[stream_num]) {
 
@@ -191,8 +196,9 @@ void replicate_s_scanned_entries_every_cell_PQ_lookup_computation(
     }
 }
 
-template<const int query_num, const int nprobe, const int stream_num, const int dummy_stream_num>
+template<const int query_num, const int stream_num, const int dummy_stream_num>
 void replicate_s_scanned_entries_every_cell_PQ_lookup_computation(
+    const int nprobe, 
     hls::stream<int>& s_scanned_entries_every_cell_PQ_lookup_computation,
     hls::stream<int> (&s_scanned_entries_every_cell_PQ_lookup_computation_replicated)[stream_num],
     hls::stream<int> (&s_scanned_entries_every_cell_Dummy_replicated)[dummy_stream_num]) {
@@ -218,8 +224,9 @@ void replicate_s_scanned_entries_every_cell_PQ_lookup_computation(
     }
 }
 
-template<const int query_num, const int nprobe, const int stream_num, const int PQ_code_channels_per_stream>
+template<const int query_num, const int stream_num, const int PQ_code_channels_per_stream>
 void send_s_last_element_valid_PQ_lookup_computation(
+    const int nprobe, 
     hls::stream<int>& s_last_valid_channel,
     hls::stream<int> (&s_last_element_valid_PQ_lookup_computation)[stream_num]) {
 
@@ -254,8 +261,9 @@ void send_s_last_element_valid_PQ_lookup_computation(
 }
 
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void dummy_distance_LUT_consumer(
+    const int nprobe,
     hls::stream<distance_LUT_PQ16_t>& s_distance_LUT) {
 
     distance_LUT_PQ16_t dist_row;
@@ -273,8 +281,9 @@ void dummy_distance_LUT_consumer(
     }
 }
 
-template<const int query_num, const int nprobe, const int stream_num, const int PQ_code_channels_per_stream>
+template<const int query_num, const int stream_num, const int PQ_code_channels_per_stream>
 void PQ_lookup_computation_wrapper(
+    const int nprobe, 
     hls::stream<single_PQ> (&s_single_PQ)[stream_num], 
     hls::stream<distance_LUT_PQ16_t>& s_distance_LUT,
     hls::stream<int>& s_scanned_entries_every_cell_PQ_lookup_computation, 
@@ -300,13 +309,15 @@ void PQ_lookup_computation_wrapper(
 // #pragma HLS RESOURCE variable=s_last_element_valid_PQ_lookup_computation core=FIFO_SRL
 
     // Note, here interpret the last valid element, rather than simply replicate
-    send_s_last_element_valid_PQ_lookup_computation<query_num, nprobe, stream_num, PQ_code_channels_per_stream>(
+    send_s_last_element_valid_PQ_lookup_computation<query_num, stream_num, PQ_code_channels_per_stream>(
+        nprobe,
         s_last_valid_channel, 
         s_last_element_valid_PQ_lookup_computation);
 
 #if SORT_GROUP_NUM == 0
     // head PE, get input from s_distance_LUT
-    PQ_lookup_computation<query_num, nprobe>(
+    PQ_lookup_computation<query_num>(
+        nprobe,
         // input streams
         s_distance_LUT,
         s_single_PQ[0],
@@ -319,7 +330,8 @@ void PQ_lookup_computation_wrapper(
     // remaining PEs
     for (int j = 1; j < stream_num; j++) {
 #pragma HLS UNROLL
-        PQ_lookup_computation<query_num, nprobe>(
+        PQ_lookup_computation<query_num>(
+            nprobe,
             // input streams
             s_distance_LUT_systolic[j - 1],
             s_single_PQ[j],
@@ -331,7 +343,8 @@ void PQ_lookup_computation_wrapper(
     }
 #elif SORT_GROUP_NUM == 1
     // PE 0, get input from s_distance_LUT
-    PQ_lookup_computation<query_num, nprobe>(
+    PQ_lookup_computation<query_num>(
+        nprobe,
         // input streams
         s_distance_LUT,
         s_single_PQ[0],
@@ -344,7 +357,8 @@ void PQ_lookup_computation_wrapper(
     // head PE 1~15 
     for (int j = 1; j < stream_num; j++) {
 #pragma HLS UNROLL
-        PQ_lookup_computation<query_num, nprobe>(
+        PQ_lookup_computation<query_num>(
+            nprobe,
             // input streams
             s_distance_LUT_systolic[j - 1],
             s_single_PQ[j],
@@ -357,14 +371,16 @@ void PQ_lookup_computation_wrapper(
 
     for (int j = stream_num; j < 16; j++) {
 #pragma HLS UNROLL
-        dummy_PQ_result_sender<query_num, nprobe>(
+        dummy_PQ_result_sender<query_num>(
+            nprobe,
             s_scanned_entries_every_cell_Dummy_replicated[j - stream_num], 
             s_single_PQ_result[0][j]);
     }
 
 #elif SORT_GROUP_NUM == 2
     // PE 0, get input from s_distance_LUT
-    PQ_lookup_computation<query_num, nprobe>(
+    PQ_lookup_computation<query_num>(
+        nprobe,
         // input streams
         s_distance_LUT,
         s_single_PQ[0],
@@ -377,7 +393,8 @@ void PQ_lookup_computation_wrapper(
     // head PE 1~15 
     for (int j = 1; j < 16; j++) {
 #pragma HLS UNROLL
-        PQ_lookup_computation<query_num, nprobe>(
+        PQ_lookup_computation<query_num>(
+            nprobe,
             // input streams
             s_distance_LUT_systolic[j - 1],
             s_single_PQ[j],
@@ -391,7 +408,8 @@ void PQ_lookup_computation_wrapper(
     // tail PE 16~26 
     for (int j = 0; j < stream_num - 16 * (SORT_GROUP_NUM - 1); j++) {
 #pragma HLS UNROLL
-        PQ_lookup_computation<query_num, nprobe>(
+        PQ_lookup_computation<query_num>(
+            nprobe,
             // input streams
             s_distance_LUT_systolic[(SORT_GROUP_NUM - 1) * 16 + j - 1],
             s_single_PQ[(SORT_GROUP_NUM - 1) * 16 + j],
@@ -404,13 +422,15 @@ void PQ_lookup_computation_wrapper(
 
     for (int j = stream_num - 16 * (SORT_GROUP_NUM - 1); j < 16; j++) {
 #pragma HLS UNROLL
-        dummy_PQ_result_sender<query_num, nprobe>(
+        dummy_PQ_result_sender<query_num>(
+            nprobe,
             s_scanned_entries_every_cell_Dummy_replicated[j - (stream_num - 16 * (SORT_GROUP_NUM - 1))], 
             s_single_PQ_result[SORT_GROUP_NUM - 1][j]);
     }
 #elif SORT_GROUP_NUM >= 3
     // PE 0, get input from s_distance_LUT
-    PQ_lookup_computation<query_num, nprobe>(
+    PQ_lookup_computation<query_num>(
+        nprobe,
         // input streams
         s_distance_LUT,
         s_single_PQ[0],
@@ -423,7 +443,8 @@ void PQ_lookup_computation_wrapper(
     // head PE 1~15 
     for (int j = 1; j < 16; j++) {
 #pragma HLS UNROLL
-        PQ_lookup_computation<query_num, nprobe>(
+        PQ_lookup_computation<query_num>(
+            nprobe,
             // input streams
             s_distance_LUT_systolic[j - 1],
             s_single_PQ[j],
@@ -438,7 +459,8 @@ void PQ_lookup_computation_wrapper(
     for (int i = 1; i < SORT_GROUP_NUM - 1; i++) {
         for (int j = 0; j < 16; j++) {
 #pragma HLS UNROLL
-            PQ_lookup_computation<query_num, nprobe>(
+            PQ_lookup_computation<query_num>(
+                nprobe,
                 // input streams
                 s_distance_LUT_systolic[i * 16 + j - 1],
                 s_single_PQ[i * 16 + j],
@@ -453,7 +475,8 @@ void PQ_lookup_computation_wrapper(
     // tail PE  
     for (int j = 0; j < stream_num - 16 * (SORT_GROUP_NUM - 1); j++) {
 #pragma HLS UNROLL
-        PQ_lookup_computation<query_num, nprobe>(
+        PQ_lookup_computation<query_num>(
+            nprobe,
             // input streams
             s_distance_LUT_systolic[(SORT_GROUP_NUM - 1) * 16 + j - 1],
             s_single_PQ[(SORT_GROUP_NUM - 1) * 16 + j],
@@ -466,7 +489,8 @@ void PQ_lookup_computation_wrapper(
 
     for (int j = stream_num - 16 * (SORT_GROUP_NUM - 1); j < 16; j++) {
 #pragma HLS UNROLL
-        dummy_PQ_result_sender<query_num, nprobe>(
+        dummy_PQ_result_sender<query_num>(
+            nprobe,
             s_scanned_entries_every_cell_Dummy_replicated[j - (3 * stream_num - 16 * (SORT_GROUP_NUM - 1))], 
             s_single_PQ_result[SORT_GROUP_NUM - 1][j]);
     }
@@ -474,7 +498,8 @@ void PQ_lookup_computation_wrapper(
 #endif
 
     // consume the systolic output of the last PE
-    dummy_distance_LUT_consumer<query_num, nprobe>(
+    dummy_distance_LUT_consumer<query_num>(
+        nprobe,
         s_distance_LUT_systolic[stream_num - 1]);
 }
 

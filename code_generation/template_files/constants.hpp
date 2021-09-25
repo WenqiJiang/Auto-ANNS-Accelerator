@@ -1,8 +1,8 @@
 /*
 Variable to be replaced (<--variable_name-->):
 
-    NLIST
-    NPROBE
+    NLIST_MAX
+    NPROBE_MAX
     D
     M
     K
@@ -46,8 +46,8 @@ Variable to be replaced (<--variable_name-->):
 
 #pragma once
 
-#define NLIST <--NLIST-->
-#define NPROBE <--NPROBE-->
+#define NLIST_MAX <--NLIST_MAX-->
+#define NPROBE_MAX <--NPROBE_MAX-->
 #define D <--D-->
 #define M <--M-->
 #define K <--K-->

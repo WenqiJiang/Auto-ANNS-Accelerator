@@ -16,9 +16,18 @@ class Priority_queue<dist_cell_ID_t, queue_size, Collect_smallest> {
         }
 
         // For vector quantizer, each query outputs a certain number of distances
-        //  = NLIST
-        template<const int query_num, const int read_iter_per_query>
+        //  = nlist
+        // The size of the queue shoud be NPROBE_MAX
+        template<const int query_num>
         void insert_wrapper(
+            // whether to fully sort the array: must be True when 
+            //    output_iter_per_query < read_iter_per_query, e.g., output the 
+            //    top 16 numbers from all 128 numbers
+            // should be False when output_iter_per_query = read_iter_per_query 
+            //    unless full sorting is needed
+            const bool sort_all, 
+            const int read_iter_per_query,
+            const int output_iter_per_query,
             hls::stream<dist_cell_ID_t> &s_input, 
             hls::stream<dist_cell_ID_t> &s_output) {
             
@@ -35,13 +44,18 @@ class Priority_queue<dist_cell_ID_t, queue_size, Collect_smallest> {
                 }
 
                 // insert: 
-                for (int i = 0; i < read_iter_per_query; i++) {
+                int total_insert_iter = read_iter_per_query;
+                if (sort_all) {
+                    total_insert_iter += query_num;
+                }
+                for (int i = 0; i < total_insert_iter; i++) {
 #pragma HLS pipeline II=1
-                    dist_cell_ID_t reg = s_input.read();
-                    queue[0] = queue[0].dist < reg.dist? queue[0] : reg;
+                    if (i < output_iter_per_query) {
+                        dist_cell_ID_t reg = s_input.read();
+                        queue[0] = queue[0].dist < reg.dist? queue[0] : reg;
+                    }
 
                     compare_swap_array_step_A(queue);
-
                     compare_swap_array_step_B(queue);
                 }
 

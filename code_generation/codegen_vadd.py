@@ -91,12 +91,24 @@ else:
 template_fill_dict["stage2_vadd_arg"] = ""
 template_fill_dict["stage2_m_axi"] = ""
 template_fill_dict["stage2_s_axilite"] = ""
-template_fill_dict["stage_2_IVF_center_distance_computation"] = """
+if config["STAGE2_ON_CHIP"] == True:
+    if config["PE_NUM_CENTER_DIST_COMP"] > 1:
+        template_fill_dict["stage_2_IVF_center_distance_computation"] = """
     compute_cell_distance_wrapper<QUERY_NUM>(
+        centroids_per_partition, 
+        centroids_per_partition_last_PE, 
+        nlist,
         s_center_vectors_init_distance_computation_PE, 
         s_preprocessed_query_vectors_distance_computation_PE, 
         s_merged_cell_distance);"""
-if config["STAGE2_ON_CHIP"] == False:
+    elif config["PE_NUM_CENTER_DIST_COMP"] == 1:
+        template_fill_dict["stage_2_IVF_center_distance_computation"] = """
+    compute_cell_distance_wrapper<QUERY_NUM>(
+        nlist,
+        s_center_vectors_init_distance_computation_PE, 
+        s_preprocessed_query_vectors_distance_computation_PE, 
+        s_merged_cell_distance);"""
+else:
     func_call_str = ""
     for i in range(config["PE_NUM_CENTER_DIST_COMP"]):
         template_fill_dict["stage2_vadd_arg"] += \
@@ -106,8 +118,19 @@ if config["STAGE2_ON_CHIP"] == False:
         template_fill_dict["stage2_s_axilite"] += \
             "#pragma HLS INTERFACE s_axilite port=HBM_centroid_vectors_{i}\n".format(i=i)
         func_call_str += "        HBM_centroid_vectors_{i},\n".format(i=i)
-    template_fill_dict["stage_2_IVF_center_distance_computation"] = """
+    if config["PE_NUM_CENTER_DIST_COMP"] > 1:
+        template_fill_dict["stage_2_IVF_center_distance_computation"] = """
     compute_cell_distance_wrapper<QUERY_NUM>(
+        centroids_per_partition, 
+        centroids_per_partition_last_PE, 
+        nlist,
+{func_call_str}
+        s_preprocessed_query_vectors_distance_computation_PE,
+        s_merged_cell_distance);""".format(func_call_str=func_call_str)
+    elif config["PE_NUM_CENTER_DIST_COMP"] == 1:
+        template_fill_dict["stage_2_IVF_center_distance_computation"] = """
+    compute_cell_distance_wrapper<QUERY_NUM>(
+        nlist,
 {func_call_str}
         s_preprocessed_query_vectors_distance_computation_PE,
         s_merged_cell_distance);""".format(func_call_str=func_call_str)

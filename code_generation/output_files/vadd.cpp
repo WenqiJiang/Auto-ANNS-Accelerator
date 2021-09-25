@@ -19,6 +19,7 @@ Variable to be replaced (<--variable_name-->):
         stage_1_OPQ_preprocessing
         stage_2_IVF_center_distance_computation
         stage6_sort_reduction
+        stage6_priority_queue_group_L2_wrapper_stream_num
         stage6_priority_queue_group_L2_wrapper_arg
         
     basic constants:
@@ -70,6 +71,12 @@ void vadd(
     const ap_uint512_t* HBM_in7,
     const ap_uint512_t* HBM_in8,
     const ap_uint512_t* HBM_in9,
+    const ap_uint512_t* HBM_in10,
+    const ap_uint512_t* HBM_in11,
+    const ap_uint512_t* HBM_in12,
+    const ap_uint512_t* HBM_in13,
+    const ap_uint512_t* HBM_in14,
+    const ap_uint512_t* HBM_in15,
 
 
     // HBM21: assigned for HBM_addr_info
@@ -81,8 +88,11 @@ void vadd(
     // HBM24: PQ quantizer
     float* HBM_product_quantizer,
 
-    // HBM25: OPQ Matrix
-    float* HBM_OPQ_matrix,
+    const int nlist,
+    const int nprobe,
+    // stage 2 parameters
+    const int centroids_per_partition, 
+    const int centroids_per_partition_last_PE, 
     // HBM26: output (vector_ID, distance)
     ap_uint64_t* HBM_out
     // const ap_uint512_t* HBM_in22, const ap_uint512_t* HBM_in23, 
@@ -103,6 +113,12 @@ void vadd(
 #pragma HLS INTERFACE m_axi port=HBM_in7 offset=slave bundle=gmem7
 #pragma HLS INTERFACE m_axi port=HBM_in8 offset=slave bundle=gmem8
 #pragma HLS INTERFACE m_axi port=HBM_in9 offset=slave bundle=gmem9
+#pragma HLS INTERFACE m_axi port=HBM_in10 offset=slave bundle=gmem10
+#pragma HLS INTERFACE m_axi port=HBM_in11 offset=slave bundle=gmem11
+#pragma HLS INTERFACE m_axi port=HBM_in12 offset=slave bundle=gmem12
+#pragma HLS INTERFACE m_axi port=HBM_in13 offset=slave bundle=gmem13
+#pragma HLS INTERFACE m_axi port=HBM_in14 offset=slave bundle=gmem14
+#pragma HLS INTERFACE m_axi port=HBM_in15 offset=slave bundle=gmem15
 
 
 
@@ -110,7 +126,7 @@ void vadd(
 #pragma HLS INTERFACE m_axi port=HBM_query_vectors  offset=slave bundle=gmemB
 #pragma HLS INTERFACE m_axi port=HBM_vector_quantizer  offset=slave bundle=gmemC
 #pragma HLS INTERFACE m_axi port=HBM_product_quantizer  offset=slave bundle=gmemD
-#pragma HLS INTERFACE m_axi port=HBM_OPQ_matrix  offset=slave bundle=gmemE
+
 
 #pragma HLS INTERFACE m_axi port=HBM_out offset=slave bundle=gmemF
 
@@ -124,6 +140,12 @@ void vadd(
 #pragma HLS INTERFACE s_axilite port=HBM_in7
 #pragma HLS INTERFACE s_axilite port=HBM_in8
 #pragma HLS INTERFACE s_axilite port=HBM_in9
+#pragma HLS INTERFACE s_axilite port=HBM_in10
+#pragma HLS INTERFACE s_axilite port=HBM_in11
+#pragma HLS INTERFACE s_axilite port=HBM_in12
+#pragma HLS INTERFACE s_axilite port=HBM_in13
+#pragma HLS INTERFACE s_axilite port=HBM_in14
+#pragma HLS INTERFACE s_axilite port=HBM_in15
 
 
 
@@ -131,7 +153,12 @@ void vadd(
 #pragma HLS INTERFACE s_axilite port=HBM_query_vectors 
 #pragma HLS INTERFACE s_axilite port=HBM_vector_quantizer 
 #pragma HLS INTERFACE s_axilite port=HBM_product_quantizer 
-#pragma HLS INTERFACE s_axilite port=HBM_OPQ_matrix
+
+
+#pragma HLS INTERFACE s_axilite port=nlist
+#pragma HLS INTERFACE s_axilite port=nprobe
+#pragma HLS INTERFACE s_axilite port=centroids_per_partition
+#pragma HLS INTERFACE s_axilite port=centroids_per_partition_last_PE
 
 #pragma HLS INTERFACE s_axilite port=HBM_out
 
@@ -172,21 +199,6 @@ void vadd(
     ////////////////////     Preprocessing    ////////////////////
 
 
-    hls::stream<float> s_OPQ_init;
-#pragma HLS stream variable=s_OPQ_init depth=512
-// #pragma HLS resource variable=s_OPQ_init core=FIFO_BRAM
-
-    load_OPQ_matrix(HBM_OPQ_matrix, s_OPQ_init);
-
-    hls::stream<float> s_preprocessed_query_vectors;
-#pragma HLS stream variable=s_preprocessed_query_vectors depth=512
-// #pragma HLS resource variable=s_preprocessed_query_vectors core=FIFO_BRAM
-
-    OPQ_preprocessing<QUERY_NUM>(
-        s_OPQ_init,
-        s_query_vectors,
-        s_preprocessed_query_vectors);
-
     hls::stream<float> s_preprocessed_query_vectors_lookup_PE;
 #pragma HLS stream variable=s_preprocessed_query_vectors_lookup_PE depth=512
 // #pragma HLS resource variable=s_preprocessed_query_vectors_lookup_PE core=FIFO_BRAM
@@ -196,7 +208,7 @@ void vadd(
 // #pragma HLS resource variable=s_preprocessed_query_vectors_distance_computation_PE core=FIFO_BRAM
 
     broadcast_preprocessed_query_vectors<QUERY_NUM>(
-        s_preprocessed_query_vectors,
+        s_query_vectors,
         s_preprocessed_query_vectors_distance_computation_PE,
         s_preprocessed_query_vectors_lookup_PE);
 
@@ -208,6 +220,9 @@ void vadd(
 
 
     compute_cell_distance_wrapper<QUERY_NUM>(
+        centroids_per_partition, 
+        centroids_per_partition_last_PE, 
+        nlist,
         s_center_vectors_init_distance_computation_PE, 
         s_preprocessed_query_vectors_distance_computation_PE, 
         s_merged_cell_distance);
@@ -322,6 +337,12 @@ void vadd(
         HBM_in7,
         HBM_in8,
         HBM_in9,
+        HBM_in10,
+        HBM_in11,
+        HBM_in12,
+        HBM_in13,
+        HBM_in14,
+        HBM_in15,
 
         s_start_addr_every_cell,
         s_scanned_entries_every_cell_Load_unit,
@@ -349,14 +370,26 @@ void vadd(
         s_single_PQ_result);
 
 
+        ////////////////////     Sort Results     ////////////////////    
+    Sort_reduction<single_PQ_result, SORT_GROUP_NUM * 16, TOPK, Collect_smallest> sort_reduction_module;
+
+    hls::stream<single_PQ_result> s_sorted_PQ_result[TOPK];
+#pragma HLS stream variable=s_sorted_PQ_result depth=8
+#pragma HLS array_partition variable=s_sorted_PQ_result complete
+// #pragma HLS RESOURCE variable=s_sorted_PQ_result core=FIFO_SRL
+
+    sort_reduction_module.sort_and_reduction<QUERY_NUM>(
+        s_scanned_entries_per_query_Sort_and_reduction, 
+        s_single_PQ_result, 
+        s_sorted_PQ_result);
 
     hls::stream<single_PQ_result> s_output; // the top 10 numbers
 #pragma HLS stream variable=s_output depth=512
 // #pragma HLS RESOURCE variable=s_output core=FIFO_BRAM
 
-    stage6_priority_queue_group_L2_wrapper<QUERY_NUM>(
+    stage6_priority_queue_group_L2_wrapper<QUERY_NUM, TOPK>(
         s_scanned_entries_per_query_Priority_queue, 
-        s_single_PQ_result,
+        s_sorted_PQ_result,
         s_output);
 
     ////////////////////     Write Results     ////////////////////    

@@ -47,8 +47,10 @@ else:
             if i == 1:
                 template_fill_dict["compute_cell_distance_wrapper_func_body"] += "    // middle"
             template_fill_dict["compute_cell_distance_wrapper_func_body"] += """
-        compute_cell_distance_middle_PE<QUERY_NUM, CENTROIDS_PER_PARTITION_EVEN, NLIST>(
+        compute_cell_distance_middle_PE<QUERY_NUM>(
             {i},
+            centroids_per_partition, 
+            total_centriods,
             HBM_centroid_vectors_{i},
             s_query_vectors_forward[{i} - 1],
             s_query_vectors_forward[{i}],
@@ -57,8 +59,11 @@ else:
         
         template_fill_dict["compute_cell_distance_wrapper_func_body"] += """    
         // tail
-        compute_cell_distance_tail_PE<QUERY_NUM, CENTROIDS_PER_PARTITION_EVEN, CENTROIDS_PER_PARTITION_LAST_PE, NLIST>(
+        compute_cell_distance_tail_PE<QUERY_NUM>(
             PE_NUM_CENTER_DIST_COMP_EVEN,
+            centroids_per_partition, 
+            centroids_per_partition_last_PE, 
+            total_centriods,
             HBM_centroid_vectors_{i},
             s_query_vectors_forward[PE_NUM_CENTER_DIST_COMP_EVEN - 1],
             s_partial_cell_distance_forward[PE_NUM_CENTER_DIST_COMP_EVEN - 1],

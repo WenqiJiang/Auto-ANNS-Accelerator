@@ -72,6 +72,15 @@ void vadd(
     // HBM24: PQ quantizer
     float* HBM_product_quantizer,
 <--vadd_arg_OPQ_matrix-->
+    const int nlist,
+    const int nprobe,
+    // stage 2 parameters
+    const int centroids_per_partition, 
+    const int centroids_per_partition_last_PE, 
+    // stage 4 parameters, if PE_NUM==1, set the same value
+    //   nprobe_per_table_construction_pe_larger = nprobe_per_table_construction_pe_smaller
+    const int nprobe_per_table_construction_pe_larger,
+    const int nprobe_per_table_construction_pe_smaller,
     // HBM26: output (vector_ID, distance)
     ap_uint64_t* HBM_out
     // const ap_uint512_t* HBM_in22, const ap_uint512_t* HBM_in23, 
@@ -101,6 +110,13 @@ void vadd(
 #pragma HLS INTERFACE s_axilite port=HBM_vector_quantizer 
 #pragma HLS INTERFACE s_axilite port=HBM_product_quantizer 
 <--vadd_s_axilite_HBM_OPQ_matrix-->
+
+#pragma HLS INTERFACE s_axilite port=nlist
+#pragma HLS INTERFACE s_axilite port=nprobe
+#pragma HLS INTERFACE s_axilite port=centroids_per_partition
+#pragma HLS INTERFACE s_axilite port=centroids_per_partition_last_PE
+#pragma HLS INTERFACE s_axilite port=nprobe_per_table_construction_pe_larger
+#pragma HLS INTERFACE s_axilite port=nprobe_per_table_construction_pe_smaller
 
 #pragma HLS INTERFACE s_axilite port=HBM_out
 
@@ -156,7 +172,7 @@ void vadd(
 #pragma HLS stream variable=s_selected_distance_cell_ID depth=512
 // #pragma HLS resource variable=s_selected_distance_cell_ID core=FIFO_BRAM
 
-    select_Voronoi_cell<STAGE_3_PRIORITY_QUEUE_LEVEL, STAGE_3_PRIORITY_QUEUE_L1_NUM>(
+    select_Voronoi_cell<STAGE_3_PRIORITY_QUEUE_LEVEL, STAGE_3_PRIORITY_QUEUE_L1_NUM, NPROBE_MAX>(
         s_merged_cell_distance,
         s_selected_distance_cell_ID);
 
@@ -198,12 +214,22 @@ void vadd(
 #pragma HLS stream variable=s_distance_LUT depth=512
 // #pragma HLS resource variable=s_distance_LUT core=FIFO_BRAM
 
+#if PE_NUM_TABLE_CONSTRUCTION == 1
     lookup_table_construction_wrapper<QUERY_NUM>(
+        nprobe_per_table_construction_pe_larger,
         s_PQ_quantizer_init, 
         s_center_vectors_lookup_PE, 
         s_preprocessed_query_vectors_lookup_PE, 
         s_distance_LUT);
-
+#else
+    lookup_table_construction_wrapper<QUERY_NUM>(
+        nprobe_per_table_construction_pe_larger,
+        nprobe_per_table_construction_pe_smaller,
+        s_PQ_quantizer_init, 
+        s_center_vectors_lookup_PE, 
+        s_preprocessed_query_vectors_lookup_PE, 
+        s_distance_LUT);
+#endif
     ////////////////////     Load PQ Codes     ////////////////////    
 
     hls::stream<int> s_scanned_entries_every_cell_Load_unit;
@@ -249,7 +275,8 @@ void vadd(
 #pragma HLS array_partition variable=s_single_PQ complete
 // #pragma HLS RESOURCE variable=s_single_PQ core=FIFO_SRL
 
-    load_and_split_PQ_codes_wrapper<QUERY_NUM, NPROBE>(
+    load_and_split_PQ_codes_wrapper<QUERY_NUM>(
+        nprobe,
 <--load_and_split_PQ_codes_wrapper_arg-->
         s_start_addr_every_cell,
         s_scanned_entries_every_cell_Load_unit,
@@ -269,7 +296,8 @@ void vadd(
 
     ////////////////////     Estimate Distance by LUT     ////////////////////    
 
-    PQ_lookup_computation_wrapper<QUERY_NUM, NPROBE, STAGE5_COMP_PE_NUM, PQ_CODE_CHANNELS_PER_STREAM>(
+    PQ_lookup_computation_wrapper<QUERY_NUM, STAGE5_COMP_PE_NUM, PQ_CODE_CHANNELS_PER_STREAM>(
+        nprobe,
         s_single_PQ, 
         s_distance_LUT, 
         s_scanned_entries_every_cell_PQ_lookup_computation,

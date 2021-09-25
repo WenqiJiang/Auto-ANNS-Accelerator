@@ -14,8 +14,9 @@ void lookup_table_construction_wrapper(
     
 ////////////////////     Function to call in top-level     ////////////////////
 
-template<const int query_num, const int nprobe_per_PE>
+template<const int query_num>
 void lookup_table_construction_compute(
+    const int nprobe_per_PE,
     hls::stream<float>& s_PQ_quantizer_init_in,
     hls::stream<float>& s_center_vectors_table_construction_PE_in,
     hls::stream<float>& s_query_vectors_table_construction_PE_in,
@@ -95,8 +96,9 @@ void lookup_table_construction_compute(
     }
 }
 
-template<const int query_num, const int nprobe_per_PE>
+template<const int query_num>
 void gather_float_to_distance_LUT_PQ16(
+    const int nprobe_per_PE,
     hls::stream<float>& s_partial_result_table_construction_individual,
     hls::stream<distance_LUT_PQ16_t>& s_partial_result_table_construction_PE) {
 
@@ -130,8 +132,9 @@ void gather_float_to_distance_LUT_PQ16(
     }
 }
 
-template<const int query_num, const int nprobe_per_PE>
+template<const int query_num>
 void lookup_table_construction_PE(
+    const int nprobe_per_PE,
     hls::stream<float>& s_PQ_quantizer_init_in,
     hls::stream<float>& s_center_vectors_table_construction_PE_in,
     hls::stream<float>& s_query_vectors_table_construction_PE_in,
@@ -142,13 +145,15 @@ void lookup_table_construction_PE(
     hls::stream<float> s_partial_result_table_construction_individual;
 #pragma HLS stream variable=s_partial_result_table_construction_individual depth=512
 
-    lookup_table_construction_compute<query_num, nprobe_per_PE>(
+    lookup_table_construction_compute<query_num>(
+        nprobe_per_PE,
         s_PQ_quantizer_init_in,
         s_center_vectors_table_construction_PE_in,
         s_query_vectors_table_construction_PE_in,
         s_partial_result_table_construction_individual);
 
-    gather_float_to_distance_LUT_PQ16<query_num, nprobe_per_PE>(
+    gather_float_to_distance_LUT_PQ16<query_num>(
+        nprobe_per_PE,
         s_partial_result_table_construction_individual,
         s_partial_result_table_construction_PE);
 
@@ -156,6 +161,7 @@ void lookup_table_construction_PE(
 
 template<const int query_num>
 void lookup_table_construction_wrapper(
+    const int nprobe_per_PE,
     hls::stream<float> &s_PQ_quantizer_init,
     hls::stream<float> &s_center_vectors_lookup_PE,
     hls::stream<float> &s_query_vectors_lookup_PE,
@@ -163,7 +169,8 @@ void lookup_table_construction_wrapper(
 
 #pragma HLS inline
 
-    lookup_table_construction_PE<query_num, NPROBE>(
+    lookup_table_construction_PE<query_num>(
+        nprobe_per_PE,
         s_PQ_quantizer_init,
         s_center_vectors_lookup_PE,
         s_query_vectors_lookup_PE,

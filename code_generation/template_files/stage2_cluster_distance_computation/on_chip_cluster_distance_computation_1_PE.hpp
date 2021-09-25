@@ -6,6 +6,7 @@
 ////////////////////     Function to call in top-level     ////////////////////
 template<const int query_num>
 void compute_cell_distance_wrapper(
+    const int centroids_per_partition, // nlist
     hls::stream<float> &s_centroid_vectors,
     hls::stream<float> &s_query_vectors,
     hls::stream<dist_cell_ID_t> &s_cell_distance);
@@ -23,8 +24,9 @@ void compute_cell_distance_wrapper(
 //////////////////////////////////////////////////////////////////////////////////////////
 
 
-template<const int query_num, const int centroids_per_partition>
+template<const int query_num, const int centroids_per_partition_max>
 void compute_cell_distance_component_A(
+    const int centroids_per_partition,
     hls::stream<float>& s_centroid_vectors_in,
     hls::stream<float>& s_query_vectors_in,
     hls::stream<ap_uint512_t>& s_square_dist_pack) {
@@ -36,7 +38,7 @@ void compute_cell_distance_component_A(
     //   -> at most 50 vectors per URAM (actually 1 URAM can only fit 32)
     // My strategy: 32 Partitions, each responsible for 256 vectors, 
     //   each vector finish in 10 cycles
-    ap_uint<64> cell_centroids_partition[centroids_per_partition * D / 2];
+    ap_uint<64> cell_centroids_partition[centroids_per_partition_max * D / 2];
 #pragma HLS array_partition variable=cell_centroids_partition cyclic factor=8 
 #pragma HLS resource variable=cell_centroids_partition core=RAM_2P_URAM
 
@@ -196,8 +198,9 @@ void compute_cell_distance_component_A(
     }
 }
 
-template<const int query_num, const int centroids_per_partition>
+template<const int query_num>
 void compute_cell_distance_component_B(
+    const int centroids_per_partition,
     hls::stream<ap_uint512_t>& s_square_dist_pack,
     hls::stream<float>& s_partial_dist) {
 
@@ -256,8 +259,9 @@ void compute_cell_distance_component_B(
     }
 }
 
-template<const int query_num, const int centroids_per_partition>
+template<const int query_num>
 void compute_cell_distance_component_C(
+    const int centroids_per_partition,
     const int start_cell_ID,
     hls::stream<float>& s_partial_dist,
     hls::stream<dist_cell_ID_t>& s_partial_cell_PE_result) {
@@ -288,6 +292,7 @@ void compute_cell_distance_component_C(
 
 template<const int query_num>
 void compute_cell_distance_wrapper(
+    const int centroids_per_partition, // nlist
     hls::stream<float> &s_centroid_vectors,
     hls::stream<float> &s_query_vectors,
     hls::stream<dist_cell_ID_t> &s_cell_distance) {
@@ -299,17 +304,20 @@ void compute_cell_distance_wrapper(
     hls::stream<float> s_partial_dist;
 #pragma HLS stream variable=s_partial_dist depth=8
 
-    compute_cell_distance_component_A<query_num, NLIST>(
+    compute_cell_distance_component_A<query_num, NLIST_MAX>(
+        centroids_per_partition,
         s_centroid_vectors,
         s_query_vectors,
         s_square_dist_pack);
 
-    compute_cell_distance_component_B<query_num, NLIST>(
+    compute_cell_distance_component_B<query_num>(
+        centroids_per_partition,
         s_square_dist_pack,
         s_partial_dist);
         
     const int start_cell_ID = 0;
-    compute_cell_distance_component_C<query_num, NLIST>(
+    compute_cell_distance_component_C<query_num>(
+        centroids_per_partition,
         start_cell_ID,
         s_partial_dist,
         s_cell_distance); 

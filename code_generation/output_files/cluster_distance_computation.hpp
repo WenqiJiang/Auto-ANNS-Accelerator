@@ -1,3 +1,9 @@
+/*
+Variable to be replaced (<--variable_name-->):
+    compute_cell_distance_wrapper_arguments
+    compute_cell_distance_wrapper_func_body
+*/
+
 #pragma once 
 
 #include "constants.hpp"
@@ -6,7 +12,22 @@
 ////////////////////     Function to call in top-level     ////////////////////
 template<const int query_num>
 void compute_cell_distance_wrapper(
-    hls::stream<float> &s_centroid_vectors,
+    const int centroids_per_partition, 
+    const int centroids_per_partition_last_PE, 
+    const int total_centriods,
+    const ap_uint512_t* HBM_centroid_vectors_0,
+    const ap_uint512_t* HBM_centroid_vectors_1,
+    const ap_uint512_t* HBM_centroid_vectors_2,
+    const ap_uint512_t* HBM_centroid_vectors_3,
+    const ap_uint512_t* HBM_centroid_vectors_4,
+    const ap_uint512_t* HBM_centroid_vectors_5,
+    const ap_uint512_t* HBM_centroid_vectors_6,
+    const ap_uint512_t* HBM_centroid_vectors_7,
+    const ap_uint512_t* HBM_centroid_vectors_8,
+    const ap_uint512_t* HBM_centroid_vectors_9,
+    const ap_uint512_t* HBM_centroid_vectors_10,
+    const ap_uint512_t* HBM_centroid_vectors_11,
+
     hls::stream<float> &s_query_vectors,
     hls::stream<dist_cell_ID_t> &s_cell_distance);
 
@@ -16,17 +37,18 @@ void compute_cell_distance_wrapper(
 //                    ARCHITECTURE DESIGN 
 // Each PE in the systolic array contains 3~4 components
 //  component A -> output compute 16 numbers per 2 CC
-//  component B -> reduction 16 numbers per 2 CC -> output 1 number per 2 CC
+//  component B -> reduction 16 numbers per CC -> output 1 number per CC
 //  component C -> consume 8 (D=128/M=16) numbers in 16 cycles, do reduction sum, and output
 //  (optional) forward -> forward the result of the previous PE to the next PE
 //////////////////////////////////////////////////////////////////////////////////////////
 
 
-template<const int query_num, const int centroids_per_partition, const int total_centriods>
+template<const int query_num>
 void compute_cell_distance_head_component_A(
     const int systolic_array_id,
-    hls::stream<float>& s_centroid_vectors_in,
-    hls::stream<float>& s_centroid_vectors_out,
+    const int centroids_per_partition,
+    const int total_centriods, // nlist
+    const ap_uint512_t* HBM_centroid_vectors,
     hls::stream<float>& s_query_vectors_in,
     hls::stream<float>& s_query_vectors_out,
     hls::stream<ap_uint512_t>& s_square_dist_pack) {
@@ -34,37 +56,8 @@ void compute_cell_distance_head_component_A(
     // systolic_array_id should be the middle ids, 
     //   e.g., for systolic array of 16 PEs, one head, one tail, then middle should be 1~14
 
-    // what is the speed needed to compute these distances? need to match HBM
-    // python performance_estimation_three_nodes_IVF.py --nlist=8192 --nprobe=32
-    // Estimated HBM Latency: 23.58 us -> 3K cycles
-    // each URAM -> 64bit port x 2 -> 4 elements per cycle -> 64 cycles per vec
-    //   -> at most 50 vectors per URAM (actually 1 URAM can only fit 32)
-    // My strategy: 32 Partitions, each responsible for 256 vectors, 
-    //   each vector finish in 10 cycles
-    ap_uint<64> cell_centroids_partition[centroids_per_partition * D / 2];
-#pragma HLS array_partition variable=cell_centroids_partition cyclic factor=8 
-#pragma HLS resource variable=cell_centroids_partition core=RAM_2P_URAM
-
     float local_query_buffer[D];
 #pragma HLS array_partition variable=local_query_buffer cyclic factor=8
-
-    for (int c = 0; c < total_centriods; c++) {
-        for (int d = 0; d < D / 2; d++) {
-#pragma HLS pipeline II=1
-            float reg_A = s_centroid_vectors_in.read();
-            float reg_B = s_centroid_vectors_in.read();
-            s_centroid_vectors_out.write(reg_A);
-            s_centroid_vectors_out.write(reg_B);
-            if ((c >= systolic_array_id * centroids_per_partition) && (c < (systolic_array_id + 1) * centroids_per_partition)) {
-                ap_uint<32> reg_A_uint = *((ap_uint<32>*) (&reg_A));
-                ap_uint<32> reg_B_uint = *((ap_uint<32>*) (&reg_B));
-                ap_uint<64> val;
-                val.range(31, 0) = reg_A_uint;
-                val.range(63, 32) = reg_B_uint;
-                cell_centroids_partition[(c - systolic_array_id * centroids_per_partition) * D / 2 + d] = val;
-            }
-        }
-    }
 
     int start_cell_ID = centroids_per_partition * systolic_array_id;
 
@@ -86,32 +79,26 @@ void compute_cell_distance_head_component_A(
             // Manually unroll 16, auto-unroll doesn't work well
             for (int d = 0; d < D / 16; d++) {
 #pragma HLS pipeline II=2
-            //#pragma HLS UNROLL factor=16
-                ap_uint<64> tmp_0 = cell_centroids_partition[(c * D + d * 16) / 2 + 0];
-                ap_uint<64> tmp_1 = cell_centroids_partition[(c * D + d * 16) / 2 + 1];
-                ap_uint<64> tmp_2 = cell_centroids_partition[(c * D + d * 16) / 2 + 2];
-                ap_uint<64> tmp_3 = cell_centroids_partition[(c * D + d * 16) / 2 + 3];
-                ap_uint<64> tmp_4 = cell_centroids_partition[(c * D + d * 16) / 2 + 4];
-                ap_uint<64> tmp_5 = cell_centroids_partition[(c * D + d * 16) / 2 + 5];
-                ap_uint<64> tmp_6 = cell_centroids_partition[(c * D + d * 16) / 2 + 6];
-                ap_uint<64> tmp_7 = cell_centroids_partition[(c * D + d * 16) / 2 + 7];
 
-                ap_uint<32> cell_centroids_0_int = tmp_0.range(31, 0);
-                ap_uint<32> cell_centroids_1_int = tmp_0.range(63, 32);
-                ap_uint<32> cell_centroids_2_int = tmp_1.range(31, 0);
-                ap_uint<32> cell_centroids_3_int = tmp_1.range(63, 32);
-                ap_uint<32> cell_centroids_4_int = tmp_2.range(31, 0);
-                ap_uint<32> cell_centroids_5_int = tmp_2.range(63, 32);
-                ap_uint<32> cell_centroids_6_int = tmp_3.range(31, 0);
-                ap_uint<32> cell_centroids_7_int = tmp_3.range(63, 32);
-                ap_uint<32> cell_centroids_8_int = tmp_4.range(31, 0);
-                ap_uint<32> cell_centroids_9_int = tmp_4.range(63, 32);
-                ap_uint<32> cell_centroids_10_int = tmp_5.range(31, 0);
-                ap_uint<32> cell_centroids_11_int = tmp_5.range(63, 32);
-                ap_uint<32> cell_centroids_12_int = tmp_6.range(31, 0);
-                ap_uint<32> cell_centroids_13_int = tmp_6.range(63, 32);
-                ap_uint<32> cell_centroids_14_int = tmp_7.range(31, 0);
-                ap_uint<32> cell_centroids_15_int = tmp_7.range(63, 32);
+                int addr_HBM = c * 8 + d; // each 512-bit = 16 numbers, 1 vec=8 addresses
+                ap_uint512_t cell_centroids_uint = HBM_centroid_vectors[addr_HBM];
+
+                ap_uint<32> cell_centroids_0_int = cell_centroids_uint.range((1 + 0) * 32 - 1, 0 * 32);
+                ap_uint<32> cell_centroids_1_int = cell_centroids_uint.range((1 + 1) * 32 - 1, 1 * 32);
+                ap_uint<32> cell_centroids_2_int = cell_centroids_uint.range((1 + 2) * 32 - 1, 2 * 32);
+                ap_uint<32> cell_centroids_3_int = cell_centroids_uint.range((1 + 3) * 32 - 1, 3 * 32);
+                ap_uint<32> cell_centroids_4_int = cell_centroids_uint.range((1 + 4) * 32 - 1, 4 * 32);
+                ap_uint<32> cell_centroids_5_int = cell_centroids_uint.range((1 + 5) * 32 - 1, 5 * 32);
+                ap_uint<32> cell_centroids_6_int = cell_centroids_uint.range((1 + 6) * 32 - 1, 6 * 32);
+                ap_uint<32> cell_centroids_7_int = cell_centroids_uint.range((1 + 7) * 32 - 1, 7 * 32);
+                ap_uint<32> cell_centroids_8_int = cell_centroids_uint.range((1 + 8) * 32 - 1, 8 * 32);
+                ap_uint<32> cell_centroids_9_int = cell_centroids_uint.range((1 + 9) * 32 - 1, 9 * 32);
+                ap_uint<32> cell_centroids_10_int = cell_centroids_uint.range((1 + 10) * 32 - 1, 10 * 32);
+                ap_uint<32> cell_centroids_11_int = cell_centroids_uint.range((1 + 11) * 32 - 1, 11 * 32);
+                ap_uint<32> cell_centroids_12_int = cell_centroids_uint.range((1 + 12) * 32 - 1, 12 * 32);
+                ap_uint<32> cell_centroids_13_int = cell_centroids_uint.range((1 + 13) * 32 - 1, 13 * 32);
+                ap_uint<32> cell_centroids_14_int = cell_centroids_uint.range((1 + 14) * 32 - 1, 14 * 32);
+                ap_uint<32> cell_centroids_15_int = cell_centroids_uint.range((1 + 15) * 32 - 1, 15 * 32);
 
                 float cell_centroids_0 = *((float*) (&cell_centroids_0_int));
                 float cell_centroids_1 = *((float*) (&cell_centroids_1_int));
@@ -206,53 +193,20 @@ void compute_cell_distance_head_component_A(
     }
 }
 
-
-template<const int query_num, const int centroids_per_partition, const int total_centriods>
+template<const int query_num>
 void compute_cell_distance_middle_component_A(
     const int systolic_array_id,
-    hls::stream<float>& s_centroid_vectors_in,
-    hls::stream<float>& s_centroid_vectors_out,
+    const int centroids_per_partition,
+    const int total_centriods, // nlist
+    const ap_uint512_t* HBM_centroid_vectors,
     hls::stream<float>& s_query_vectors_in,
     hls::stream<float>& s_query_vectors_out,
     hls::stream<ap_uint512_t>& s_square_dist_pack) {
-
-    // systolic_array_id should be the middle ids, 
-    //   e.g., for systolic array of 16 PEs, one head, one tail, then middle should be 1~14
-
-    // what is the speed needed to compute these distances? need to match HBM
-    // python performance_estimation_three_nodes_IVF.py --nlist=8192 --nprobe=32
-    // Estimated HBM Latency: 23.58 us -> 3K cycles
-    // each URAM -> 64bit port x 2 -> 4 elements per cycle -> 64 cycles per vec
-    //   -> at most 50 vectors per URAM (actually 1 URAM can only fit 32)
-    // My strategy: 32 Partitions, each responsible for 256 vectors, 
-    //   each vector finish in 10 cycles
-
-    ap_uint<64> cell_centroids_partition[centroids_per_partition * D / 2];
-#pragma HLS array_partition variable=cell_centroids_partition cyclic factor=8 
-#pragma HLS resource variable=cell_centroids_partition core=RAM_2P_URAM
 
     float local_query_buffer[D];
 #pragma HLS array_partition variable=local_query_buffer cyclic factor=8
 
     int start_cell_ID = centroids_per_partition * systolic_array_id;
-
-    for (int c = 0; c < total_centriods; c++) {
-        for (int d = 0; d < D / 2; d++) {
-#pragma HLS pipeline II=1
-            float reg_A = s_centroid_vectors_in.read();
-            float reg_B = s_centroid_vectors_in.read();
-            s_centroid_vectors_out.write(reg_A);
-            s_centroid_vectors_out.write(reg_B);
-            if ((c >= systolic_array_id * centroids_per_partition) && (c < (systolic_array_id + 1) * centroids_per_partition)) {
-                ap_uint<32> reg_A_uint = *((ap_uint<32>*) (&reg_A));
-                ap_uint<32> reg_B_uint = *((ap_uint<32>*) (&reg_B));
-                ap_uint<64> val;
-                val.range(31, 0) = reg_A_uint;
-                val.range(63, 32) = reg_B_uint;
-                cell_centroids_partition[(c - systolic_array_id * centroids_per_partition) * D / 2 + d] = val;
-            }
-        }
-    }
 
     for (int query_id = 0; query_id < query_num; query_id++) {
 
@@ -267,36 +221,29 @@ void compute_cell_distance_middle_component_A(
         // compute distance and write results out
         for (int c = 0; c < centroids_per_partition; c++) {
 
-            float distance = 0;
-
             // Manually unroll 16, auto-unroll doesn't work well
             for (int d = 0; d < D / 16; d++) {
 #pragma HLS pipeline II=2
-                ap_uint<64> tmp_0 = cell_centroids_partition[(c * D + d * 16) / 2 + 0];
-                ap_uint<64> tmp_1 = cell_centroids_partition[(c * D + d * 16) / 2 + 1];
-                ap_uint<64> tmp_2 = cell_centroids_partition[(c * D + d * 16) / 2 + 2];
-                ap_uint<64> tmp_3 = cell_centroids_partition[(c * D + d * 16) / 2 + 3];
-                ap_uint<64> tmp_4 = cell_centroids_partition[(c * D + d * 16) / 2 + 4];
-                ap_uint<64> tmp_5 = cell_centroids_partition[(c * D + d * 16) / 2 + 5];
-                ap_uint<64> tmp_6 = cell_centroids_partition[(c * D + d * 16) / 2 + 6];
-                ap_uint<64> tmp_7 = cell_centroids_partition[(c * D + d * 16) / 2 + 7];
 
-                ap_uint<32> cell_centroids_0_int = tmp_0.range(31, 0);
-                ap_uint<32> cell_centroids_1_int = tmp_0.range(63, 32);
-                ap_uint<32> cell_centroids_2_int = tmp_1.range(31, 0);
-                ap_uint<32> cell_centroids_3_int = tmp_1.range(63, 32);
-                ap_uint<32> cell_centroids_4_int = tmp_2.range(31, 0);
-                ap_uint<32> cell_centroids_5_int = tmp_2.range(63, 32);
-                ap_uint<32> cell_centroids_6_int = tmp_3.range(31, 0);
-                ap_uint<32> cell_centroids_7_int = tmp_3.range(63, 32);
-                ap_uint<32> cell_centroids_8_int = tmp_4.range(31, 0);
-                ap_uint<32> cell_centroids_9_int = tmp_4.range(63, 32);
-                ap_uint<32> cell_centroids_10_int = tmp_5.range(31, 0);
-                ap_uint<32> cell_centroids_11_int = tmp_5.range(63, 32);
-                ap_uint<32> cell_centroids_12_int = tmp_6.range(31, 0);
-                ap_uint<32> cell_centroids_13_int = tmp_6.range(63, 32);
-                ap_uint<32> cell_centroids_14_int = tmp_7.range(31, 0);
-                ap_uint<32> cell_centroids_15_int = tmp_7.range(63, 32);
+                int addr_HBM = c * 8 + d; // each 512-bit = 16 numbers, 1 vec=8 addresses
+                ap_uint512_t cell_centroids_uint = HBM_centroid_vectors[addr_HBM];
+
+                ap_uint<32> cell_centroids_0_int = cell_centroids_uint.range((1 + 0) * 32 - 1, 0 * 32);
+                ap_uint<32> cell_centroids_1_int = cell_centroids_uint.range((1 + 1) * 32 - 1, 1 * 32);
+                ap_uint<32> cell_centroids_2_int = cell_centroids_uint.range((1 + 2) * 32 - 1, 2 * 32);
+                ap_uint<32> cell_centroids_3_int = cell_centroids_uint.range((1 + 3) * 32 - 1, 3 * 32);
+                ap_uint<32> cell_centroids_4_int = cell_centroids_uint.range((1 + 4) * 32 - 1, 4 * 32);
+                ap_uint<32> cell_centroids_5_int = cell_centroids_uint.range((1 + 5) * 32 - 1, 5 * 32);
+                ap_uint<32> cell_centroids_6_int = cell_centroids_uint.range((1 + 6) * 32 - 1, 6 * 32);
+                ap_uint<32> cell_centroids_7_int = cell_centroids_uint.range((1 + 7) * 32 - 1, 7 * 32);
+                ap_uint<32> cell_centroids_8_int = cell_centroids_uint.range((1 + 8) * 32 - 1, 8 * 32);
+                ap_uint<32> cell_centroids_9_int = cell_centroids_uint.range((1 + 9) * 32 - 1, 9 * 32);
+                ap_uint<32> cell_centroids_10_int = cell_centroids_uint.range((1 + 10) * 32 - 1, 10 * 32);
+                ap_uint<32> cell_centroids_11_int = cell_centroids_uint.range((1 + 11) * 32 - 1, 11 * 32);
+                ap_uint<32> cell_centroids_12_int = cell_centroids_uint.range((1 + 12) * 32 - 1, 12 * 32);
+                ap_uint<32> cell_centroids_13_int = cell_centroids_uint.range((1 + 13) * 32 - 1, 13 * 32);
+                ap_uint<32> cell_centroids_14_int = cell_centroids_uint.range((1 + 14) * 32 - 1, 14 * 32);
+                ap_uint<32> cell_centroids_15_int = cell_centroids_uint.range((1 + 15) * 32 - 1, 15 * 32);
 
                 float cell_centroids_0 = *((float*) (&cell_centroids_0_int));
                 float cell_centroids_1 = *((float*) (&cell_centroids_1_int));
@@ -392,48 +339,18 @@ void compute_cell_distance_middle_component_A(
 }
 
 // centroids_per_partition_last_PE must < centroids_per_partition
-template<const int query_num, const int centroids_per_partition, 
-    const int centroids_per_partition_last_PE, const int total_centriods>
+template<const int query_num>
 void compute_cell_distance_tail_component_A(
     const int systolic_array_id,
-    hls::stream<float>& s_centroid_vectors_in,
+    const int centroids_per_partition,
+    const int centroids_per_partition_last_PE,
+    const int total_centriods, // nlist
+    const ap_uint512_t* HBM_centroid_vectors,
     hls::stream<float>& s_query_vectors_in,
     hls::stream<ap_uint512_t>& s_square_dist_pack) {
 
-    // systolic_array_id should be the middle ids, 
-    //   e.g., for systolic array of 16 PEs, one head, one tail, then middle should be 1~14
-
-    // what is the speed needed to compute these distances? need to match HBM
-    // python performance_estimation_three_nodes_IVF.py --nlist=8192 --nprobe=32
-    // Estimated HBM Latency: 23.58 us -> 3K cycles
-    // each URAM -> 64bit port x 2 -> 4 elements per cycle -> 64 cycles per vec
-    //   -> at most 50 vectors per URAM (actually 1 URAM can only fit 32)
-    // My strategy: 32 Partitions, each responsible for 256 vectors, 
-    //   each vector finish in 10 cycles
-    ap_uint<64> cell_centroids_partition[centroids_per_partition_last_PE * D / 2];
-#pragma HLS array_partition variable=cell_centroids_partition cyclic factor=8 
-#pragma HLS resource variable=cell_centroids_partition core=RAM_2P_URAM
-
     float local_query_buffer[D];
 #pragma HLS array_partition variable=local_query_buffer cyclic factor=8
-
-    // init before any computation
-    for (int c = 0; c < total_centriods; c++) {
-        for (int d = 0; d < D / 2; d++) {
-#pragma HLS pipeline II=1
-            float reg_A = s_centroid_vectors_in.read();
-            float reg_B = s_centroid_vectors_in.read();
-            if ((c >= systolic_array_id * centroids_per_partition) && (c < systolic_array_id * centroids_per_partition + centroids_per_partition_last_PE)) {
-                ap_uint<32> reg_A_uint = *((ap_uint<32>*) (&reg_A));
-                ap_uint<32> reg_B_uint = *((ap_uint<32>*) (&reg_B));
-                ap_uint<64> val;
-                val.range(31, 0) = reg_A_uint;
-                val.range(63, 32) = reg_B_uint;
-                cell_centroids_partition[(c - systolic_array_id * centroids_per_partition) * D / 2 + d] = val;
-            }
-        }
-    }
-
 
     int start_cell_ID = centroids_per_partition * systolic_array_id;
 
@@ -454,32 +371,26 @@ void compute_cell_distance_tail_component_A(
             // Manually unroll 16, auto-unroll doesn't work well
             for (int d = 0; d < D / 16; d++) {
 #pragma HLS pipeline II=2
-            //#pragma HLS UNROLL factor=16
-                ap_uint<64> tmp_0 = cell_centroids_partition[(c * D + d * 16) / 2 + 0];
-                ap_uint<64> tmp_1 = cell_centroids_partition[(c * D + d * 16) / 2 + 1];
-                ap_uint<64> tmp_2 = cell_centroids_partition[(c * D + d * 16) / 2 + 2];
-                ap_uint<64> tmp_3 = cell_centroids_partition[(c * D + d * 16) / 2 + 3];
-                ap_uint<64> tmp_4 = cell_centroids_partition[(c * D + d * 16) / 2 + 4];
-                ap_uint<64> tmp_5 = cell_centroids_partition[(c * D + d * 16) / 2 + 5];
-                ap_uint<64> tmp_6 = cell_centroids_partition[(c * D + d * 16) / 2 + 6];
-                ap_uint<64> tmp_7 = cell_centroids_partition[(c * D + d * 16) / 2 + 7];
 
-                ap_uint<32> cell_centroids_0_int = tmp_0.range(31, 0);
-                ap_uint<32> cell_centroids_1_int = tmp_0.range(63, 32);
-                ap_uint<32> cell_centroids_2_int = tmp_1.range(31, 0);
-                ap_uint<32> cell_centroids_3_int = tmp_1.range(63, 32);
-                ap_uint<32> cell_centroids_4_int = tmp_2.range(31, 0);
-                ap_uint<32> cell_centroids_5_int = tmp_2.range(63, 32);
-                ap_uint<32> cell_centroids_6_int = tmp_3.range(31, 0);
-                ap_uint<32> cell_centroids_7_int = tmp_3.range(63, 32);
-                ap_uint<32> cell_centroids_8_int = tmp_4.range(31, 0);
-                ap_uint<32> cell_centroids_9_int = tmp_4.range(63, 32);
-                ap_uint<32> cell_centroids_10_int = tmp_5.range(31, 0);
-                ap_uint<32> cell_centroids_11_int = tmp_5.range(63, 32);
-                ap_uint<32> cell_centroids_12_int = tmp_6.range(31, 0);
-                ap_uint<32> cell_centroids_13_int = tmp_6.range(63, 32);
-                ap_uint<32> cell_centroids_14_int = tmp_7.range(31, 0);
-                ap_uint<32> cell_centroids_15_int = tmp_7.range(63, 32);
+                int addr_HBM = c * 8 + d; // each 512-bit = 16 numbers, 1 vec=8 addresses
+                ap_uint512_t cell_centroids_uint = HBM_centroid_vectors[addr_HBM];
+
+                ap_uint<32> cell_centroids_0_int = cell_centroids_uint.range((1 + 0) * 32 - 1, 0 * 32);
+                ap_uint<32> cell_centroids_1_int = cell_centroids_uint.range((1 + 1) * 32 - 1, 1 * 32);
+                ap_uint<32> cell_centroids_2_int = cell_centroids_uint.range((1 + 2) * 32 - 1, 2 * 32);
+                ap_uint<32> cell_centroids_3_int = cell_centroids_uint.range((1 + 3) * 32 - 1, 3 * 32);
+                ap_uint<32> cell_centroids_4_int = cell_centroids_uint.range((1 + 4) * 32 - 1, 4 * 32);
+                ap_uint<32> cell_centroids_5_int = cell_centroids_uint.range((1 + 5) * 32 - 1, 5 * 32);
+                ap_uint<32> cell_centroids_6_int = cell_centroids_uint.range((1 + 6) * 32 - 1, 6 * 32);
+                ap_uint<32> cell_centroids_7_int = cell_centroids_uint.range((1 + 7) * 32 - 1, 7 * 32);
+                ap_uint<32> cell_centroids_8_int = cell_centroids_uint.range((1 + 8) * 32 - 1, 8 * 32);
+                ap_uint<32> cell_centroids_9_int = cell_centroids_uint.range((1 + 9) * 32 - 1, 9 * 32);
+                ap_uint<32> cell_centroids_10_int = cell_centroids_uint.range((1 + 10) * 32 - 1, 10 * 32);
+                ap_uint<32> cell_centroids_11_int = cell_centroids_uint.range((1 + 11) * 32 - 1, 11 * 32);
+                ap_uint<32> cell_centroids_12_int = cell_centroids_uint.range((1 + 12) * 32 - 1, 12 * 32);
+                ap_uint<32> cell_centroids_13_int = cell_centroids_uint.range((1 + 13) * 32 - 1, 13 * 32);
+                ap_uint<32> cell_centroids_14_int = cell_centroids_uint.range((1 + 14) * 32 - 1, 14 * 32);
+                ap_uint<32> cell_centroids_15_int = cell_centroids_uint.range((1 + 15) * 32 - 1, 15 * 32);
 
                 float cell_centroids_0 = *((float*) (&cell_centroids_0_int));
                 float cell_centroids_1 = *((float*) (&cell_centroids_1_int));
@@ -575,8 +486,9 @@ void compute_cell_distance_tail_component_A(
 }
 
 
-template<const int query_num, const int centroids_per_partition>
+template<const int query_num>
 void compute_cell_distance_component_B(
+    const int centroids_per_partition,
     hls::stream<ap_uint512_t>& s_square_dist_pack,
     hls::stream<float>& s_partial_dist) {
 
@@ -635,8 +547,9 @@ void compute_cell_distance_component_B(
     }
 }
 
-template<const int query_num, const int centroids_per_partition>
+template<const int query_num>
 void compute_cell_distance_component_C(
+    const int centroids_per_partition,
     const int start_cell_ID,
     hls::stream<float>& s_partial_dist,
     hls::stream<dist_cell_ID_t>& s_partial_cell_PE_result) {
@@ -664,9 +577,10 @@ void compute_cell_distance_component_C(
     }
 }
 
-template<const int query_num, const int centroids_per_partition>
+template<const int query_num>
 void forward_cell_distance_middle(
     const int systolic_array_id,
+    const int centroids_per_partition,
     hls::stream<dist_cell_ID_t>& s_partial_cell_PE_result,
     hls::stream<dist_cell_ID_t>& s_partial_cell_distance_in,
     hls::stream<dist_cell_ID_t>& s_partial_cell_distance_out) {
@@ -695,10 +609,12 @@ void forward_cell_distance_middle(
 
 
 // centroids_per_partition_last_PE must < centroids_per_partition
-template<const int query_num, const int centroids_per_partition, 
-    const int centroids_per_partition_last_PE, const int total_centriods>
+template<const int query_num>
 void forward_cell_distance_tail(
     const int systolic_array_id,
+    const int centroids_per_partition, 
+    const int centroids_per_partition_last_PE, 
+    const int total_centriods,
     hls::stream<dist_cell_ID_t>& s_partial_cell_PE_result,
     hls::stream<dist_cell_ID_t>& s_partial_cell_distance_in,
     hls::stream<dist_cell_ID_t>& s_cell_distance_out) {
@@ -733,11 +649,12 @@ void forward_cell_distance_tail(
 }
 
 
-template<const int query_num, const int centroids_per_partition, const int total_centriods>
+template<const int query_num>
 void compute_cell_distance_head_PE(
     const int systolic_array_id,
-    hls::stream<float>& s_centroid_vectors_in,
-    hls::stream<float>& s_centroid_vectors_out,
+    const int centroids_per_partition, 
+    const int total_centriods,
+    const ap_uint512_t* HBM_centroid_vectors,
     hls::stream<float>& s_query_vectors_in,
     hls::stream<float>& s_query_vectors_out,
     hls::stream<dist_cell_ID_t>& s_partial_cell_distance_out) {
@@ -750,30 +667,34 @@ void compute_cell_distance_head_PE(
     hls::stream<float> s_partial_dist;
 #pragma HLS stream variable=s_partial_dist depth=8
 
-    compute_cell_distance_head_component_A<query_num, centroids_per_partition, total_centriods>(
+    compute_cell_distance_head_component_A<query_num>(
         systolic_array_id,
-        s_centroid_vectors_in,
-        s_centroid_vectors_out,
+        centroids_per_partition,
+        total_centriods, 
+        HBM_centroid_vectors,
         s_query_vectors_in,
         s_query_vectors_out,
         s_square_dist_pack); 
 
-    compute_cell_distance_component_B<query_num, centroids_per_partition>(
+    compute_cell_distance_component_B<query_num>(
+        centroids_per_partition,
         s_square_dist_pack,
         s_partial_dist);
         
     const int start_cell_ID = centroids_per_partition * systolic_array_id;
-    compute_cell_distance_component_C<query_num, centroids_per_partition>(
+    compute_cell_distance_component_C<query_num>(
+        centroids_per_partition,
         start_cell_ID,
         s_partial_dist,
         s_partial_cell_distance_out); 
 }
 
-template<const int query_num, const int centroids_per_partition, const int total_centriods>
+template<const int query_num>
 void compute_cell_distance_middle_PE(
     const int systolic_array_id,
-    hls::stream<float>& s_centroid_vectors_in,
-    hls::stream<float>& s_centroid_vectors_out,
+    const int centroids_per_partition, 
+    const int total_centriods,
+    const ap_uint512_t* HBM_centroid_vectors,
     hls::stream<float>& s_query_vectors_in,
     hls::stream<float>& s_query_vectors_out,
     hls::stream<dist_cell_ID_t>& s_partial_cell_distance_in,
@@ -790,37 +711,43 @@ void compute_cell_distance_middle_PE(
     hls::stream<float> s_partial_dist;
 #pragma HLS stream variable=s_partial_dist depth=8
 
-    compute_cell_distance_middle_component_A<query_num, centroids_per_partition, total_centriods>(
+    compute_cell_distance_middle_component_A<query_num>(
         systolic_array_id,
-        s_centroid_vectors_in,
-        s_centroid_vectors_out,
+        centroids_per_partition,
+        total_centriods,
+        HBM_centroid_vectors,
         s_query_vectors_in,
         s_query_vectors_out,
         s_square_dist_pack);
    
-    compute_cell_distance_component_B<query_num, centroids_per_partition>(
+    compute_cell_distance_component_B<query_num>(
+        centroids_per_partition,
         s_square_dist_pack,
         s_partial_dist);
         
     const int start_cell_ID = centroids_per_partition * systolic_array_id;
-    compute_cell_distance_component_C<query_num, centroids_per_partition>(
+    compute_cell_distance_component_C<query_num>(
+        centroids_per_partition,
         start_cell_ID,
         s_partial_dist,
         s_partial_cell_PE_result); 
 
-    forward_cell_distance_middle<query_num, centroids_per_partition>(
+    forward_cell_distance_middle<query_num>(
         systolic_array_id,
+        centroids_per_partition,
         s_partial_cell_PE_result,
         s_partial_cell_distance_in,
         s_partial_cell_distance_out);
 }
 
 // centroids_per_partition_last_PE must < centroids_per_partition
-template<const int query_num, const int centroids_per_partition, 
-    const int centroids_per_partition_last_PE, const int total_centriods>
+template<const int query_num>
 void compute_cell_distance_tail_PE(
     const int systolic_array_id,
-    hls::stream<float>& s_centroid_vectors_in,
+    const int centroids_per_partition, 
+    const int centroids_per_partition_last_PE, 
+    const int total_centriods,
+    const ap_uint512_t* HBM_centroid_vectors,
     hls::stream<float>& s_query_vectors_in,
     hls::stream<dist_cell_ID_t>& s_partial_cell_distance_in,
     hls::stream<dist_cell_ID_t>& s_cell_distance_out) {
@@ -836,24 +763,32 @@ void compute_cell_distance_tail_PE(
     hls::stream<float> s_partial_dist;
 #pragma HLS stream variable=s_partial_dist depth=8
 
-    compute_cell_distance_tail_component_A<query_num, centroids_per_partition, centroids_per_partition_last_PE, total_centriods>(
+    compute_cell_distance_tail_component_A<query_num>(
         systolic_array_id,
-        s_centroid_vectors_in,
+        centroids_per_partition,
+        centroids_per_partition_last_PE,
+        total_centriods,
+        HBM_centroid_vectors,
         s_query_vectors_in,
         s_square_dist_pack);
     
-    compute_cell_distance_component_B<query_num, centroids_per_partition_last_PE>(
+    compute_cell_distance_component_B<query_num>(
+        centroids_per_partition_last_PE,
         s_square_dist_pack,
         s_partial_dist);
         
     const int start_cell_ID = centroids_per_partition * systolic_array_id;
-    compute_cell_distance_component_C<query_num, centroids_per_partition_last_PE>(
+    compute_cell_distance_component_C<query_num>(
+        centroids_per_partition_last_PE,
         start_cell_ID,
         s_partial_dist,
         s_partial_cell_PE_result); 
 
-    forward_cell_distance_tail<query_num, centroids_per_partition, centroids_per_partition_last_PE, total_centriods>(
+    forward_cell_distance_tail<query_num>(
         systolic_array_id,
+        centroids_per_partition, 
+        centroids_per_partition_last_PE, 
+        total_centriods,
         s_partial_cell_PE_result,
         s_partial_cell_distance_in,
         s_cell_distance_out);
@@ -861,46 +796,152 @@ void compute_cell_distance_tail_PE(
 
 template<const int query_num>
 void compute_cell_distance_wrapper(
-    hls::stream<float> &s_centroid_vectors,
+    const int centroids_per_partition, 
+    const int centroids_per_partition_last_PE, 
+    const int total_centriods,
+    const ap_uint512_t* HBM_centroid_vectors_0,
+    const ap_uint512_t* HBM_centroid_vectors_1,
+    const ap_uint512_t* HBM_centroid_vectors_2,
+    const ap_uint512_t* HBM_centroid_vectors_3,
+    const ap_uint512_t* HBM_centroid_vectors_4,
+    const ap_uint512_t* HBM_centroid_vectors_5,
+    const ap_uint512_t* HBM_centroid_vectors_6,
+    const ap_uint512_t* HBM_centroid_vectors_7,
+    const ap_uint512_t* HBM_centroid_vectors_8,
+    const ap_uint512_t* HBM_centroid_vectors_9,
+    const ap_uint512_t* HBM_centroid_vectors_10,
+    const ap_uint512_t* HBM_centroid_vectors_11,
+
     hls::stream<float> &s_query_vectors,
     hls::stream<dist_cell_ID_t> &s_cell_distance) {
 #pragma HLS inline
 
     hls::stream<float> s_query_vectors_forward[PE_NUM_CENTER_DIST_COMP_EVEN];
 #pragma HLS stream variable=s_query_vectors_forward depth=8
-    hls::stream<float> s_centroid_vectors_forward[PE_NUM_CENTER_DIST_COMP_EVEN];
-#pragma HLS stream variable=s_centroid_vectors_forward depth=8
 
     hls::stream<dist_cell_ID_t> s_partial_cell_distance_forward[PE_NUM_CENTER_DIST_COMP_EVEN];
 #pragma HLS stream variable=s_partial_cell_distance_forward depth=8
 
     // head
-    compute_cell_distance_head_PE<QUERY_NUM, CENTROIDS_PER_PARTITION_EVEN, NLIST>(
+    compute_cell_distance_head_PE<query_num>(
         0,
-        s_centroid_vectors,
-        s_centroid_vectors_forward[0],
+        centroids_per_partition, 
+        total_centriods,
+        HBM_centroid_vectors_0,
         s_query_vectors,
         s_query_vectors_forward[0],
         s_partial_cell_distance_forward[0]); 
 
-    // middle 
-    for (int s = 1; s < PE_NUM_CENTER_DIST_COMP_EVEN; s++) {
-#pragma HLS UNROLL
-        compute_cell_distance_middle_PE<QUERY_NUM, CENTROIDS_PER_PARTITION_EVEN, NLIST>(
-            s,
-            s_centroid_vectors_forward[s - 1],
-            s_centroid_vectors_forward[s],
-            s_query_vectors_forward[s - 1],
-            s_query_vectors_forward[s],
-            s_partial_cell_distance_forward[s - 1],
-            s_partial_cell_distance_forward[s]);
-    }
+    // middle
+        compute_cell_distance_middle_PE<QUERY_NUM>(
+            1,
+            centroids_per_partition, 
+            total_centriods,
+            HBM_centroid_vectors_1,
+            s_query_vectors_forward[1 - 1],
+            s_query_vectors_forward[1],
+            s_partial_cell_distance_forward[1 - 1],
+            s_partial_cell_distance_forward[1]);
 
-    // tail
-    compute_cell_distance_tail_PE<QUERY_NUM, CENTROIDS_PER_PARTITION_EVEN, CENTROIDS_PER_PARTITION_LAST_PE, NLIST>(
-        PE_NUM_CENTER_DIST_COMP_EVEN,
-        s_centroid_vectors_forward[PE_NUM_CENTER_DIST_COMP_EVEN - 1],
-        s_query_vectors_forward[PE_NUM_CENTER_DIST_COMP_EVEN - 1],
-        s_partial_cell_distance_forward[PE_NUM_CENTER_DIST_COMP_EVEN - 1],
-        s_cell_distance);
+        compute_cell_distance_middle_PE<QUERY_NUM>(
+            2,
+            centroids_per_partition, 
+            total_centriods,
+            HBM_centroid_vectors_2,
+            s_query_vectors_forward[2 - 1],
+            s_query_vectors_forward[2],
+            s_partial_cell_distance_forward[2 - 1],
+            s_partial_cell_distance_forward[2]);
+
+        compute_cell_distance_middle_PE<QUERY_NUM>(
+            3,
+            centroids_per_partition, 
+            total_centriods,
+            HBM_centroid_vectors_3,
+            s_query_vectors_forward[3 - 1],
+            s_query_vectors_forward[3],
+            s_partial_cell_distance_forward[3 - 1],
+            s_partial_cell_distance_forward[3]);
+
+        compute_cell_distance_middle_PE<QUERY_NUM>(
+            4,
+            centroids_per_partition, 
+            total_centriods,
+            HBM_centroid_vectors_4,
+            s_query_vectors_forward[4 - 1],
+            s_query_vectors_forward[4],
+            s_partial_cell_distance_forward[4 - 1],
+            s_partial_cell_distance_forward[4]);
+
+        compute_cell_distance_middle_PE<QUERY_NUM>(
+            5,
+            centroids_per_partition, 
+            total_centriods,
+            HBM_centroid_vectors_5,
+            s_query_vectors_forward[5 - 1],
+            s_query_vectors_forward[5],
+            s_partial_cell_distance_forward[5 - 1],
+            s_partial_cell_distance_forward[5]);
+
+        compute_cell_distance_middle_PE<QUERY_NUM>(
+            6,
+            centroids_per_partition, 
+            total_centriods,
+            HBM_centroid_vectors_6,
+            s_query_vectors_forward[6 - 1],
+            s_query_vectors_forward[6],
+            s_partial_cell_distance_forward[6 - 1],
+            s_partial_cell_distance_forward[6]);
+
+        compute_cell_distance_middle_PE<QUERY_NUM>(
+            7,
+            centroids_per_partition, 
+            total_centriods,
+            HBM_centroid_vectors_7,
+            s_query_vectors_forward[7 - 1],
+            s_query_vectors_forward[7],
+            s_partial_cell_distance_forward[7 - 1],
+            s_partial_cell_distance_forward[7]);
+
+        compute_cell_distance_middle_PE<QUERY_NUM>(
+            8,
+            centroids_per_partition, 
+            total_centriods,
+            HBM_centroid_vectors_8,
+            s_query_vectors_forward[8 - 1],
+            s_query_vectors_forward[8],
+            s_partial_cell_distance_forward[8 - 1],
+            s_partial_cell_distance_forward[8]);
+
+        compute_cell_distance_middle_PE<QUERY_NUM>(
+            9,
+            centroids_per_partition, 
+            total_centriods,
+            HBM_centroid_vectors_9,
+            s_query_vectors_forward[9 - 1],
+            s_query_vectors_forward[9],
+            s_partial_cell_distance_forward[9 - 1],
+            s_partial_cell_distance_forward[9]);
+
+        compute_cell_distance_middle_PE<QUERY_NUM>(
+            10,
+            centroids_per_partition, 
+            total_centriods,
+            HBM_centroid_vectors_10,
+            s_query_vectors_forward[10 - 1],
+            s_query_vectors_forward[10],
+            s_partial_cell_distance_forward[10 - 1],
+            s_partial_cell_distance_forward[10]);
+    
+        // tail
+        compute_cell_distance_tail_PE<QUERY_NUM>(
+            PE_NUM_CENTER_DIST_COMP_EVEN,
+            centroids_per_partition, 
+            centroids_per_partition_last_PE, 
+            total_centriods,
+            HBM_centroid_vectors_11,
+            s_query_vectors_forward[PE_NUM_CENTER_DIST_COMP_EVEN - 1],
+            s_partial_cell_distance_forward[PE_NUM_CENTER_DIST_COMP_EVEN - 1],
+            s_cell_distance);
+
 }

@@ -12,8 +12,9 @@ Variable to be replaced (<--variable_name-->):
 
 ////////////////////     Declaration     ////////////////////
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void load_and_split_PQ_codes_wrapper(
+    const int nprobe,
 <--load_and_split_PQ_codes_wrapper_arguments-->
     hls::stream<int>& s_start_addr_every_cell,
     hls::stream<int>& s_scanned_entries_every_cell_Load_unit,
@@ -21,8 +22,9 @@ void load_and_split_PQ_codes_wrapper(
 
 ////////////////////     Definition     ////////////////////
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void load_PQ_codes(
+    const int nprobe,
     const ap_uint512_t* src,
     hls::stream<int>& s_scanned_entries_every_cell,
     hls::stream<int>& s_start_addr_every_cell,
@@ -83,8 +85,9 @@ three_PQ_codes ap_uint512_to_three_PQ_codes(ap_uint<512> in) {
 }
 
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void type_conversion_and_split(
+    const int nprobe,
     hls::stream<int>& s_scanned_entries_every_cell,
     hls::stream<ap_uint512_t>& s_raw_input,
     hls::stream<single_PQ>& s_single_PQ) {
@@ -108,8 +111,9 @@ void type_conversion_and_split(
     }
 }
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void type_conversion_and_split(
+    const int nprobe,
     hls::stream<int>& s_scanned_entries_every_cell,
     hls::stream<ap_uint512_t>& s_raw_input,
     hls::stream<single_PQ>& s_single_PQ_0,
@@ -135,8 +139,9 @@ void type_conversion_and_split(
     }
 }
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void load_and_split_PQ_codes(
+    const int nprobe,
     const ap_uint512_t* HBM_in, // HBM for PQ code + vecID storage
     hls::stream<int>& s_start_addr_every_cell,
     hls::stream<int>& s_scanned_entries_every_cell_Load_unit,
@@ -147,19 +152,22 @@ void load_and_split_PQ_codes(
 
     hls::stream<ap_uint512_t> s_raw_input; // raw AXI width input
 
-    load_PQ_codes<query_num, nprobe>(
+    load_PQ_codes<query_num>(
+        nprobe,
         HBM_in, 
         s_scanned_entries_every_cell_Load_unit, 
         s_start_addr_every_cell, 
         s_raw_input);
-    type_conversion_and_split<query_num, nprobe>(
+    type_conversion_and_split<query_num>(
+        nprobe,
         s_scanned_entries_every_cell_Split_unit,
         s_raw_input, 
         s_single_PQ);
 }
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void load_and_split_PQ_codes(
+    const int nprobe,
     const ap_uint512_t* HBM_in, // HBM for PQ code + vecID storage
     hls::stream<int>& s_start_addr_every_cell,
     hls::stream<int>& s_scanned_entries_every_cell_Load_unit,
@@ -172,18 +180,21 @@ void load_and_split_PQ_codes(
 
     hls::stream<ap_uint512_t> s_raw_input; // raw AXI width input
 
-    load_PQ_codes<query_num, nprobe>(
+    load_PQ_codes<query_num>(
+        nprobe,
         HBM_in, 
         s_scanned_entries_every_cell_Load_unit, 
         s_start_addr_every_cell, 
         s_raw_input);
-    type_conversion_and_split<query_num, nprobe>(
+    type_conversion_and_split<query_num>(
+        nprobe,
         s_scanned_entries_every_cell_Split_unit,
         s_raw_input, s_single_PQ_0, s_single_PQ_1, s_single_PQ_2);
 }
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void replicate_s_start_addr_every_cell(
+    const int nprobe,
     hls::stream<int>& s_start_addr_every_cell,
     hls::stream<int> (&s_start_addr_every_cell_replicated)[HBM_CHANNEL_NUM]) {
 
@@ -201,8 +212,9 @@ void replicate_s_start_addr_every_cell(
     }
 }
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void replicate_s_scanned_entries_every_cell(
+    const int nprobe,
     hls::stream<int>& s_scanned_entries_every_cell_in,
     hls::stream<int> (&s_scanned_entries_every_cell_Load_unit_replicated)[HBM_CHANNEL_NUM],
     hls::stream<int> (&s_scanned_entries_every_cell_Split_unit_replicated)[HBM_CHANNEL_NUM]) {
@@ -227,8 +239,9 @@ void replicate_s_scanned_entries_every_cell(
     }
 }
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void replicate_s_scanned_entries_every_cell(
+    const int nprobe,
     hls::stream<int>& s_scanned_entries_every_cell_in,
     hls::stream<int> (&s_scanned_entries_every_cell_Load_unit_replicated)[HBM_CHANNEL_NUM],
     hls::stream<int> (&s_scanned_entries_every_cell_Split_unit_replicated)[HBM_CHANNEL_NUM],
@@ -259,8 +272,9 @@ void replicate_s_scanned_entries_every_cell(
     }
 }
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void merge_HBM_channel_PQ_codes_2_in_1(
+    const int nprobe,
     hls::stream<int> &s_scanned_entries_every_cell_Merge_unit_replicated,
     hls::stream<single_PQ> &s_single_PQ_A,
     hls::stream<single_PQ> &s_single_PQ_B,
@@ -289,8 +303,9 @@ void merge_HBM_channel_PQ_codes_2_in_1(
     }
 }
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void merge_HBM_channel_PQ_codes_3_in_1(
+    const int nprobe,
     hls::stream<int> &s_scanned_entries_every_cell_Merge_unit_replicated,
     hls::stream<single_PQ> &s_single_PQ_A,
     hls::stream<single_PQ> &s_single_PQ_B,
@@ -324,8 +339,9 @@ void merge_HBM_channel_PQ_codes_3_in_1(
     }
 }
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void merge_HBM_channel_PQ_codes_4_in_1(
+    const int nprobe,
     hls::stream<int> &s_scanned_entries_every_cell_Merge_unit_replicated,
     hls::stream<single_PQ> &s_single_PQ_A,
     hls::stream<single_PQ> &s_single_PQ_B,
@@ -364,8 +380,9 @@ void merge_HBM_channel_PQ_codes_4_in_1(
     }
 }
 
-template<const int query_num, const int nprobe>
+template<const int query_num>
 void load_and_split_PQ_codes_wrapper(
+    const int nprobe,
 <--load_and_split_PQ_codes_wrapper_arguments-->
     hls::stream<int>& s_start_addr_every_cell,
     hls::stream<int>& s_scanned_entries_every_cell_Load_unit,
@@ -378,7 +395,8 @@ void load_and_split_PQ_codes_wrapper(
 #pragma HLS array_partition variable=s_start_addr_every_cell_replicated complete
 // #pragma HLS RESOURCE variable=s_start_addr_every_cell_replicated core=FIFO_SRL
 
-    replicate_s_start_addr_every_cell<query_num, nprobe>(
+    replicate_s_start_addr_every_cell<query_num>(
+        nprobe,
         s_start_addr_every_cell, 
         s_start_addr_every_cell_replicated); 
 

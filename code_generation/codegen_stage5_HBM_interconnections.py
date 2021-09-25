@@ -47,7 +47,8 @@ if config["HBM_CHANNEL_NUM"] > config["STAGE5_COMP_PE_NUM"]:
 // #pragma HLS RESOURCE variable=s_single_PQ_per_channel core=FIFO_SRL
 """
     template_fill_dict["load_and_split_PQ_codes_wrapper_func_body"] += """
-    replicate_s_scanned_entries_every_cell<query_num, nprobe>(
+    replicate_s_scanned_entries_every_cell<query_num>(
+        nprobe,
         s_scanned_entries_every_cell_Load_unit, 
         s_scanned_entries_every_cell_Load_unit_replicated,
         s_scanned_entries_every_cell_Split_unit_replicated,
@@ -56,7 +57,8 @@ if config["HBM_CHANNEL_NUM"] > config["STAGE5_COMP_PE_NUM"]:
     for i in range(config["HBM_CHANNEL_NUM"]):
         template_fill_dict["load_and_split_PQ_codes_wrapper_func_body"] += \
         """
-    load_and_split_PQ_codes<query_num, nprobe>(
+    load_and_split_PQ_codes<query_num>(
+        nprobe,
         HBM_in{i}, 
         s_start_addr_every_cell_replicated[{i}], 
         s_scanned_entries_every_cell_Load_unit_replicated[{i}], 
@@ -67,7 +69,8 @@ if config["HBM_CHANNEL_NUM"] > config["STAGE5_COMP_PE_NUM"]:
         for i in range(config["STAGE5_COMP_PE_NUM"]):
             template_fill_dict["load_and_split_PQ_codes_wrapper_func_body"] += \
             """
-    merge_HBM_channel_PQ_codes_2_in_1<query_num, nprobe>(
+    merge_HBM_channel_PQ_codes_2_in_1<query_num>(
+        nprobe,
         s_scanned_entries_every_cell_Merge_unit_replicated[{i}],
         s_single_PQ_per_channel[{i} * 2],
         s_single_PQ_per_channel[{i} * 2 + 1],
@@ -76,7 +79,8 @@ if config["HBM_CHANNEL_NUM"] > config["STAGE5_COMP_PE_NUM"]:
         for i in range(config["STAGE5_COMP_PE_NUM"]):
             template_fill_dict["load_and_split_PQ_codes_wrapper_func_body"] += \
             """
-    merge_HBM_channel_PQ_codes_3_in_1<query_num, nprobe>(
+    merge_HBM_channel_PQ_codes_3_in_1<query_num>(
+        nprobe,
         s_scanned_entries_every_cell_Merge_unit_replicated[{i}],
         s_single_PQ_per_channel[{i} * 3],
         s_single_PQ_per_channel[{i} * 3 + 1],
@@ -86,7 +90,8 @@ if config["HBM_CHANNEL_NUM"] > config["STAGE5_COMP_PE_NUM"]:
         for i in range(config["STAGE5_COMP_PE_NUM"]):
             template_fill_dict["load_and_split_PQ_codes_wrapper_func_body"] += \
             """
-    merge_HBM_channel_PQ_codes_4_in_1<query_num, nprobe>(
+    merge_HBM_channel_PQ_codes_4_in_1<query_num>(
+        nprobe,
         s_scanned_entries_every_cell_Merge_unit_replicated[{i}],
         s_single_PQ_per_channel[{i} * 4],
         s_single_PQ_per_channel[{i} * 4 + 1],
@@ -105,7 +110,8 @@ elif config["HBM_CHANNEL_NUM"] == config["STAGE5_COMP_PE_NUM"]:
         4. no merge_HBM_channel_PQ_codes_2_in_1 functions
     """
     template_fill_dict["load_and_split_PQ_codes_wrapper_func_body"] += """
-    replicate_s_scanned_entries_every_cell<query_num, nprobe>(
+    replicate_s_scanned_entries_every_cell<query_num>(
+        nprobe,
         s_scanned_entries_every_cell_Load_unit, 
         s_scanned_entries_every_cell_Load_unit_replicated,
         s_scanned_entries_every_cell_Split_unit_replicated); 
@@ -113,7 +119,8 @@ elif config["HBM_CHANNEL_NUM"] == config["STAGE5_COMP_PE_NUM"]:
     for i in range(config["HBM_CHANNEL_NUM"]):
         template_fill_dict["load_and_split_PQ_codes_wrapper_func_body"] += \
         """
-    load_and_split_PQ_codes<query_num, nprobe>(
+    load_and_split_PQ_codes<query_num>(
+        nprobe,
         HBM_in{i}, 
         s_start_addr_every_cell_replicated[{i}], 
         s_scanned_entries_every_cell_Load_unit_replicated[{i}], 
@@ -129,7 +136,8 @@ elif config["HBM_CHANNEL_NUM"] * 3 == config["STAGE5_COMP_PE_NUM"]:
         4. no merge_HBM_channel_PQ_codes_2_in_1 functions
     """
     template_fill_dict["load_and_split_PQ_codes_wrapper_func_body"] += """
-    replicate_s_scanned_entries_every_cell<query_num, nprobe>(
+    replicate_s_scanned_entries_every_cell<query_num>(
+        nprobe,
         s_scanned_entries_every_cell_Load_unit, 
         s_scanned_entries_every_cell_Load_unit_replicated,
         s_scanned_entries_every_cell_Split_unit_replicated); 
@@ -137,7 +145,8 @@ elif config["HBM_CHANNEL_NUM"] * 3 == config["STAGE5_COMP_PE_NUM"]:
     for i in range(config["HBM_CHANNEL_NUM"]):
         template_fill_dict["load_and_split_PQ_codes_wrapper_func_body"] += \
         """
-    load_and_split_PQ_codes<query_num, nprobe>(
+    load_and_split_PQ_codes<query_num>(
+        nprobe,
         HBM_in{i}, 
         s_start_addr_every_cell_replicated[{i}], 
         s_scanned_entries_every_cell_Load_unit_replicated[{i}], 
