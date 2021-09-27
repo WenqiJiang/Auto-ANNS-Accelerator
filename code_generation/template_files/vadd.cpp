@@ -77,7 +77,7 @@ void vadd(
     // stage 1 parameter
     const bool OPQ_enable,
     // stage 2 parameters
-    const int centroids_per_partition, 
+    const int centroids_per_partition_even, 
     const int centroids_per_partition_last_PE, 
     // stage 4 parameters, if PE_NUM==1, set the same value
     //   nprobe_per_table_construction_pe_larger = nprobe_per_table_construction_pe_smaller
@@ -116,7 +116,7 @@ void vadd(
 #pragma HLS INTERFACE s_axilite port=nlist
 #pragma HLS INTERFACE s_axilite port=nprobe
 #pragma HLS INTERFACE s_axilite port=OPQ_enable
-#pragma HLS INTERFACE s_axilite port=centroids_per_partition
+#pragma HLS INTERFACE s_axilite port=centroids_per_partition_even
 #pragma HLS INTERFACE s_axilite port=centroids_per_partition_last_PE
 #pragma HLS INTERFACE s_axilite port=nprobe_per_table_construction_pe_larger
 #pragma HLS INTERFACE s_axilite port=nprobe_per_table_construction_pe_smaller
@@ -177,6 +177,8 @@ void vadd(
 // #pragma HLS resource variable=s_selected_distance_cell_ID core=FIFO_BRAM
 
     select_Voronoi_cell<STAGE_3_PRIORITY_QUEUE_LEVEL, STAGE_3_PRIORITY_QUEUE_L1_NUM, NPROBE_MAX>(
+        nlist,
+        nprobe,
         s_merged_cell_distance,
         s_selected_distance_cell_ID);
 

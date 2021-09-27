@@ -51,8 +51,10 @@ Variable to be replaced (<--variable_name-->):
 #include <iostream>
 #include <fstream>
 
+#include <boost/filesystem>
 #include "xcl2.hpp"
 
+namespace fs = boost::filesystem;
 
 #define BANK_NAME(n) n | XCL_MEM_TOPOLOGY
 // memory topology:  https://www.xilinx.com/html_docs/xilinx2021_1/vitis_doc/optimizingperformance.html#utc1504034308941
@@ -110,12 +112,54 @@ char* read_binary_file(const std::string &xclbin_file_name, unsigned &nb)
 
 int main(int argc, char** argv)
 {
-    if (argc != 2) {
-        std::cout << "Usage: " << argv[0] << " <XCLBIN File>" << std::endl;
+    if (argc != 7) {
+        std::cout << "Usage: " << argv[0] << " <XCLBIN File> <nlist> <nprobe> <OPQ_enable> <data directory> <ground truth dir>" << std::endl;
 		return EXIT_FAILURE;
 	}
 
     std::string binaryFile = argv[1];
+
+    int nlist = std::stoi(argv[2]);
+    int nprobe = std::stoi(argv[3]);
+    bool OPQ_enable = (bool) std::stoi(argv[4]);
+
+    std::string data_dir_prefix_str = argv[5];
+    fs::path data_dir_prefix_path(data_dir_prefix_str);
+    std::string gnd_dir_str = argv[6];
+    fs::path gnd_dir_path(gnd_dir_str);
+
+    std::cout << "nlist: " << nlist << std::endl <<
+        "nprobe: " << nprobe << std::endl <<
+        "OPQ enable: " << OPQ_enable << std::endl <<
+        "data directory" << data_dir_prefix_str << std::endl <<
+        "ground truth directory" << gnd_dir_path << std::endl;
+
+    // inferred parameters giving input parameters
+    int centroids_per_partition_even = ceil(float(nlist) / float(PE_NUM_CENTER_DIST_COMP));
+    int centroids_per_partition_last_PE = nlist - centroids_per_partition_even * (PE_NUM_CENTER_DIST_COMP - 1);
+
+    int nprobe_per_table_construction_pe_larger = -1;
+    int nprobe_per_table_construction_pe_smaller = -1;
+    while (nprobe_per_table_construction_pe_smaller < 1) {
+        nprobe_per_table_construction_pe_larger = ceil(float(nprobe) / float(PE_NUM_TABLE_CONSTRUCTION));
+        nprobe_per_table_construction_pe_smaller = 
+            nprobe - PE_NUM_TABLE_CONSTRUCTION_LARGER * nprobe_per_table_construction_pe_larger;
+        if (nprobe_per_table_construction_pe_smaller < 1) {
+            nprobe++;
+            std::cout << "Increasing nprobe due to stage 4 hardware compatibility reason," <<
+                "current nprobe: " << nprobe << std::endl;
+        }
+    }
+    if (PE_NUM_TABLE_CONSTRUCTION == 1) {
+        nprobe_per_table_construction_pe_smaller = nprobe_per_table_construction_pe_larger;
+    }
+
+    std::cout << "Inferred parameters:" << std::endl <<
+         "centroids_per_partition_even: " << centroids_per_partition_even << std::endl <<
+         "centroids_per_partition_last_PE: " << centroids_per_partition_last_PE << std::endl <<
+         "nprobe_per_table_construction_pe_larger: " << nprobe_per_table_construction_pe_larger << std::endl <<
+         "nprobe_per_table_construction_pe_smaller: " << nprobe_per_table_construction_pe_smaller << std::endl;
+
 //////////////////////////////   TEMPLATE START  //////////////////////////////
     
 <--HBM_embedding_fstream-->
@@ -125,9 +169,9 @@ int main(int argc, char** argv)
 <--HBM_centroid_vectors_len-->
 
     int query_num = <--QUERY_NUM-->;
-    size_t HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_len = NLIST * 3;
+    size_t HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_len = nlist * 3;
     size_t HBM_query_vector_len = query_num * <--D--> < <--QUERY_NUM--> * <--D-->? query_num * <--D-->: <--QUERY_NUM--> * <--D-->;
-    size_t HBM_vector_quantizer_len = <--NLIST--> * <--D-->;
+    size_t HBM_vector_quantizer_len = nlist * <--D-->;
     size_t HBM_product_quantizer_len = <--M--> * 256 * (<--D--> / <--M-->);
 #ifdef OPQ_ENABLE
     size_t HBM_OPQ_matrix_len = <--D--> * <--D-->;
@@ -202,7 +246,7 @@ int main(int argc, char** argv)
 
 <--raw_gt_vec_ID_fstream-->
         
-<--HBM_embedding0_fstream_read-->
+<--HBM_embedding_fstream_read-->
 
     HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_fstream.read(
         HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_char,
@@ -384,6 +428,13 @@ int main(int argc, char** argv)
 #ifdef OPQ_ENABLE
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_HBM_OPQ_matrix));
 #endif
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, nlist));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, nprobe));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, OPQ_enable));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, centroids_per_partition));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, centroids_per_partition_last_PE));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, nprobe_per_table_construction_pe_larger));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, nprobe_per_table_construction_pe_smaller));
 
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, buffer_output));
     

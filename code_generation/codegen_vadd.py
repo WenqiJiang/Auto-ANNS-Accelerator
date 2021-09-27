@@ -96,7 +96,7 @@ if config["STAGE2_ON_CHIP"] == True:
     if config["PE_NUM_CENTER_DIST_COMP"] > 1:
         template_fill_dict["stage_2_IVF_center_distance_computation"] = """
     compute_cell_distance_wrapper<QUERY_NUM>(
-        centroids_per_partition, 
+        centroids_per_partition_even, 
         centroids_per_partition_last_PE, 
         nlist,
         s_center_vectors_init_distance_computation_PE, 
@@ -122,7 +122,7 @@ else:
     if config["PE_NUM_CENTER_DIST_COMP"] > 1:
         template_fill_dict["stage_2_IVF_center_distance_computation"] = """
     compute_cell_distance_wrapper<QUERY_NUM>(
-        centroids_per_partition, 
+        centroids_per_partition_even, 
         centroids_per_partition_last_PE, 
         nlist,
 {func_call_str}

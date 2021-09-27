@@ -6,7 +6,7 @@
 ////////////////////     Function to call in top-level     ////////////////////
 template<const int query_num>
 void compute_cell_distance_wrapper(
-    const int centroids_per_partition, 
+    const int centroids_per_partition_even, 
     const int centroids_per_partition_last_PE, 
     const int total_centriods,
     hls::stream<float> &s_centroid_vectors,
@@ -898,7 +898,7 @@ void compute_cell_distance_tail_PE(
 
 template<const int query_num>
 void compute_cell_distance_wrapper(
-    const int centroids_per_partition, 
+    const int centroids_per_partition_even, 
     const int centroids_per_partition_last_PE, 
     const int total_centriods,
     hls::stream<float> &s_centroid_vectors,
