@@ -74,6 +74,8 @@ void vadd(
 <--vadd_arg_OPQ_matrix-->
     const int nlist,
     const int nprobe,
+    // stage 1 parameter
+    const bool OPQ_enable,
     // stage 2 parameters
     const int centroids_per_partition, 
     const int centroids_per_partition_last_PE, 
@@ -113,6 +115,7 @@ void vadd(
 
 #pragma HLS INTERFACE s_axilite port=nlist
 #pragma HLS INTERFACE s_axilite port=nprobe
+#pragma HLS INTERFACE s_axilite port=OPQ_enable
 #pragma HLS INTERFACE s_axilite port=centroids_per_partition
 #pragma HLS INTERFACE s_axilite port=centroids_per_partition_last_PE
 #pragma HLS INTERFACE s_axilite port=nprobe_per_table_construction_pe_larger
@@ -143,6 +146,7 @@ void vadd(
 #pragma HLS stream variable=s_center_vectors_init_distance_computation_PE depth=8
 
     load_center_vectors(
+        nlist,
         HBM_vector_quantizer,
         s_center_vectors_init_distance_computation_PE,
         s_center_vectors_init_lookup_PE);
@@ -186,6 +190,7 @@ void vadd(
 
     //  dist struct to cell ID (int)
     split_cell_ID<QUERY_NUM>(
+        nprobe,
         s_selected_distance_cell_ID, 
         s_searched_cell_id_lookup_PE, 
         s_searched_cell_id_scan_controller);
@@ -198,11 +203,14 @@ void vadd(
 
 #ifdef STAGE2_ON_CHIP
     lookup_center_vectors<QUERY_NUM>(
+        nlist,
+        nprobe,
         s_center_vectors_init_lookup_PE, 
         s_searched_cell_id_lookup_PE, 
         s_center_vectors_lookup_PE);
 #else
     lookup_center_vectors<QUERY_NUM>(
+        nprobe,
         HBM_vector_quantizer, 
         s_searched_cell_id_lookup_PE, 
         s_center_vectors_lookup_PE);
@@ -257,7 +265,9 @@ void vadd(
 #pragma HLS stream variable=s_scanned_entries_per_query_Priority_queue depth=512
 // #pragma HLS RESOURCE variable=s_scanned_entries_per_query_Priority_queue core=FIFO_BRAM
 
-    scan_controller<QUERY_NUM, NLIST, NPROBE>(
+    scan_controller<QUERY_NUM>(
+        nlist, 
+        nprobe,
         HBM_addr_info,
         s_searched_cell_id_scan_controller, 
         s_start_addr_every_cell,

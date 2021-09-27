@@ -1,8 +1,8 @@
 /*
 Variable to be replaced (<--variable_name-->):
 
-    NLIST
-    NPROBE
+    NLIST_MAX
+    NPROBE_MAX
     D
     M
     K
@@ -18,8 +18,6 @@ Variable to be replaced (<--variable_name-->):
     STAGE2_ON_CHIP
     PE_NUM_CENTER_DIST_COMP
     PE_NUM_CENTER_DIST_COMP_EVEN
-    CENTROIDS_PER_PARTITION_EVEN
-    CENTROIDS_PER_PARTITION_LAST_PE
 
     // stage 3
     STAGE_3_PRIORITY_QUEUE_LEVEL
@@ -29,8 +27,6 @@ Variable to be replaced (<--variable_name-->):
     PE_NUM_TABLE_CONSTRUCTION
     PE_NUM_TABLE_CONSTRUCTION_LARGER
     PE_NUM_TABLE_CONSTRUCTION_SMALLER
-    NPROBE_PER_TABLE_CONSTRUCTION_PE_LARGER
-    NPROBE_PER_TABLE_CONSTRUCTION_PE_SMALLER
 
     // stage 5
     HBM_CHANNEL_NUM
@@ -46,12 +42,12 @@ Variable to be replaced (<--variable_name-->):
 
 #pragma once
 
-#define NLIST 1024
-#define NPROBE 1
+#define NLIST_MAX 16384
+#define NPROBE_MAX 128
 #define D 128
 #define M 16
 #define K 256
-#define TOPK 1
+#define TOPK 10
 
 
 
@@ -62,31 +58,34 @@ Variable to be replaced (<--variable_name-->):
 // stage 2
 // 16 = 15 equal one + 1 (all equal) diff must be 1!
 #define STAGE2_ON_CHIP 1
-#define PE_NUM_CENTER_DIST_COMP 4
+#define PE_NUM_CENTER_DIST_COMP 12
 
-#define PE_NUM_CENTER_DIST_COMP_EVEN 3
-#define CENTROIDS_PER_PARTITION_EVEN 256
-#define CENTROIDS_PER_PARTITION_LAST_PE 256
+#define PE_NUM_CENTER_DIST_COMP_EVEN 11
+#define CENTROIDS_PER_PARTITION_EVEN_MAX 1366
+#define CENTROIDS_PER_PARTITION_LAST_PE_MAX 1358
 
 
 // stage 3
 // 2 levels, first level 2 queue, second level 1 queue
-#define STAGE_3_PRIORITY_QUEUE_LEVEL 1
-#define STAGE_3_PRIORITY_QUEUE_L1_NUM 1
+#define STAGE_3_PRIORITY_QUEUE_LEVEL 2
+#define STAGE_3_PRIORITY_QUEUE_L1_NUM 2
 
 // stage 4
 // first PE: construct 9 tables per query, last one construct 8
-#define PE_NUM_TABLE_CONSTRUCTION 1
+#define PE_NUM_TABLE_CONSTRUCTION 6
+
+#define PE_NUM_TABLE_CONSTRUCTION_LARGER 5
+#define PE_NUM_TABLE_CONSTRUCTION_SMALLER 1
 
 
 // stage 5
-#define HBM_CHANNEL_NUM 9
-#define STAGE5_COMP_PE_NUM 27
-#define PQ_CODE_CHANNELS_PER_STREAM 1
+#define HBM_CHANNEL_NUM 16
+#define STAGE5_COMP_PE_NUM 16
+#define PQ_CODE_CHANNELS_PER_STREAM 3
 
 
 // number of 16 outputs per cycle, e.g., HBM channel num = 10, comp PE num = 30, then 
 //   SORT_GROUP_NUM = 2; if HBM channel = 12, PE_num = 36, then SORT_GROUP_NUM = 3
-#define SORT_GROUP_NUM 0
+#define SORT_GROUP_NUM 1
 #define STAGE_6_PRIORITY_QUEUE_LEVEL 2
-#define STAGE_6_PRIORITY_QUEUE_L1_NUM 54
+#define STAGE_6_PRIORITY_QUEUE_L1_NUM 20

@@ -46,13 +46,14 @@ if config["OPQ_ENABLE"]:
 #pragma HLS stream variable=s_OPQ_init depth=512
 // #pragma HLS resource variable=s_OPQ_init core=FIFO_BRAM
 
-    load_OPQ_matrix(HBM_OPQ_matrix, s_OPQ_init);
+    load_OPQ_matrix(OPQ_enable, HBM_OPQ_matrix, s_OPQ_init);
 
     hls::stream<float> s_preprocessed_query_vectors;
 #pragma HLS stream variable=s_preprocessed_query_vectors depth=512
 // #pragma HLS resource variable=s_preprocessed_query_vectors core=FIFO_BRAM
 
     OPQ_preprocessing<QUERY_NUM>(
+        OPQ_enable,
         s_OPQ_init,
         s_query_vectors,
         s_preprocessed_query_vectors);

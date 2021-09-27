@@ -8,6 +8,7 @@ const int opq_unroll_width = 4; //vectorized computation of 8 numbers
 ////////////////////    Function to call in top-level     //////////////////// 
 template<const int query_num>
 void OPQ_preprocessing(
+    const bool OPQ_enable,
     hls::stream<float> &s_OPQ_init,
     hls::stream<float> &s_query_vectors,
     hls::stream<float> &s_preprocessed_query_vectors);
@@ -17,6 +18,7 @@ void OPQ_preprocessing(
 
 template<const int query_num>
 void OPQ_preprocessing(
+    const bool OPQ_enable,
     hls::stream<float> &s_OPQ_init,
     hls::stream<float> &s_query_vectors,
     hls::stream<float> &s_preprocessed_query_vectors) {
@@ -28,7 +30,10 @@ void OPQ_preprocessing(
     // init, load D x D OPQ matrix to local
     for (int r = 0; r < D; r++) {
         for (int c = 0; c < D; c++) {
-            OPQ_mat[r][c] = s_OPQ_init.read();
+#pragma HLS pipeline II=1
+            if (OPQ_enable) {
+                OPQ_mat[r][c] = s_OPQ_init.read();
+            }
         }
     }
 
@@ -71,7 +76,14 @@ void OPQ_preprocessing(
         // write
         for (int d = 0; d < D; d++) {
 #pragma HLS pipeline II=1
-            s_preprocessed_query_vectors.write(intermediate_result[d]);
+            float processed_query_vector;
+            if (OPQ_enable) {
+                processed_query_vector = intermediate_result[d];
+            }
+            else {
+                processed_query_vector = query_buffer[d];
+            }
+            s_preprocessed_query_vectors.write(processed_query_vector);
         }
     }
 }
