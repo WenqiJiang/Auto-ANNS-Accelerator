@@ -60,6 +60,10 @@ Variable to be replaced (<--variable_name-->):
 
 extern "C" {
 
+// The argument of top-level function must not be too long,
+//   otherwise there will be error when loading bitstreams.
+// The safe number is <= 20 chararcters, but it could be longer
+//   (the limit is not tested yet)
 void vadd(  
     const ap_uint512_t* HBM_in0,
     const ap_uint512_t* HBM_in1,
@@ -93,12 +97,12 @@ void vadd(
     // stage 1 parameter
     const bool OPQ_enable,
     // stage 2 parameters
-    const int centroids_per_partition, 
-    const int centroids_per_partition_last_PE, 
+    const int c_per_part_even, 
+    const int c_per_part_last, 
     // stage 4 parameters, if PE_NUM==1, set the same value
     //   nprobe_per_table_construction_pe_larger = nprobe_per_table_construction_pe_smaller
-    const int nprobe_per_table_construction_pe_larger,
-    const int nprobe_per_table_construction_pe_smaller,
+    const int np_per_pe_larger,
+    const int np_per_pe_smaller,
     // HBM26: output (vector_ID, distance)
     ap_uint64_t* HBM_out
     // const ap_uint512_t* HBM_in22, const ap_uint512_t* HBM_in23, 
@@ -164,16 +168,23 @@ void vadd(
 #pragma HLS INTERFACE s_axilite port=nlist
 #pragma HLS INTERFACE s_axilite port=nprobe
 #pragma HLS INTERFACE s_axilite port=OPQ_enable
-#pragma HLS INTERFACE s_axilite port=centroids_per_partition
-#pragma HLS INTERFACE s_axilite port=centroids_per_partition_last_PE
-#pragma HLS INTERFACE s_axilite port=nprobe_per_table_construction_pe_larger
-#pragma HLS INTERFACE s_axilite port=nprobe_per_table_construction_pe_smaller
+#pragma HLS INTERFACE s_axilite port=c_per_part_even
+#pragma HLS INTERFACE s_axilite port=c_per_part_last
+#pragma HLS INTERFACE s_axilite port=np_per_pe_larger
+#pragma HLS INTERFACE s_axilite port=np_per_pe_smaller
 
 #pragma HLS INTERFACE s_axilite port=HBM_out
 
 #pragma HLS INTERFACE s_axilite port=return
     
 #pragma HLS dataflow
+
+    // name the input argument to longer version
+    int centroids_per_partition_even = c_per_part_even;
+    int centroids_per_partition_last_PE = c_per_part_last;
+
+    int nprobe_per_table_construction_pe_larger = np_per_pe_larger;
+    int nprobe_per_table_construction_pe_smaller = np_per_pe_smaller;
 
     ////////////////////     Init     ////////////////////
 
@@ -230,7 +241,7 @@ void vadd(
 
 
     compute_cell_distance_wrapper<QUERY_NUM>(
-        centroids_per_partition, 
+        centroids_per_partition_even, 
         centroids_per_partition_last_PE, 
         nlist,
         s_center_vectors_init_distance_computation_PE, 

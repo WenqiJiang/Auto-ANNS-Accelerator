@@ -99,10 +99,10 @@ for i in range(config["HBM_CHANNEL_NUM"]):
         "    char* HBM_embedding{i}_char = (char*) malloc(HBM_embedding{i}_size);\n".format(i=i)
     template_fill_dict["HBM_embedding_fstream"] += \
         '''    
-    fs::path HBM_embedding{i}_dir_suffix_path("HBM_bank_{i}_raw");
-    fs::path HBM_embedding{i}_dir_path = data_dir_prefix_path / HBM_embedding{i}_dir_suffix_path;
+    std::string HBM_embedding{i}_dir_suffix("HBM_bank_{i}_raw");
+    std::string HBM_embedding{i}_dir = dir_concat(data_dir_prefix, HBM_embedding{i}_dir_suffix);
     std::ifstream HBM_embedding{i}_fstream(
-        HBM_embedding{i}_dir_path.string(), 
+        HBM_embedding{i}_dir, 
         std::ios::in | std::ios::binary);\n'''.format(i=i)
     template_fill_dict["HBM_embedding_fstream_read"] += \
         "    HBM_embedding{i}_fstream.read(HBM_embedding{i}_char, HBM_embedding{i}_size);\n".format(i=i)
@@ -126,50 +126,47 @@ for i in range(config["HBM_CHANNEL_NUM"]):
 
     template_fill_dict["HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_fstream"] = \
         '''  
-    std::string HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir_suffix_str = 
+    std::string HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir_suffix = 
         "HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_3_by_" + std::to_string(nlist) + "_raw";
-    fs::path HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir_suffix_path(
-        HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir_suffix_str);
-    fs::path HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir_path = 
-        data_dir_prefix_path / HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir_suffix_path;
+    std::string HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir = 
+        dir_concat(data_dir_prefix, HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir_suffix);
     std::ifstream HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_fstream(
-        HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir_path.string(), 
+        HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir, 
         std::ios::in | std::ios::binary);\n'''
     template_fill_dict["HBM_query_vector_fstream"] = \
         '''
-    fs::path HBM_query_vector_dir_suffix_path("query_vectors_float32_{QUERY_NUM}_128_raw");
-    fs::path HBM_query_vector_path = data_dir_prefix_path / HBM_query_vector_dir_suffix_path;
+    std::string HBM_query_vector_dir_suffix = "query_vectors_float32_{QUERY_NUM}_128_raw";
+    std::string HBM_query_vector_path = dir_concat(data_dir_prefix, HBM_query_vector_dir_suffix);
     std::ifstream HBM_query_vector_fstream(
-        HBM_query_vector_path.string(),
+        HBM_query_vector_path,
         std::ios::in | std::ios::binary);\n'''.format(QUERY_NUM=config["QUERY_NUM"])
     template_fill_dict["HBM_vector_quantizer_fstream"] = \
         '''    
-    std::string HBM_vector_quantizer_dir_suffix_str = "vector_quantizer_float32_" + std::to_string(nlist) + "_128_raw";
-    fs::path HBM_vector_quantizer_dir_suffix_path(HBM_vector_quantizer_dir_suffix_str);
-    fs::path HBM_vector_quantizer_dir_path = data_dir_prefix_path / HBM_vector_quantizer_dir_suffix_path;
+    std::string HBM_vector_quantizer_dir_suffix = "vector_quantizer_float32_" + std::to_string(nlist) + "_128_raw";
+    std::string HBM_vector_quantizer_dir = dir_concat(data_dir_prefix, HBM_vector_quantizer_dir_suffix);
     std::ifstream HBM_vector_quantizer_fstream(
-        HBM_vector_quantizer_dir_path.string(), 
+        HBM_vector_quantizer_dir, 
         std::ios::in | std::ios::binary);\n'''
     template_fill_dict["HBM_product_quantizer_fstream"] = \
         '''    
-    fs::path HBM_product_quantizer_suffix_dir_path("product_quantizer_float32_{M}_{K}_{PARTITION}_raw");
-    fs::path HBM_product_quantizer_dir_path = data_dir_prefix_path / HBM_product_quantizer_suffix_dir_path;
+    std::string HBM_product_quantizer_suffix_dir = "product_quantizer_float32_{M}_{K}_{PARTITION}_raw";
+    std::string HBM_product_quantizer_dir = dir_concat(data_dir_prefix, HBM_product_quantizer_suffix_dir);
     std::ifstream HBM_product_quantizer_fstream(
-        HBM_product_quantizer_dir_path.string(),
+        HBM_product_quantizer_dir,
         std::ios::in | std::ios::binary);\n'''.format(
             M=config["M"], K=config["K"],  PARTITION=int(config["D"]/config["M"]))
     template_fill_dict["HBM_OPQ_matrix_fstream"] = \
         '''    
-    fs::path HBM_OPQ_matrix_suffix_dir_path("OPQ_matrix_float32_{D}_{D}_raw");
-    fs::path HBM_OPQ_matrix_dir_path = data_dir_prefix_path / HBM_OPQ_matrix_suffix_dir_path;
+    std::string HBM_OPQ_matrix_suffix_dir = "OPQ_matrix_float32_{D}_{D}_raw";
+    std::string HBM_OPQ_matrix_dir = dir_concat(data_dir_prefix, HBM_OPQ_matrix_suffix_dir);
     std::ifstream HBM_OPQ_matrix_fstream(
-        HBM_OPQ_matrix_dir_path.string(),
+        HBM_OPQ_matrix_dir,
         std::ios::in | std::ios::binary);\n'''.format(D=config["D"])
     template_fill_dict["raw_gt_vec_ID_fstream"] = '''
-    fs::path raw_gt_vec_ID_suffix_dir_path("idx_{DB_SCALE}.ivecs");
-    fs::path raw_gt_vec_ID_dir_path = gnd_dir_path / raw_gt_vec_ID_suffix_dir_path;
+    std::string raw_gt_vec_ID_suffix_dir = "idx_{DB_SCALE}.ivecs";
+    std::string raw_gt_vec_ID_dir = dir_concat(gnd_dir, raw_gt_vec_ID_suffix_dir);
     std::ifstream raw_gt_vec_ID_fstream(
-        raw_gt_vec_ID_dir_path.string(),
+        raw_gt_vec_ID_dir,
         std::ios::in | std::ios::binary);\n'''.format(DB_SCALE=config["DB_SCALE"])
 
 bytes_float = 4

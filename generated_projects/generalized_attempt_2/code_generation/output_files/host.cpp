@@ -50,10 +50,8 @@ Variable to be replaced (<--variable_name-->):
 #include <limits>
 #include <iostream>
 #include <fstream>
-#include <filesystem>
 
 #include "xcl2.hpp"
-
 
 #define BANK_NAME(n) n | XCL_MEM_TOPOLOGY
 // memory topology:  https://www.xilinx.com/html_docs/xilinx2021_1/vitis_doc/optimizingperformance.html#utc1504034308941
@@ -125,6 +123,14 @@ char* read_binary_file(const std::string &xclbin_file_name, unsigned &nb)
     return buf;
 }
 
+// boost::filesystem does not compile well, so implement this myself
+std::string dir_concat(std::string dir1, std::string dir2) {
+    if (dir1.back() != '/') {
+        dir1 += '/';
+    }
+    return dir1 + dir2;
+}
+
 int main(int argc, char** argv)
 {
     if (argc != 7) {
@@ -138,16 +144,14 @@ int main(int argc, char** argv)
     int nprobe = std::stoi(argv[3]);
     bool OPQ_enable = (bool) std::stoi(argv[4]);
 
-    std::string data_dir_prefix_str = argv[5];
-    fs::path data_dir_prefix_path(data_dir_prefix_str);
-    std::string gnd_dir_str = argv[6];
-    fs::path gnd_dir_path(gnd_dir_str);
+    std::string data_dir_prefix = argv[5];
+    std::string gnd_dir = argv[6];
 
     std::cout << "nlist: " << nlist << std::endl <<
         "nprobe: " << nprobe << std::endl <<
         "OPQ enable: " << OPQ_enable << std::endl <<
-        "data directory" << data_dir_prefix_str << std::endl <<
-        "ground truth directory" << gnd_dir_path << std::endl;
+        "data directory" << data_dir_prefix << std::endl <<
+        "ground truth directory" << gnd_dir << std::endl;
 
     // inferred parameters giving input parameters
     int centroids_per_partition_even = ceil(float(nlist) / float(PE_NUM_CENTER_DIST_COMP));
@@ -173,105 +177,105 @@ int main(int argc, char** argv)
          "centroids_per_partition_even: " << centroids_per_partition_even << std::endl <<
          "centroids_per_partition_last_PE: " << centroids_per_partition_last_PE << std::endl <<
          "nprobe_per_table_construction_pe_larger: " << nprobe_per_table_construction_pe_larger << std::endl <<
-         "nprobe_per_table_construction_pe_smaller: " << nprobe_per_table_construction_pe_smaller << std::endl <<
+         "nprobe_per_table_construction_pe_smaller: " << nprobe_per_table_construction_pe_smaller << std::endl;
 
 //////////////////////////////   TEMPLATE START  //////////////////////////////
     
     
-    fs::path HBM_embedding0_dir_suffix_path("HBM_bank_0_raw");
-    fs::path HBM_embedding0_dir_path = data_dir_prefix_path / HBM_embedding0_dir_suffix_path;
+    std::string HBM_embedding0_dir_suffix("HBM_bank_0_raw");
+    std::string HBM_embedding0_dir = dir_concat(data_dir_prefix, HBM_embedding0_dir_suffix);
     std::ifstream HBM_embedding0_fstream(
-        HBM_embedding0_dir_path.string(), 
+        HBM_embedding0_dir, 
         std::ios::in | std::ios::binary);
     
-    fs::path HBM_embedding1_dir_suffix_path("HBM_bank_1_raw");
-    fs::path HBM_embedding1_dir_path = data_dir_prefix_path / HBM_embedding1_dir_suffix_path;
+    std::string HBM_embedding1_dir_suffix("HBM_bank_1_raw");
+    std::string HBM_embedding1_dir = dir_concat(data_dir_prefix, HBM_embedding1_dir_suffix);
     std::ifstream HBM_embedding1_fstream(
-        HBM_embedding1_dir_path.string(), 
+        HBM_embedding1_dir, 
         std::ios::in | std::ios::binary);
     
-    fs::path HBM_embedding2_dir_suffix_path("HBM_bank_2_raw");
-    fs::path HBM_embedding2_dir_path = data_dir_prefix_path / HBM_embedding2_dir_suffix_path;
+    std::string HBM_embedding2_dir_suffix("HBM_bank_2_raw");
+    std::string HBM_embedding2_dir = dir_concat(data_dir_prefix, HBM_embedding2_dir_suffix);
     std::ifstream HBM_embedding2_fstream(
-        HBM_embedding2_dir_path.string(), 
+        HBM_embedding2_dir, 
         std::ios::in | std::ios::binary);
     
-    fs::path HBM_embedding3_dir_suffix_path("HBM_bank_3_raw");
-    fs::path HBM_embedding3_dir_path = data_dir_prefix_path / HBM_embedding3_dir_suffix_path;
+    std::string HBM_embedding3_dir_suffix("HBM_bank_3_raw");
+    std::string HBM_embedding3_dir = dir_concat(data_dir_prefix, HBM_embedding3_dir_suffix);
     std::ifstream HBM_embedding3_fstream(
-        HBM_embedding3_dir_path.string(), 
+        HBM_embedding3_dir, 
         std::ios::in | std::ios::binary);
     
-    fs::path HBM_embedding4_dir_suffix_path("HBM_bank_4_raw");
-    fs::path HBM_embedding4_dir_path = data_dir_prefix_path / HBM_embedding4_dir_suffix_path;
+    std::string HBM_embedding4_dir_suffix("HBM_bank_4_raw");
+    std::string HBM_embedding4_dir = dir_concat(data_dir_prefix, HBM_embedding4_dir_suffix);
     std::ifstream HBM_embedding4_fstream(
-        HBM_embedding4_dir_path.string(), 
+        HBM_embedding4_dir, 
         std::ios::in | std::ios::binary);
     
-    fs::path HBM_embedding5_dir_suffix_path("HBM_bank_5_raw");
-    fs::path HBM_embedding5_dir_path = data_dir_prefix_path / HBM_embedding5_dir_suffix_path;
+    std::string HBM_embedding5_dir_suffix("HBM_bank_5_raw");
+    std::string HBM_embedding5_dir = dir_concat(data_dir_prefix, HBM_embedding5_dir_suffix);
     std::ifstream HBM_embedding5_fstream(
-        HBM_embedding5_dir_path.string(), 
+        HBM_embedding5_dir, 
         std::ios::in | std::ios::binary);
     
-    fs::path HBM_embedding6_dir_suffix_path("HBM_bank_6_raw");
-    fs::path HBM_embedding6_dir_path = data_dir_prefix_path / HBM_embedding6_dir_suffix_path;
+    std::string HBM_embedding6_dir_suffix("HBM_bank_6_raw");
+    std::string HBM_embedding6_dir = dir_concat(data_dir_prefix, HBM_embedding6_dir_suffix);
     std::ifstream HBM_embedding6_fstream(
-        HBM_embedding6_dir_path.string(), 
+        HBM_embedding6_dir, 
         std::ios::in | std::ios::binary);
     
-    fs::path HBM_embedding7_dir_suffix_path("HBM_bank_7_raw");
-    fs::path HBM_embedding7_dir_path = data_dir_prefix_path / HBM_embedding7_dir_suffix_path;
+    std::string HBM_embedding7_dir_suffix("HBM_bank_7_raw");
+    std::string HBM_embedding7_dir = dir_concat(data_dir_prefix, HBM_embedding7_dir_suffix);
     std::ifstream HBM_embedding7_fstream(
-        HBM_embedding7_dir_path.string(), 
+        HBM_embedding7_dir, 
         std::ios::in | std::ios::binary);
     
-    fs::path HBM_embedding8_dir_suffix_path("HBM_bank_8_raw");
-    fs::path HBM_embedding8_dir_path = data_dir_prefix_path / HBM_embedding8_dir_suffix_path;
+    std::string HBM_embedding8_dir_suffix("HBM_bank_8_raw");
+    std::string HBM_embedding8_dir = dir_concat(data_dir_prefix, HBM_embedding8_dir_suffix);
     std::ifstream HBM_embedding8_fstream(
-        HBM_embedding8_dir_path.string(), 
+        HBM_embedding8_dir, 
         std::ios::in | std::ios::binary);
     
-    fs::path HBM_embedding9_dir_suffix_path("HBM_bank_9_raw");
-    fs::path HBM_embedding9_dir_path = data_dir_prefix_path / HBM_embedding9_dir_suffix_path;
+    std::string HBM_embedding9_dir_suffix("HBM_bank_9_raw");
+    std::string HBM_embedding9_dir = dir_concat(data_dir_prefix, HBM_embedding9_dir_suffix);
     std::ifstream HBM_embedding9_fstream(
-        HBM_embedding9_dir_path.string(), 
+        HBM_embedding9_dir, 
         std::ios::in | std::ios::binary);
     
-    fs::path HBM_embedding10_dir_suffix_path("HBM_bank_10_raw");
-    fs::path HBM_embedding10_dir_path = data_dir_prefix_path / HBM_embedding10_dir_suffix_path;
+    std::string HBM_embedding10_dir_suffix("HBM_bank_10_raw");
+    std::string HBM_embedding10_dir = dir_concat(data_dir_prefix, HBM_embedding10_dir_suffix);
     std::ifstream HBM_embedding10_fstream(
-        HBM_embedding10_dir_path.string(), 
+        HBM_embedding10_dir, 
         std::ios::in | std::ios::binary);
     
-    fs::path HBM_embedding11_dir_suffix_path("HBM_bank_11_raw");
-    fs::path HBM_embedding11_dir_path = data_dir_prefix_path / HBM_embedding11_dir_suffix_path;
+    std::string HBM_embedding11_dir_suffix("HBM_bank_11_raw");
+    std::string HBM_embedding11_dir = dir_concat(data_dir_prefix, HBM_embedding11_dir_suffix);
     std::ifstream HBM_embedding11_fstream(
-        HBM_embedding11_dir_path.string(), 
+        HBM_embedding11_dir, 
         std::ios::in | std::ios::binary);
     
-    fs::path HBM_embedding12_dir_suffix_path("HBM_bank_12_raw");
-    fs::path HBM_embedding12_dir_path = data_dir_prefix_path / HBM_embedding12_dir_suffix_path;
+    std::string HBM_embedding12_dir_suffix("HBM_bank_12_raw");
+    std::string HBM_embedding12_dir = dir_concat(data_dir_prefix, HBM_embedding12_dir_suffix);
     std::ifstream HBM_embedding12_fstream(
-        HBM_embedding12_dir_path.string(), 
+        HBM_embedding12_dir, 
         std::ios::in | std::ios::binary);
     
-    fs::path HBM_embedding13_dir_suffix_path("HBM_bank_13_raw");
-    fs::path HBM_embedding13_dir_path = data_dir_prefix_path / HBM_embedding13_dir_suffix_path;
+    std::string HBM_embedding13_dir_suffix("HBM_bank_13_raw");
+    std::string HBM_embedding13_dir = dir_concat(data_dir_prefix, HBM_embedding13_dir_suffix);
     std::ifstream HBM_embedding13_fstream(
-        HBM_embedding13_dir_path.string(), 
+        HBM_embedding13_dir, 
         std::ios::in | std::ios::binary);
     
-    fs::path HBM_embedding14_dir_suffix_path("HBM_bank_14_raw");
-    fs::path HBM_embedding14_dir_path = data_dir_prefix_path / HBM_embedding14_dir_suffix_path;
+    std::string HBM_embedding14_dir_suffix("HBM_bank_14_raw");
+    std::string HBM_embedding14_dir = dir_concat(data_dir_prefix, HBM_embedding14_dir_suffix);
     std::ifstream HBM_embedding14_fstream(
-        HBM_embedding14_dir_path.string(), 
+        HBM_embedding14_dir, 
         std::ios::in | std::ios::binary);
     
-    fs::path HBM_embedding15_dir_suffix_path("HBM_bank_15_raw");
-    fs::path HBM_embedding15_dir_path = data_dir_prefix_path / HBM_embedding15_dir_suffix_path;
+    std::string HBM_embedding15_dir_suffix("HBM_bank_15_raw");
+    std::string HBM_embedding15_dir = dir_concat(data_dir_prefix, HBM_embedding15_dir_suffix);
     std::ifstream HBM_embedding15_fstream(
-        HBM_embedding15_dir_path.string(), 
+        HBM_embedding15_dir, 
         std::ios::in | std::ios::binary);
 
 
@@ -444,53 +448,50 @@ int main(int argc, char** argv)
     char* raw_gt_vec_ID_char = (char*) malloc(raw_gt_vec_ID_size);
 
   
-    std::string HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir_suffix_str = 
+    std::string HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir_suffix = 
         "HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_3_by_" + std::to_string(nlist) + "_raw";
-    fs::path HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir_suffix_path(
-        HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir_suffix_str);
-    fs::path HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir_path = 
-        data_dir_prefix_path / HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir_suffix_path;
+    std::string HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir = 
+        dir_concat(data_dir_prefix, HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir_suffix);
     std::ifstream HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_fstream(
-        HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir_path.string(), 
+        HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_dir, 
         std::ios::in | std::ios::binary);
 
 
-    fs::path HBM_query_vector_dir_suffix_path("query_vectors_float32_10000_128_raw");
-    fs::path HBM_query_vector_path = data_dir_prefix_path / HBM_query_vector_dir_suffix_path;
+    std::string HBM_query_vector_dir_suffix = "query_vectors_float32_10000_128_raw";
+    std::string HBM_query_vector_path = dir_concat(data_dir_prefix, HBM_query_vector_dir_suffix);
     std::ifstream HBM_query_vector_fstream(
-        HBM_query_vector_path.string(),
+        HBM_query_vector_path,
         std::ios::in | std::ios::binary);
 
     
-    std::string HBM_vector_quantizer_dir_suffix_str = "vector_quantizer_float32_" + std::to_string(nlist) + "_128_raw";
-    fs::path HBM_vector_quantizer_dir_suffix_path(HBM_vector_quantizer_dir_suffix_str);
-    fs::path HBM_vector_quantizer_dir_path = data_dir_prefix_path / HBM_vector_quantizer_dir_suffix_path;
+    std::string HBM_vector_quantizer_dir_suffix = "vector_quantizer_float32_" + std::to_string(nlist) + "_128_raw";
+    std::string HBM_vector_quantizer_dir = dir_concat(data_dir_prefix, HBM_vector_quantizer_dir_suffix);
     std::ifstream HBM_vector_quantizer_fstream(
-        HBM_vector_quantizer_dir_path.string(), 
+        HBM_vector_quantizer_dir, 
         std::ios::in | std::ios::binary);
 
     
-    fs::path HBM_product_quantizer_suffix_dir_path("product_quantizer_float32_16_256_8_raw");
-    fs::path HBM_product_quantizer_dir_path = data_dir_prefix_path / HBM_product_quantizer_suffix_dir_path;
+    std::string HBM_product_quantizer_suffix_dir = "product_quantizer_float32_16_256_8_raw";
+    std::string HBM_product_quantizer_dir = dir_concat(data_dir_prefix, HBM_product_quantizer_suffix_dir);
     std::ifstream HBM_product_quantizer_fstream(
-        HBM_product_quantizer_dir_path.string(),
+        HBM_product_quantizer_dir,
         std::ios::in | std::ios::binary);
 
 #ifdef OPQ_ENABLE
     
-    fs::path HBM_OPQ_matrix_suffix_dir_path("OPQ_matrix_float32_128_128_raw");
-    fs::path HBM_OPQ_matrix_dir_path = data_dir_prefix_path / HBM_OPQ_matrix_suffix_dir_path;
+    std::string HBM_OPQ_matrix_suffix_dir = "OPQ_matrix_float32_128_128_raw";
+    std::string HBM_OPQ_matrix_dir = dir_concat(data_dir_prefix, HBM_OPQ_matrix_suffix_dir);
     std::ifstream HBM_OPQ_matrix_fstream(
-        HBM_OPQ_matrix_dir_path.string(),
+        HBM_OPQ_matrix_dir,
         std::ios::in | std::ios::binary);
 
 #endif
 
 
-    fs::path raw_gt_vec_ID_suffix_dir_path("idx_100M.ivecs");
-    fs::path raw_gt_vec_ID_dir_path = gnd_dir_path / raw_gt_vec_ID_suffix_dir_path;
+    std::string raw_gt_vec_ID_suffix_dir = "idx_100M.ivecs";
+    std::string raw_gt_vec_ID_dir = dir_concat(gnd_dir, raw_gt_vec_ID_suffix_dir);
     std::ifstream raw_gt_vec_ID_fstream(
-        raw_gt_vec_ID_dir_path.string(),
+        raw_gt_vec_ID_dir,
         std::ios::in | std::ios::binary);
 
         
@@ -866,7 +867,7 @@ int main(int argc, char** argv)
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, nlist));
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, nprobe));
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, OPQ_enable));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, centroids_per_partition));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, centroids_per_partition_even));
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, centroids_per_partition_last_PE));
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, nprobe_per_table_construction_pe_larger));
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, nprobe_per_table_construction_pe_smaller));

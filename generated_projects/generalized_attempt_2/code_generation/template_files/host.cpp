@@ -1,4 +1,11 @@
 /*
+Usage: 
+    ./host <XCLBIN File> <nlist> <nprobe> <OPQ_enable> <data directory> <ground truth dir>
+Example
+    ./host vadd.xclbin 8192 17 1 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/gnd
+*/
+
+/*
 Variable to be replaced (<--variable_name-->):
     multiple lines (depends on HBM channel num):
         HBM_embedding_len    # number of 512-bit chunk in each bank
@@ -50,10 +57,8 @@ Variable to be replaced (<--variable_name-->):
 #include <limits>
 #include <iostream>
 #include <fstream>
-#include <filesystem>
 
 #include "xcl2.hpp"
-
 
 #define BANK_NAME(n) n | XCL_MEM_TOPOLOGY
 // memory topology:  https://www.xilinx.com/html_docs/xilinx2021_1/vitis_doc/optimizingperformance.html#utc1504034308941
@@ -109,6 +114,14 @@ char* read_binary_file(const std::string &xclbin_file_name, unsigned &nb)
     return buf;
 }
 
+// boost::filesystem does not compile well, so implement this myself
+std::string dir_concat(std::string dir1, std::string dir2) {
+    if (dir1.back() != '/') {
+        dir1 += '/';
+    }
+    return dir1 + dir2;
+}
+
 int main(int argc, char** argv)
 {
     if (argc != 7) {
@@ -122,16 +135,14 @@ int main(int argc, char** argv)
     int nprobe = std::stoi(argv[3]);
     bool OPQ_enable = (bool) std::stoi(argv[4]);
 
-    std::string data_dir_prefix_str = argv[5];
-    fs::path data_dir_prefix_path(data_dir_prefix_str);
-    std::string gnd_dir_str = argv[6];
-    fs::path gnd_dir_path(gnd_dir_str);
+    std::string data_dir_prefix = argv[5];
+    std::string gnd_dir = argv[6];
 
     std::cout << "nlist: " << nlist << std::endl <<
         "nprobe: " << nprobe << std::endl <<
         "OPQ enable: " << OPQ_enable << std::endl <<
-        "data directory" << data_dir_prefix_str << std::endl <<
-        "ground truth directory" << gnd_dir_path << std::endl;
+        "data directory" << data_dir_prefix << std::endl <<
+        "ground truth directory" << gnd_dir << std::endl;
 
     // inferred parameters giving input parameters
     int centroids_per_partition_even = ceil(float(nlist) / float(PE_NUM_CENTER_DIST_COMP));
@@ -157,7 +168,7 @@ int main(int argc, char** argv)
          "centroids_per_partition_even: " << centroids_per_partition_even << std::endl <<
          "centroids_per_partition_last_PE: " << centroids_per_partition_last_PE << std::endl <<
          "nprobe_per_table_construction_pe_larger: " << nprobe_per_table_construction_pe_larger << std::endl <<
-         "nprobe_per_table_construction_pe_smaller: " << nprobe_per_table_construction_pe_smaller << std::endl <<
+         "nprobe_per_table_construction_pe_smaller: " << nprobe_per_table_construction_pe_smaller << std::endl;
 
 //////////////////////////////   TEMPLATE START  //////////////////////////////
     
@@ -430,7 +441,7 @@ int main(int argc, char** argv)
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, nlist));
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, nprobe));
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, OPQ_enable));
-    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, centroids_per_partition));
+    OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, centroids_per_partition_even));
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, centroids_per_partition_last_PE));
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, nprobe_per_table_construction_pe_larger));
     OCL_CHECK(err, err = krnl_vector_add.setArg(arg_counter++, nprobe_per_table_construction_pe_smaller));

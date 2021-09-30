@@ -188,7 +188,7 @@ endif
 VIVADO_INCLUDE:= $(XILINX_VIVADO)/include
 opencl_CXXFLAGS=-I$(OPENCL_INCLUDE) -I$(VIVADO_INCLUDE)
 OPENCL_LIB:= $(xrt_path)/lib
-opencl_LDFLAGS=-L$(OPENCL_LIB) -lOpenCL -pthread -lboost_system
+opencl_LDFLAGS=-L$(OPENCL_LIB) -lOpenCL -pthread
 
 CXXFLAGS += $(opencl_CXXFLAGS) -Wall -O0 -g -std=c++1y
 LDFLAGS += $(opencl_LDFLAGS)
