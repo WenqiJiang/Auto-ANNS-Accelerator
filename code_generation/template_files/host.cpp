@@ -183,9 +183,7 @@ int main(int argc, char** argv)
     size_t HBM_query_vector_len = query_num * <--D--> < <--QUERY_NUM--> * <--D-->? query_num * <--D-->: <--QUERY_NUM--> * <--D-->;
     size_t HBM_vector_quantizer_len = nlist * <--D-->;
     size_t HBM_product_quantizer_len = <--M--> * 256 * (<--D--> / <--M-->);
-#ifdef OPQ_ENABLE
     size_t HBM_OPQ_matrix_len = <--D--> * <--D-->;
-#endif
     size_t HBM_out_len = TOPK * query_num; 
 
     // the raw ground truth size is the same for idx_1M.ivecs, idx_10M.ivecs, idx_100M.ivecs
@@ -200,9 +198,7 @@ int main(int argc, char** argv)
     size_t HBM_query_vector_size = HBM_query_vector_len * sizeof(float);
     size_t HBM_vector_quantizer_size = HBM_vector_quantizer_len * sizeof(float);
     size_t HBM_product_quantizer_size = HBM_product_quantizer_len * sizeof(float);
-#ifdef OPQ_ENABLE
     size_t HBM_OPQ_matrix_size = HBM_OPQ_matrix_len * sizeof(float);
-#endif
     size_t HBM_out_size = HBM_out_len * sizeof(ap_uint64_t); 
 
     size_t raw_gt_vec_ID_size = raw_gt_vec_ID_len * sizeof(int);
@@ -223,9 +219,7 @@ int main(int argc, char** argv)
     std::vector<float, aligned_allocator<float>> HBM_query_vectors(HBM_query_vector_len, 0);
     std::vector<float, aligned_allocator<float>> HBM_vector_quantizer(HBM_vector_quantizer_len, 0);
     std::vector<float, aligned_allocator<float>> HBM_product_quantizer(HBM_product_quantizer_len, 0);
-#ifdef OPQ_ENABLE
     std::vector<float, aligned_allocator<float>> HBM_OPQ_matrix(HBM_OPQ_matrix_len, 0);
-#endif
     std::vector<ap_uint64_t, aligned_allocator<ap_uint64_t>> HBM_out(HBM_out_len, 0);
     
     std::vector<int, aligned_allocator<int>> raw_gt_vec_ID(raw_gt_vec_ID_len, 0);
@@ -240,9 +234,7 @@ int main(int argc, char** argv)
     char* HBM_query_vector_char = (char*) malloc(HBM_query_vector_size);
     char* HBM_vector_quantizer_char = (char*) malloc(HBM_vector_quantizer_size);
     char* HBM_product_quantizer_char = (char*) malloc(HBM_product_quantizer_size);
-#ifdef OPQ_ENABLE
     char* HBM_OPQ_matrix_char = (char*) malloc(HBM_OPQ_matrix_size);
-#endif
 
     char* raw_gt_vec_ID_char = (char*) malloc(raw_gt_vec_ID_size);
 
@@ -250,9 +242,20 @@ int main(int argc, char** argv)
 <--HBM_query_vector_fstream-->
 <--HBM_vector_quantizer_fstream-->
 <--HBM_product_quantizer_fstream-->
-#ifdef OPQ_ENABLE
-<--HBM_OPQ_matrix_fstream-->
-#endif
+
+    if (OPQ_enable) {
+        std::string HBM_OPQ_matrix_suffix_dir = "OPQ_matrix_float32_<--D-->_<--D-->_raw";
+        std::string HBM_OPQ_matrix_dir = dir_concat(data_dir_prefix, HBM_OPQ_matrix_suffix_dir);
+        std::ifstream HBM_OPQ_matrix_fstream(
+            HBM_OPQ_matrix_dir,
+            std::ios::in | std::ios::binary);
+        HBM_OPQ_matrix_fstream.read(HBM_OPQ_matrix_char, HBM_OPQ_matrix_size);
+        if (!HBM_OPQ_matrix_fstream) {
+            std::cout << "error: only " << HBM_OPQ_matrix_fstream.gcount() << " could be read";
+            exit(1);
+        }
+        memcpy(&HBM_OPQ_matrix[0], HBM_OPQ_matrix_char, HBM_OPQ_matrix_size);
+    }
 
 <--raw_gt_vec_ID_fstream-->
         
@@ -261,14 +264,31 @@ int main(int argc, char** argv)
     HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_fstream.read(
         HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_char,
         HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_size);
+    if (!HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_fstream) {
+        std::cout << "error: only " << HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_fstream.gcount() << " could be read";
+        exit(1);
+    }
     HBM_query_vector_fstream.read(HBM_query_vector_char, HBM_query_vector_size);
+    if (!HBM_query_vector_fstream) {
+        std::cout << "error: only " << HBM_query_vector_fstream.gcount() << " could be read";
+        exit(1);
+    }
     HBM_vector_quantizer_fstream.read(HBM_vector_quantizer_char, HBM_vector_quantizer_size);
+    if (!HBM_vector_quantizer_fstream) {
+        std::cout << "error: only " << HBM_vector_quantizer_fstream.gcount() << " could be read";
+        exit(1);
+    }
     HBM_product_quantizer_fstream.read(HBM_product_quantizer_char, HBM_product_quantizer_size);
-#ifdef OPQ_ENABLE
-    HBM_OPQ_matrix_fstream.read(HBM_OPQ_matrix_char, HBM_OPQ_matrix_size);
-#endif
+    if (!HBM_product_quantizer_fstream) {
+        std::cout << "error: only " << HBM_product_quantizer_fstream.gcount() << " could be read";
+        exit(1);
+    }
 
     raw_gt_vec_ID_fstream.read(raw_gt_vec_ID_char, raw_gt_vec_ID_size);
+    if (!raw_gt_vec_ID_fstream) {
+        std::cout << "error: only " << raw_gt_vec_ID_fstream.gcount() << " could be read";
+        exit(1);
+    }
 
     // std::cout << "HBM_query_vector_fstream read bytes: " << HBM_query_vector_fstream.gcount() << std::endl;
     // std::cout << "HBM_vector_quantizer_fstream read bytes: " << HBM_vector_quantizer_fstream.gcount() << std::endl;
@@ -282,9 +302,6 @@ int main(int argc, char** argv)
     memcpy(&HBM_query_vectors[0], HBM_query_vector_char, HBM_query_vector_size);
     memcpy(&HBM_vector_quantizer[0], HBM_vector_quantizer_char, HBM_vector_quantizer_size);
     memcpy(&HBM_product_quantizer[0], HBM_product_quantizer_char, HBM_product_quantizer_size);
-#ifdef OPQ_ENABLE
-    memcpy(&HBM_OPQ_matrix[0], HBM_OPQ_matrix_char, HBM_OPQ_matrix_size);
-#endif
 
 <--HBM_centroid_vectors_memcpy-->
 
@@ -296,9 +313,7 @@ int main(int argc, char** argv)
     free(HBM_query_vector_char);
     free(HBM_vector_quantizer_char);
     free(HBM_product_quantizer_char);
-#ifdef OPQ_ENABLE
     free(HBM_OPQ_matrix_char);
-#endif
 
     free(raw_gt_vec_ID_char);
     // free(sw_result_vec_ID_char);
@@ -508,7 +523,9 @@ int main(int argc, char** argv)
         
         // Check correctness
         count++;
+        // std::cout << "query id" << query_id << std::endl;
         for (int k = 0; k < TOPK; k++) {
+            // std::cout << "hw: " << hw_result_vec_ID_partial[k] << "gt: " << gt_vec_ID[query_id] << std::endl;
             if (hw_result_vec_ID_partial[k] == gt_vec_ID[query_id]) {
                 match_count++;
                 break;

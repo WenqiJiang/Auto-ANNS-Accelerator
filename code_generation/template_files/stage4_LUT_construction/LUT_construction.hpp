@@ -29,25 +29,20 @@ void center_vectors_dispatcher(
     for (int query_id = 0; query_id < query_num; query_id++) {
 
         // first, interleave the common part of all PEs (decided by the PE of smaller scanned cells)
-        for (int interleave_iter = 0; interleave_iter < nprobe_per_table_construction_pe_smaller; interleave_iter++) {
-
-            for (int s = 0; s < PE_NUM_TABLE_CONSTRUCTION; s++) {
-
-                for (int n = 0; n < D; n++) {
-#pragma HLS pipeline II=1
-                    s_center_vectors_table_construction_PE[s].write(s_center_vectors_lookup_PE.read());
-                }
-            }
-        }
-
-        // then, interleave the rest workload
-        for (int interleave_iter = 0; interleave_iter < nprobe_per_table_construction_pe_larger - nprobe_per_table_construction_pe_smaller; interleave_iter++) {
+        for (int interleave_iter = 0; interleave_iter < nprobe_per_table_construction_pe_larger; interleave_iter++) {
 
             for (int s = 0; s < PE_NUM_TABLE_CONSTRUCTION_LARGER; s++) {
 
                 for (int n = 0; n < D; n++) {
 #pragma HLS pipeline II=1
                     s_center_vectors_table_construction_PE[s].write(s_center_vectors_lookup_PE.read());
+                }
+            }
+            if (interleave_iter < nprobe_per_table_construction_pe_smaller) {
+
+                for (int n = 0; n < D; n++) {
+#pragma HLS pipeline II=1
+                    s_center_vectors_table_construction_PE[PE_NUM_TABLE_CONSTRUCTION_LARGER].write(s_center_vectors_lookup_PE.read());
                 }
             }
         }

@@ -46,7 +46,7 @@ class Priority_queue<dist_cell_ID_t, queue_size, Collect_smallest> {
                 // insert: 
                 int total_insert_iter = read_iter_per_query;
                 if (sort_all) {
-                    total_insert_iter += query_num;
+                    total_insert_iter += queue_size;
                 }
                 for (int i = 0; i < total_insert_iter; i++) {
 #pragma HLS pipeline II=1
@@ -60,7 +60,7 @@ class Priority_queue<dist_cell_ID_t, queue_size, Collect_smallest> {
                 }
 
                 // write
-                for (int i = 0; i < queue_size; i++) {
+                for (int i = 0; i < output_iter_per_query; i++) {
 #pragma HLS pipeline II=1
                     s_output.write(queue[i]);
                 }
