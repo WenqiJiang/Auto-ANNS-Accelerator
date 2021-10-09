@@ -43,20 +43,20 @@ if config["DEVICE"] == "U280" or config["DEVICE"] == "U50":
             "sp=vadd_1.HBM_in{i}:HBM[{i}]\n".format(i=i)
 
     if config["STAGE2_ON_CHIP"]:
-        template_fill_dict["stage2_memory_channel"] = ""
+        template_fill_dict["HBM_centroid_vectors_stage2_"] = ""
     else:
         connectivity_str = "" 
         for i in range(config["PE_NUM_CENTER_DIST_COMP"]):
             connectivity_str += "sp=vadd_1.HBM_centroid_vectors_{i}:HBM[{c}]\n".format(
                 i=i, c=int(i + config["STAGE2_OFF_CHIP_START_CHANNEL"]))
-        template_fill_dict["stage2_memory_channel"] = connectivity_str
+        template_fill_dict["HBM_centroid_vectors_stage2_"] = connectivity_str
 
     # Store meta info in some HBM channels
     template_fill_dict["meta_info_memory_channel"] = """
-sp=vadd_1.HBM_addr_info:HBM[21]
-sp=vadd_1.HBM_query_vectors:HBM[22]
-sp=vadd_1.HBM_vector_quantizer:HBM[23]
-sp=vadd_1.HBM_product_quantizer:HBM[24]
+sp=vadd_1.HBM_addr_info:HBM[24]
+sp=vadd_1.HBM_query_vectors:HBM[25]
+sp=vadd_1.HBM_vector_quantizer:HBM[26]
+sp=vadd_1.HBM_product_quantizer:HBM[27]
     """
     if config["OPQ_ENABLE"]:
         template_fill_dict["connectivity_HBM_OPQ_matrix"] = "sp=vadd_1.HBM_OPQ_matrix:HBM[25]"
@@ -76,13 +76,13 @@ elif config["DEVICE"]== "U250":
             "sp=vadd_1.HBM_in{i}:DDR[{i}]\n".format(i=i)
 
     if config["STAGE2_ON_CHIP"]:
-        template_fill_dict["stage2_memory_channel"] = ""
+        template_fill_dict["HBM_centroid_vectors_stage2_"] = ""
     else:
         connectivity_str = "" 
         for i in range(config["PE_NUM_CENTER_DIST_COMP"]):
             connectivity_str += "sp=vadd_1.HBM_centroid_vectors_{i}:DDR[{c}]\n".format(
                 i=i, c=int(i + config["STAGE2_OFF_CHIP_START_CHANNEL"]))
-        template_fill_dict["stage2_memory_channel"] = connectivity_str
+        template_fill_dict["HBM_centroid_vectors_stage2_"] = connectivity_str
 
     # Store meta info in some HBM channels
     template_fill_dict["meta_info_memory_channel"] = """
