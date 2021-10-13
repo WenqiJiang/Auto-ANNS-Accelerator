@@ -41,6 +41,7 @@ FREQ = config["FREQ"] * 1e6
 device = config["DEVICE"]
 
 MAX_UTIL_PERC = 1 # no resource constraint applied herer
+MAX_NLIST = 65536
 
 print("======== Parameters ========")
 print("topK: {topK}\nrecall_goal={recall_goal}\nFREQ: {FREQ} Hz\n".format(
@@ -449,7 +450,7 @@ if __name__ == "__main__":
         else:
             raise ValueError
 
-        if nlist > 16384: # currently do not consider large nlist
+        if nlist > MAX_NLIST: # currently do not consider large nlist
             continue
         nprobe = d_nprobes[dbname][index_key][topK][recall_goal]
         if not nprobe: # nprobe can be None if it cannot reach the recall goal

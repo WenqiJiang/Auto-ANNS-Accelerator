@@ -1,0 +1,7 @@
+# Final version for VLDB
+
+generalized_attempt_11_K_1_16_bank
+
+generalized_attempt_11_K_10_16_bank
+
+generalized_attempt_11_K_100_16_bank

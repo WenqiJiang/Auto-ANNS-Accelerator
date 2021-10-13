@@ -114,7 +114,7 @@ def get_options_stage_2_cluster_distance_computation(nlist, FREQ, MAX_URAM):
         # off-chip version
         #####  HLS Prediction & Vivado Measured #####
         perf_resource_obj_off_chip.STAGE2_ON_CHIP = False
-        perf_resource_obj_off_chip.HBM_bank = PE_num
+        perf_resource_obj_off_chip.HBM_bank = int(np.ceil(PE_num/2))
         perf_resource_obj_off_chip.URAM = 0
         option_list.append(perf_resource_obj_off_chip)
 
