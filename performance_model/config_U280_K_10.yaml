@@ -149,8 +149,8 @@
   #   if not, set SORT_GROUP_ENABLE to False, and SORT_GROUP_NUM to 0 or None
   # number of 16 outputs per cycle, e.g., HBM channel num = 10, comp PE num = 30, then 
   #   SORT_GROUP_NUM = 2; if HBM channel = 12, PE_num = 36, then SORT_GROUP_NUM = 3
-  SORT_GROUP_ENABLE: True
-  SORT_GROUP_NUM: 1 # only used when SORT_GROUP_ENABLE=True
+  SORT_GROUP_ENABLE: False
+  SORT_GROUP_NUM: 0 # only used when SORT_GROUP_ENABLE=True
   STAGE_6_PRIORITY_QUEUE_LEVEL: 2 # supported level num: 2 or 3
   # only fill STAGE_6_PRIORITY_QUEUE_L2_NUM, STAGE_6_STREAM_PER_L2_QUEUE_LARGER, STAGE_6_STREAM_PER_L2_QUEUE_SMALLER
   #   when STAGE_6_PRIORITY_QUEUE_LEVEL = 3, else left them blank

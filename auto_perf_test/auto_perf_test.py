@@ -5,9 +5,22 @@
 #   p[dbname][index_key][topK][recall_goal] = QPS
 # Copy this script to the FPGA bitstream folder to use it
 # Usage 1, specify recall:
-#    python auto_perf_test.py --dbname SIFT100M --topK 10 --use_recall_goal 1 --recall_goal 0.8 --nlist_min 1024 --nlist_max 16384 --bank_num 16 --recall_dict_dir './cpu_recall_index_nprobe_pairs_SIFT100M.pkl' --FPGA_perf_dict_dir './FPGA_perf_dict_SIFT100M.pkl' --overwrite 0
+#    python auto_perf_test.py --dbname SIFT100M --topK 10 --use_recall_goal 1 --recall_goal 0.8 --nlist_min 1024 --nlist_max 16384 --FPGA_num 1 --bank_num 16 --recall_dict_dir './cpu_recall_index_nprobe_pairs_SIFT100M.pkl' --FPGA_perf_dict_dir './FPGA_perf_dict_SIFT100M.pkl' --overwrite 0
 # Usage 2, evaluate all recall:
-#    python auto_perf_test.py --dbname SIFT100M --topK 10 --use_recall_goal 0 --nlist_min 1024 --nlist_max 16384 --bank_num 16 --recall_dict_dir './cpu_recall_index_nprobe_pairs_SIFT100M.pkl' --FPGA_perf_dict_dir './FPGA_perf_dict_SIFT100M.pkl' --overwrite 0
+#    python auto_perf_test.py --dbname SIFT100M --topK 10 --use_recall_goal 0 --nlist_min 1024 --nlist_max 65536 --FPGA_num 1 --bank_num 16 --recall_dict_dir './cpu_recall_index_nprobe_pairs_SIFT100M.pkl' --FPGA_perf_dict_dir './FPGA_perf_dict_SIFT100M.pkl' --overwrite 0
+# An example to evaluate the performance of bitstream K=1,10,100 on several dataset
+#   Folder organization
+#   --- auto_perf_test.py
+#    |_ cpu_recall_index_nprobe_pairs_SIFT100M.pkl
+#    |_ cpu_recall_index_nprobe_pairs_SIFT500M.pkl
+#    |_ cpu_recall_index_nprobe_pairs_SIFT1000M.pkl
+#    |_ bitstream_K_1
+#    |_ bitstream_K_10
+#    |_ bitstream_K_100
+#  In each bitstream folder, e.g., bitstream_K_1, run the evaluate all command, e.g.,
+#    python auto_perf_test.py --dbname SIFT100M --topK 1 --use_recall_goal 0 --nlist_min 1024 --nlist_max 65536 --FPGA_num 1 --bank_num 12 --recall_dict_dir '../cpu_recall_index_nprobe_pairs_SIFT100M.pkl' --FPGA_perf_dict_dir '../FPGA_perf_dict_SIFT100M.pkl' --overwrite 0
+#    python auto_perf_test.py --dbname SIFT500M --topK 1 --use_recall_goal 0 --nlist_min 1024 --nlist_max 65536 --FPGA_num 4 --bank_num 12 --recall_dict_dir '../cpu_recall_index_nprobe_pairs_SIFT500M.pkl' --FPGA_perf_dict_dir '../FPGA_perf_dict_SIFT500M.pkl' --overwrite 0
+#    python auto_perf_test.py --dbname SIFT1000M --topK 1 --use_recall_goal 0 --nlist_min 1024 --nlist_max 65536 --FPGA_num 8 --bank_num 12 --recall_dict_dir '../cpu_recall_index_nprobe_pairs_SIFT1000M.pkl' --FPGA_perf_dict_dir '../FPGA_perf_dict_SIFT1000M.pkl' --overwrite 0
 
 import csv
 import os
@@ -24,6 +37,7 @@ parser.add_argument('--use_recall_goal', type=int, default=0, help="whether to e
 parser.add_argument('--recall_goal', type=float, default=0.5, help="target minimum recall, e.g., 50% -> 0.5, if not specified, evaluate all recall goal")
 parser.add_argument('--nlist_min', type=int, default=1024, help="the minimum nprobe to evluate")
 parser.add_argument('--nlist_max', type=int, default=16384, help="the minimum nprobe to evluate")
+parser.add_argument('--FPGA_num', type=int, default=1, help="the number of FPGAs to execute the data (we only run test on 1 FPGA to evaluate the performance)")
 parser.add_argument('--bank_num', type=int, default=16, help="the FPGA bank number used to store PQ codes")
 parser.add_argument('--recall_dict_dir', type=str, default='./cpu_recall_index_nprobe_pairs_SIFT100M.pkl', help="recall dictionary directory")
 parser.add_argument('--FPGA_perf_dict_dir', type=str, default='./FPGA_perf_dict_SIFT100M.pkl', help="FPGA performance dictionary directory")
@@ -37,6 +51,7 @@ if use_recall_goal:
 	recall_goal = args.recall_goal
 nlist_min = args.nlist_min 
 nlist_max = args.nlist_max 
+FPGA_num = args.FPGA_num
 bank_num = args.bank_num
 recall_dict_dir = args.recall_dict_dir
 FPGA_perf_dict_dir = args.FPGA_perf_dict_dir
@@ -135,8 +150,14 @@ for index_key in d_recall[dbname]:
     if use_recall_goal:
         if d_recall[dbname][index_key][topK][recall_goal] is not None:
             nprobe = d_recall[dbname][index_key][topK][recall_goal]
-            cmd = "./host vadd.xclbin {nlist} {nprobe} {OPQ_enable} /mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_{index_key}_{bank_num}_banks /mnt/scratch/wenqi/saved_npy_data/gnd".format(
-                nlist=nlist, nprobe=nprobe, OPQ_enable=OPQ_enable, index_key=index_key, bank_num=bank_num)
+            if FPGA_num == 1:
+                data_dir = "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_{dbname}_{index_key}_{bank_num}_banks".format(
+                    dbname=dbname, index_key=index_key, bank_num=bank_num)
+            else:
+                data_dir = "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_{dbname}_{index_key}_{FPGA_num}_{bank_num}_banks/FPGA0".format(
+                    dbname=dbname, index_key=index_key, FPGA_num=FPGA_num, bank_num=bank_num)
+            cmd = "./host vadd.xclbin {nlist} {nprobe} {OPQ_enable} {data_dir} /mnt/scratch/wenqi/saved_npy_data/gnd".format(
+                nlist=nlist, nprobe=nprobe, OPQ_enable=OPQ_enable, data_dir=data_dir)
             print("Executing command:\n{}".format(cmd))
             os.system(cmd)
             QPS = load_perf_from_profile_summary()
@@ -146,8 +167,14 @@ for index_key in d_recall[dbname]:
         for recall_goal in d_recall[dbname][index_key][topK]:
             if d_recall[dbname][index_key][topK][recall_goal] is not None:
                 nprobe = d_recall[dbname][index_key][topK][recall_goal]
-                cmd = "./host vadd.xclbin {nlist} {nprobe} {OPQ_enable} /mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_{index_key}_{bank_num}_banks /mnt/scratch/wenqi/saved_npy_data/gnd".format(
-                    nlist=nlist, nprobe=nprobe, OPQ_enable=OPQ_enable, index_key=index_key, bank_num=bank_num)
+                if FPGA_num == 1:
+                    data_dir = "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_{dbname}_{index_key}_{bank_num}_banks".format(
+                        dbname=dbname, index_key=index_key, bank_num=bank_num)
+                else:
+                    data_dir = "/mnt/scratch/wenqi/saved_npy_data/FPGA_data_{dbname}_{index_key}_{FPGA_num}_{bank_num}_banks/FPGA0".format(
+                        dbname=dbname, index_key=index_key, FPGA_num=FPGA_num, bank_num=bank_num)
+                cmd = "./host vadd.xclbin {nlist} {nprobe} {OPQ_enable} {data_dir} /mnt/scratch/wenqi/saved_npy_data/gnd".format(
+                    dbname=dbname, nlist=nlist, nprobe=nprobe, OPQ_enable=OPQ_enable, data_dir=data_dir)
                 print("Executing command:\n{}".format(cmd))
                 os.system(cmd)
                 QPS = load_perf_from_profile_summary()
