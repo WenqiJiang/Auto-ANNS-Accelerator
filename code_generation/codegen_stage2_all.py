@@ -50,7 +50,8 @@ else:
             for i in range(HBM_channel_num_stage2 - 1):
                 template_fill_dict["load_vector_quantizer_from_HBM"] += """
     int start_cell_ID_load_{i} = {i} * 2 * centroids_per_partition_even;
-    load_vector_quantizer_from_HBM<query_num>(
+    load_vector_quantizer_from_HBM(
+        query_num,
         start_cell_ID_load_{i},
         centroids_per_partition_even,
         centroids_per_partition_even,
@@ -63,7 +64,8 @@ else:
             # last PE: centroids_per_partition_even + centroids_per_partition_last_PE
             template_fill_dict["load_vector_quantizer_from_HBM"] += """
     int start_cell_ID_load_{i} = {i} * 2 * centroids_per_partition_even;
-    load_vector_quantizer_from_HBM<query_num>(
+    load_vector_quantizer_from_HBM(
+        query_num,
         start_cell_ID_load_{i},
         centroids_per_partition_even,
         centroids_per_partition_last_PE,
@@ -77,7 +79,8 @@ else:
             for i in range(HBM_channel_num_stage2 - 1):
                 template_fill_dict["load_vector_quantizer_from_HBM"] += """
     int start_cell_ID_load_{i} = {i} * 2 * centroids_per_partition_even;
-    load_vector_quantizer_from_HBM<query_num>(
+    load_vector_quantizer_from_HBM(
+        query_num,
         start_cell_ID_load_{i},
         centroids_per_partition_even,
         centroids_per_partition_even,
@@ -90,7 +93,8 @@ else:
             # last PE: centroids_per_partition_last_PE
             template_fill_dict["load_vector_quantizer_from_HBM"] += """
     int start_cell_ID_load_{i} = {i} * 2 * centroids_per_partition_even;
-    load_vector_quantizer_from_HBM<query_num>(
+    load_vector_quantizer_from_HBM(
+        query_num,
         start_cell_ID_load_{i},
         centroids_per_partition_last_PE,
         HBM_centroid_vectors_stage2_{i},
@@ -104,7 +108,8 @@ else:
             if i == 1:
                 template_fill_dict["compute_cell_distance_wrapper_func_body"] += "    // middle"
             template_fill_dict["compute_cell_distance_wrapper_func_body"] += """
-        compute_cell_distance_middle_PE<QUERY_NUM>(
+        compute_cell_distance_middle_PE(
+            query_num,
             {i},
             centroids_per_partition, 
             total_centriods,
@@ -117,7 +122,8 @@ else:
         
         template_fill_dict["compute_cell_distance_wrapper_func_body"] += """    
         // tail
-        compute_cell_distance_tail_PE<QUERY_NUM>(
+        compute_cell_distance_tail_PE(
+            query_num,
             PE_NUM_CENTER_DIST_COMP_EVEN,
             centroids_per_partition, 
             centroids_per_partition_last_PE, 

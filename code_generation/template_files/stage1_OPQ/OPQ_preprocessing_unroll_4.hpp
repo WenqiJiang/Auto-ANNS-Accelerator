@@ -6,8 +6,8 @@
 const int opq_unroll_width = 4; //vectorized computation of 8 numbers
 
 ////////////////////    Function to call in top-level     //////////////////// 
-template<const int query_num>
 void OPQ_preprocessing(
+    const int query_num,
     const bool OPQ_enable,
     hls::stream<float> &s_OPQ_init,
     hls::stream<float> &s_query_vectors,
@@ -16,8 +16,8 @@ void OPQ_preprocessing(
 ////////////////////    Function to call in top-level     //////////////////// 
 
 
-template<const int query_num>
 void OPQ_preprocessing(
+    const int query_num,
     const bool OPQ_enable,
     hls::stream<float> &s_OPQ_init,
     hls::stream<float> &s_query_vectors,

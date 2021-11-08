@@ -41,7 +41,8 @@ if config["OPQ_ENABLE"]:
 #pragma HLS stream variable=s_preprocessed_query_vectors depth=512
 // #pragma HLS resource variable=s_preprocessed_query_vectors core=FIFO_BRAM
 
-    OPQ_preprocessing<QUERY_NUM>(
+    OPQ_preprocessing(
+        query_num,
         OPQ_enable,
         s_OPQ_init,
         s_query_vectors,
@@ -81,7 +82,8 @@ template_fill_dict["stage2_s_axilite"] = ""
 if config["STAGE2_ON_CHIP"] == True:
     if config["PE_NUM_CENTER_DIST_COMP"] > 1:
         template_fill_dict["stage_2_IVF_center_distance_computation"] = """
-    compute_cell_distance_wrapper<QUERY_NUM>(
+    compute_cell_distance_wrapper(
+        query_num,
         centroids_per_partition_even, 
         centroids_per_partition_last_PE, 
         nlist,
@@ -90,7 +92,8 @@ if config["STAGE2_ON_CHIP"] == True:
         s_merged_cell_distance);"""
     elif config["PE_NUM_CENTER_DIST_COMP"] == 1:
         template_fill_dict["stage_2_IVF_center_distance_computation"] = """
-    compute_cell_distance_wrapper<QUERY_NUM>(
+    compute_cell_distance_wrapper(
+        query_num,
         nlist,
         s_center_vectors_init_distance_computation_PE, 
         s_preprocessed_query_vectors_distance_computation_PE, 
@@ -109,7 +112,8 @@ else:
         func_call_str += "        HBM_centroid_vectors_stage2_{i},\n".format(i=i)
     if config["PE_NUM_CENTER_DIST_COMP"] > 1:
         template_fill_dict["stage_2_IVF_center_distance_computation"] = """
-    compute_cell_distance_wrapper<QUERY_NUM>(
+    compute_cell_distance_wrapper(
+        query_num,
         centroids_per_partition_even, 
         centroids_per_partition_last_PE, 
         nlist,
@@ -118,7 +122,8 @@ else:
         s_merged_cell_distance);""".format(func_call_str=func_call_str)
     elif config["PE_NUM_CENTER_DIST_COMP"] == 1:
         template_fill_dict["stage_2_IVF_center_distance_computation"] = """
-    compute_cell_distance_wrapper<QUERY_NUM>(
+    compute_cell_distance_wrapper(
+        query_num,
         nlist,
 {func_call_str}
         s_preprocessed_query_vectors_distance_computation_PE,

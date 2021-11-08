@@ -4,8 +4,8 @@
 #include "types.hpp"
 
 ////////////////////     Function to call in top-level     ////////////////////
-template<const int query_num>
 void compute_cell_distance_wrapper(
+    const int query_num,
     const int centroids_per_partition, // nlist
     hls::stream<float> &s_centroid_vectors,
     hls::stream<float> &s_query_vectors,
@@ -24,8 +24,9 @@ void compute_cell_distance_wrapper(
 //////////////////////////////////////////////////////////////////////////////////////////
 
 
-template<const int query_num, const int centroids_per_partition_max>
+template<const int centroids_per_partition_max>
 void compute_cell_distance_component_A(
+    const int query_num,
     const int centroids_per_partition,
     hls::stream<float>& s_centroid_vectors_in,
     hls::stream<float>& s_query_vectors_in,
@@ -198,8 +199,8 @@ void compute_cell_distance_component_A(
     }
 }
 
-template<const int query_num>
 void compute_cell_distance_component_B(
+    const int query_num,
     const int centroids_per_partition,
     hls::stream<ap_uint512_t>& s_square_dist_pack,
     hls::stream<float>& s_partial_dist) {
@@ -259,8 +260,8 @@ void compute_cell_distance_component_B(
     }
 }
 
-template<const int query_num>
 void compute_cell_distance_component_C(
+    const int query_num,
     const int centroids_per_partition,
     const int start_cell_ID,
     hls::stream<float>& s_partial_dist,
@@ -290,8 +291,8 @@ void compute_cell_distance_component_C(
 }
 
 
-template<const int query_num>
 void compute_cell_distance_wrapper(
+    const int query_num,
     const int centroids_per_partition, // nlist
     hls::stream<float> &s_centroid_vectors,
     hls::stream<float> &s_query_vectors,
@@ -304,19 +305,22 @@ void compute_cell_distance_wrapper(
     hls::stream<float> s_partial_dist;
 #pragma HLS stream variable=s_partial_dist depth=8
 
-    compute_cell_distance_component_A<query_num, NLIST_MAX>(
+    compute_cell_distance_component_A<NLIST_MAX>(
+        query_num, 
         centroids_per_partition,
         s_centroid_vectors,
         s_query_vectors,
         s_square_dist_pack);
 
-    compute_cell_distance_component_B<query_num>(
+    compute_cell_distance_component_B(
+        query_num, 
         centroids_per_partition,
         s_square_dist_pack,
         s_partial_dist);
         
     const int start_cell_ID = 0;
-    compute_cell_distance_component_C<query_num>(
+    compute_cell_distance_component_C(
+        query_num, 
         centroids_per_partition,
         start_cell_ID,
         s_partial_dist,

@@ -13,8 +13,8 @@ Variable to be replaced (<--variable_name-->):
 #include "types.hpp"
 
 ////////////////////     Function to call in top-level     ////////////////////
-template<const int query_num>
 void compute_cell_distance_wrapper(
+    const int query_num,
     const int centroids_per_partition_even, 
     const int centroids_per_partition_last_PE, 
     const int total_centriods,
@@ -35,8 +35,8 @@ void compute_cell_distance_wrapper(
 
 
 
-template<const int query_num>
 void load_vector_quantizer_from_HBM(
+    const int query_num,
     // the cluster cell ID to begin with
     const int start_cell_ID,
     const int centroids_per_partition,
@@ -63,8 +63,8 @@ void load_vector_quantizer_from_HBM(
 }
 
 
-template<const int query_num>
 void load_vector_quantizer_from_HBM_component_A(
+    const int query_num,
     // the cluster cell ID to begin with
     const int start_cell_ID,
     // centroids_per_partition_A >= centroids_per_partition_B
@@ -93,8 +93,8 @@ void load_vector_quantizer_from_HBM_component_A(
     }
 }
 
-template<const int query_num>
 void load_vector_quantizer_from_HBM_component_B(
+    const int query_num,
     // centroids_per_partition_A >= centroids_per_partition_B
     const int centroids_per_partition_A,
     const int centroids_per_partition_B,
@@ -127,8 +127,8 @@ void load_vector_quantizer_from_HBM_component_B(
     }
 }
 
-template<const int query_num>
 void load_vector_quantizer_from_HBM(
+    const int query_num,
     // the cluster cell ID to begin with
     const int start_cell_ID,
     // centroids_per_partition_A >= centroids_per_partition_B
@@ -147,7 +147,8 @@ void load_vector_quantizer_from_HBM(
     hls::stream<int> s_cell_ID;
 #pragma HLS stream variable=s_cell_ID depth=16
 
-    load_vector_quantizer_from_HBM_component_A<query_num>(
+    load_vector_quantizer_from_HBM_component_A(
+        query_num,
         start_cell_ID,
         centroids_per_partition_A,
         centroids_per_partition_B,
@@ -155,7 +156,8 @@ void load_vector_quantizer_from_HBM(
         s_HBM_centroid_vectors,
         s_cell_ID);
 
-    load_vector_quantizer_from_HBM_component_B<query_num>(
+    load_vector_quantizer_from_HBM_component_B(
+        query_num,
         centroids_per_partition_A,
         centroids_per_partition_B,
         s_HBM_centroid_vectors,
@@ -166,8 +168,8 @@ void load_vector_quantizer_from_HBM(
         s_cell_ID_B);
 }
 
-template<const int query_num>
 void compute_cell_distance_head_component_A(
+    const int query_num,
     const int centroids_per_partition,
     const int total_centriods, // nlist
     hls::stream<ap_uint512_t>& s_HBM_centroid_vectors,
@@ -309,8 +311,8 @@ void compute_cell_distance_head_component_A(
     }
 }
 
-template<const int query_num>
 void compute_cell_distance_middle_component_A(
+    const int query_num,
     const int centroids_per_partition,
     const int total_centriods, // nlist
     hls::stream<ap_uint512_t>& s_HBM_centroid_vectors,
@@ -451,8 +453,8 @@ void compute_cell_distance_middle_component_A(
 }
 
 // centroids_per_partition_last_PE must < centroids_per_partition
-template<const int query_num>
 void compute_cell_distance_tail_component_A(
+    const int query_num,
     const int centroids_per_partition,
     const int centroids_per_partition_last_PE,
     const int total_centriods, // nlist
@@ -594,8 +596,8 @@ void compute_cell_distance_tail_component_A(
 }
 
 
-template<const int query_num>
 void compute_cell_distance_component_B(
+    const int query_num,
     const int centroids_per_partition,
     hls::stream<ap_uint512_t>& s_square_dist_pack,
     hls::stream<float>& s_partial_dist) {
@@ -655,8 +657,8 @@ void compute_cell_distance_component_B(
     }
 }
 
-template<const int query_num>
 void compute_cell_distance_component_C(
+    const int query_num,
     const int centroids_per_partition,
     hls::stream<int>& s_cell_ID,
     hls::stream<float>& s_partial_dist,
@@ -685,8 +687,9 @@ void compute_cell_distance_component_C(
     }
 }
 
-template<const int query_num>
+
 void forward_cell_distance_middle(
+    const int query_num,
     const int systolic_array_id,
     const int centroids_per_partition,
     hls::stream<dist_cell_ID_t>& s_partial_cell_PE_result,
@@ -717,8 +720,8 @@ void forward_cell_distance_middle(
 
 
 // centroids_per_partition_last_PE must < centroids_per_partition
-template<const int query_num>
 void forward_cell_distance_tail(
+    const int query_num,
     const int systolic_array_id,
     const int centroids_per_partition, 
     const int centroids_per_partition_last_PE, 
@@ -751,8 +754,8 @@ void forward_cell_distance_tail(
     }
 }
 
-template<const int query_num>
 void compute_cell_distance_head_PE(
+    const int query_num,
     const int systolic_array_id,
     const int centroids_per_partition, 
     const int total_centriods,
@@ -770,7 +773,8 @@ void compute_cell_distance_head_PE(
     hls::stream<float> s_partial_dist;
 #pragma HLS stream variable=s_partial_dist depth=16
 
-    compute_cell_distance_head_component_A<query_num>(
+    compute_cell_distance_head_component_A(
+        query_num,
         centroids_per_partition,
         total_centriods, 
         s_HBM_centroid_vectors,
@@ -778,20 +782,22 @@ void compute_cell_distance_head_PE(
         s_query_vectors_out,
         s_square_dist_pack); 
 
-    compute_cell_distance_component_B<query_num>(
+    compute_cell_distance_component_B(
+        query_num,
         centroids_per_partition,
         s_square_dist_pack,
         s_partial_dist);
         
-    compute_cell_distance_component_C<query_num>(
+    compute_cell_distance_component_C(
+        query_num,
         centroids_per_partition,
         s_cell_ID,
         s_partial_dist,
         s_partial_cell_distance_out); 
 }
 
-template<const int query_num>
 void compute_cell_distance_middle_PE(
+    const int query_num,
     const int systolic_array_id,
     const int centroids_per_partition, 
     const int total_centriods,
@@ -814,7 +820,8 @@ void compute_cell_distance_middle_PE(
 #pragma HLS stream variable=s_partial_dist depth=16
 
 
-    compute_cell_distance_middle_component_A<query_num>(
+    compute_cell_distance_middle_component_A(
+        query_num,
         centroids_per_partition,
         total_centriods,
         s_HBM_centroid_vectors,
@@ -822,18 +829,21 @@ void compute_cell_distance_middle_PE(
         s_query_vectors_out,
         s_square_dist_pack);
    
-    compute_cell_distance_component_B<query_num>(
+    compute_cell_distance_component_B(
+        query_num,
         centroids_per_partition,
         s_square_dist_pack,
         s_partial_dist);
         
-    compute_cell_distance_component_C<query_num>(
+    compute_cell_distance_component_C(
+        query_num,
         centroids_per_partition,
         s_cell_ID,
         s_partial_dist,
         s_partial_cell_PE_result); 
 
-    forward_cell_distance_middle<query_num>(
+    forward_cell_distance_middle(
+        query_num,
         systolic_array_id,
         centroids_per_partition,
         s_partial_cell_PE_result,
@@ -842,8 +852,8 @@ void compute_cell_distance_middle_PE(
 }
 
 // centroids_per_partition_last_PE must < centroids_per_partition
-template<const int query_num>
 void compute_cell_distance_tail_PE(
+    const int query_num,
     const int systolic_array_id,
     const int centroids_per_partition, 
     const int centroids_per_partition_last_PE, 
@@ -865,7 +875,8 @@ void compute_cell_distance_tail_PE(
     hls::stream<float> s_partial_dist;
 #pragma HLS stream variable=s_partial_dist depth=16
 
-    compute_cell_distance_tail_component_A<query_num>(
+    compute_cell_distance_tail_component_A(
+        query_num,
         centroids_per_partition,
         centroids_per_partition_last_PE,
         total_centriods,
@@ -873,18 +884,21 @@ void compute_cell_distance_tail_PE(
         s_query_vectors_in,
         s_square_dist_pack);
     
-    compute_cell_distance_component_B<query_num>(
+    compute_cell_distance_component_B(
+        query_num,
         centroids_per_partition_last_PE,
         s_square_dist_pack,
         s_partial_dist);
         
-    compute_cell_distance_component_C<query_num>(
+    compute_cell_distance_component_C(
+        query_num,
         centroids_per_partition_last_PE,
         s_cell_ID,
         s_partial_dist,
         s_partial_cell_PE_result); 
 
-    forward_cell_distance_tail<query_num>(
+    forward_cell_distance_tail(
+        query_num,
         systolic_array_id,
         centroids_per_partition, 
         centroids_per_partition_last_PE, 
@@ -894,8 +908,8 @@ void compute_cell_distance_tail_PE(
         s_cell_distance_out);
 }
 
-template<const int query_num>
 void compute_cell_distance_wrapper(
+    const int query_num,
     const int centroids_per_partition_even, 
     const int centroids_per_partition_last_PE, 
     const int total_centriods,
@@ -921,7 +935,8 @@ void compute_cell_distance_wrapper(
 <--load_vector_quantizer_from_HBM-->
 
     // head
-    compute_cell_distance_head_PE<query_num>(
+    compute_cell_distance_head_PE(
+        query_num,
         0,
         centroids_per_partition, 
         total_centriods,
