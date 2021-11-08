@@ -124,7 +124,7 @@
   #   while the last constructs 534: 14 * 547 + 534 = 8192
   STAGE2_ON_CHIP: False
   STAGE2_OFF_CHIP_START_CHANNEL: None # Only used when STAGE2_ON_CHIP = True
-  PE_NUM_CENTER_DIST_COMP: 9
+  PE_NUM_CENTER_DIST_COMP: 6
 
   # stage 3
   STAGE_3_PRIORITY_QUEUE_LEVEL: 2 # support 1 or 2
@@ -134,15 +134,15 @@
   # except last PE: construct more tables per query, last one construct less
   # e.g., nprobe = 17, PE num = 6, each of the first 5 PEs construct 3 tables, 
   #   while the last constructs 2: 5 * 3 + 2 = 17
-  PE_NUM_TABLE_CONSTRUCTION: 9
+  PE_NUM_TABLE_CONSTRUCTION: 6
 
   # stage 5
   # (HBM_CHANNEL_NUM * 3 / STAGE5_COMP_PE_NUM) must be integar
   # e.g., default 1 HBM channel -> 3 PQ code streams -> STAGE5_COMP_PE_NUM = 3 * HBM_CHANNEL_NUM
   # e.g., merge content of 1 HBM channel to 1 PQ code stream -> STAGE5_COMP_PE_NUM = HBM_CHANNEL_NUM
   # e.g., merge content of 2 HBM channels to 1 PQ code stream -> STAGE5_COMP_PE_NUM = HBM_CHANNEL_NUM / 2
-  HBM_CHANNEL_NUM: 16 # PQ code stream num = 3 * HBM_CHANNEL_NUM
-  STAGE5_COMP_PE_NUM: 16
+  HBM_CHANNEL_NUM: 12 # PQ code stream num = 3 * HBM_CHANNEL_NUM
+  STAGE5_COMP_PE_NUM: 12
 
   # stage 6
   # there could be a sorting network before the priority queue group (SORT_GROUP_ENABLE)
