@@ -41,7 +41,8 @@ if config['SORT_GROUP_ENABLE'] and (config["STAGE5_COMP_PE_NUM"] != config["SORT
 #pragma HLS array_partition variable=s_scanned_entries_every_cell_Dummy_replicated complete
 // #pragma HLS RESOURCE variable=s_scanned_entries_every_cell_Dummy_replicated core=FIFO_SRL
 
-    replicate_s_scanned_entries_every_cell_PQ_lookup_computation<query_num, stream_num>(
+    replicate_s_scanned_entries_every_cell_PQ_lookup_computation<stream_num>(
+        query_num,
         nprobe, 
         s_scanned_entries_every_cell_PQ_lookup_computation, 
         s_scanned_entries_every_cell_PQ_lookup_computation_replicated,
@@ -50,7 +51,8 @@ if config['SORT_GROUP_ENABLE'] and (config["STAGE5_COMP_PE_NUM"] != config["SORT
     template_fill_dict["dummy_PQ_result_sender_sort_group_num_1"] = """
     for (int j = stream_num; j < 16; j++) {
 #pragma HLS UNROLL
-        dummy_PQ_result_sender<query_num>(
+        dummy_PQ_result_sender(
+            query_num,
             nprobe,
             s_scanned_entries_every_cell_Dummy_replicated[j - stream_num], 
             s_single_PQ_result[0][j]);
@@ -59,7 +61,8 @@ if config['SORT_GROUP_ENABLE'] and (config["STAGE5_COMP_PE_NUM"] != config["SORT
     template_fill_dict["dummy_PQ_result_sender_sort_group_num_2"] = """
     for (int j = stream_num - 16 * (SORT_GROUP_NUM - 1); j < 16; j++) {
 #pragma HLS UNROLL
-        dummy_PQ_result_sender<query_num>(
+        dummy_PQ_result_sender(
+            query_num,
             nprobe,
             s_scanned_entries_every_cell_Dummy_replicated[j - (stream_num - 16 * (SORT_GROUP_NUM - 1))], 
             s_single_PQ_result[SORT_GROUP_NUM - 1][j]);
@@ -68,16 +71,18 @@ if config['SORT_GROUP_ENABLE'] and (config["STAGE5_COMP_PE_NUM"] != config["SORT
     template_fill_dict["dummy_PQ_result_sender_sort_group_num_3"] = """
     for (int j = stream_num - 16 * (SORT_GROUP_NUM - 1); j < 16; j++) {
 #pragma HLS UNROLL
-        dummy_PQ_result_sender<query_num>(
+        dummy_PQ_result_sender(
+            query_num,
             nprobe,
-            s_scanned_entries_every_cell_Dummy_replicated[j - (3 * stream_num - 16 * (SORT_GROUP_NUM - 1))], 
+            s_scanned_entries_every_cell_Dummy_replicated[j - (stream_num - 16 * (SORT_GROUP_NUM - 1))], 
             s_single_PQ_result[SORT_GROUP_NUM - 1][j]);
     }
     """
 
 else:
     template_fill_dict["PQ_lookup_computation_wrapper_replicate_signal"] = """
-    replicate_s_scanned_entries_every_cell_PQ_lookup_computation<query_num, stream_num>(
+    replicate_s_scanned_entries_every_cell_PQ_lookup_computation<stream_num>(
+        query_num, 
         nprobe, 
         s_scanned_entries_every_cell_PQ_lookup_computation, 
         s_scanned_entries_every_cell_PQ_lookup_computation_replicated);

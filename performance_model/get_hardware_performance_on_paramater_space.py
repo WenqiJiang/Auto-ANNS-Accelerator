@@ -117,31 +117,6 @@ if device == 'U280':
         raise ValueError
 
     #####     Shell     #####
-    resource_network_kernel = Resource()
-    resource_network_kernel.LUT = 126540
-    resource_network_kernel.FF = 197124
-    resource_network_kernel.BRAM_18K = 2 * 430
-    resource_network_kernel.URAM = 9
-    resource_network_kernel.DSP48E = 0
-    resource_network_kernel.HBM_bank = 0
-
-    resource_network_user_kernel_functions = Resource()
-    resource_network_user_kernel_functions.LUT = 11242
-    resource_network_user_kernel_functions.FF = 5124
-    resource_network_user_kernel_functions.BRAM_18K = 2 * 0.5
-    resource_network_user_kernel_functions.URAM = 0
-    resource_network_user_kernel_functions.DSP48E = 0
-    resource_network_user_kernel_functions.HBM_bank = 0
-    resource_network_user_kernel_functions.add_resource(resource_FIFO_d2_w32, num=21)
-    resource_network_user_kernel_functions.add_resource(resource_FIFO_d512_w32, num=32)
-
-    resource_cmac_kernel = Resource()
-    resource_cmac_kernel.LUT = 17256
-    resource_cmac_kernel.FF = 58280
-    resource_cmac_kernel.BRAM_18K = 2 * 18
-    resource_cmac_kernel.URAM = 9
-    resource_cmac_kernel.DSP48E = 0
-    resource_cmac_kernel.HBM_bank = 0
 
     resource_hmss = Resource()
     resource_hmss.LUT = 55643 
@@ -176,8 +151,7 @@ if device == 'U280':
     resourece_static_region.HBM_bank = 0
 
     # component_list_shell = [resource_hmss, resource_System_DPA, resource_xdma, resourece_static_region]
-    component_list_shell = [resource_network_kernel, resource_network_user_kernel_functions,
-        resource_cmac_kernel, resource_hmss, resource_System_DPA, resource_xdma, resourece_static_region]
+    component_list_shell = [resource_hmss, resource_System_DPA, resource_xdma, resourece_static_region]
     shell_consumption = sum_resource(component_list_shell)
 
 elif device == 'U50':
@@ -204,32 +178,6 @@ elif device == 'U50':
         raise ValueError
 
     #####     Shell     #####
-    resource_network_kernel = Resource()
-    resource_network_kernel.LUT = 126540
-    resource_network_kernel.FF = 197124
-    resource_network_kernel.BRAM_18K = 2 * 430
-    resource_network_kernel.URAM = 9
-    resource_network_kernel.DSP48E = 0
-    resource_network_kernel.HBM_bank = 0
-
-    resource_network_user_kernel_functions = Resource()
-    resource_network_user_kernel_functions.LUT = 11242
-    resource_network_user_kernel_functions.FF = 5124
-    resource_network_user_kernel_functions.BRAM_18K = 2 * 0.5
-    resource_network_user_kernel_functions.URAM = 0
-    resource_network_user_kernel_functions.DSP48E = 0
-    resource_network_user_kernel_functions.HBM_bank = 0
-    resource_network_user_kernel_functions.add_resource(resource_FIFO_d2_w32, num=21)
-    resource_network_user_kernel_functions.add_resource(resource_FIFO_d512_w32, num=32)
-
-    resource_cmac_kernel = Resource()
-    resource_cmac_kernel.LUT = 17256
-    resource_cmac_kernel.FF = 58280
-    resource_cmac_kernel.BRAM_18K = 2 * 18
-    resource_cmac_kernel.URAM = 9
-    resource_cmac_kernel.DSP48E = 0
-    resource_cmac_kernel.HBM_bank = 0
-
     resourece_dynamic_region = Resource()
     resourece_dynamic_region.LUT = 92244
     resourece_dynamic_region.FF = 175459
@@ -246,7 +194,7 @@ elif device == 'U50':
     resourece_static_region.DSP48E = 4
     resourece_static_region.HBM_bank = 0
 
-    component_list_shell = [resource_network_kernel, resource_network_user_kernel_functions, resource_cmac_kernel, resourece_dynamic_region, resourece_static_region]
+    component_list_shell = [resourece_dynamic_region, resourece_static_region]
     # component_list_shell = [resourece_dynamic_region, resourece_static_region]
     shell_consumption = sum_resource(component_list_shell)
 

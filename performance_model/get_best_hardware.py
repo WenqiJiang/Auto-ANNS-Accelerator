@@ -9,6 +9,9 @@ Example usage:
 import numpy as np
 import os 
 import pickle
+import io
+
+from contextlib import redirect_stdout
 
 from constants import * 
 from queue_and_sorting import *
@@ -112,31 +115,6 @@ if args.device == 'U280':
         raise ValueError
     
     #####     Shell     #####
-    resource_network_kernel = Resource()
-    resource_network_kernel.LUT = 126540
-    resource_network_kernel.FF = 197124
-    resource_network_kernel.BRAM_18K = 2 * 430
-    resource_network_kernel.URAM = 9
-    resource_network_kernel.DSP48E = 0
-    resource_network_kernel.HBM_bank = 0
-
-    resource_network_user_kernel_functions = Resource()
-    resource_network_user_kernel_functions.LUT = 11242
-    resource_network_user_kernel_functions.FF = 5124
-    resource_network_user_kernel_functions.BRAM_18K = 2 * 0.5
-    resource_network_user_kernel_functions.URAM = 0
-    resource_network_user_kernel_functions.DSP48E = 0
-    resource_network_user_kernel_functions.HBM_bank = 0
-    resource_network_user_kernel_functions.add_resource(resource_FIFO_d2_w32, num=21)
-    resource_network_user_kernel_functions.add_resource(resource_FIFO_d512_w32, num=32)
-
-    resource_cmac_kernel = Resource()
-    resource_cmac_kernel.LUT = 17256
-    resource_cmac_kernel.FF = 58280
-    resource_cmac_kernel.BRAM_18K = 2 * 18
-    resource_cmac_kernel.URAM = 9
-    resource_cmac_kernel.DSP48E = 0
-    resource_cmac_kernel.HBM_bank = 0
 
     resource_hmss = Resource()
     resource_hmss.LUT = 55643 
@@ -171,8 +149,7 @@ if args.device == 'U280':
     resourece_static_region.HBM_bank = 0
 
     # component_list_shell = [resource_hmss, resource_System_DPA, resource_xdma, resourece_static_region]
-    component_list_shell = [resource_network_kernel, resource_network_user_kernel_functions,
-        resource_cmac_kernel, resource_hmss, resource_System_DPA, resource_xdma, resourece_static_region]
+    component_list_shell = [resource_hmss, resource_System_DPA, resource_xdma, resourece_static_region]
     shell_consumption = sum_resource(component_list_shell)
 
 elif args.device == 'U50':
@@ -198,32 +175,7 @@ elif args.device == 'U50':
         print("Unsupported dataset")
         raise ValueError
 
-    #####     Shell     #####
-    resource_network_kernel = Resource()
-    resource_network_kernel.LUT = 126540
-    resource_network_kernel.FF = 197124
-    resource_network_kernel.BRAM_18K = 2 * 430
-    resource_network_kernel.URAM = 9
-    resource_network_kernel.DSP48E = 0
-    resource_network_kernel.HBM_bank = 0
-
-    resource_network_user_kernel_functions = Resource()
-    resource_network_user_kernel_functions.LUT = 11242
-    resource_network_user_kernel_functions.FF = 5124
-    resource_network_user_kernel_functions.BRAM_18K = 2 * 0.5
-    resource_network_user_kernel_functions.URAM = 0
-    resource_network_user_kernel_functions.DSP48E = 0
-    resource_network_user_kernel_functions.HBM_bank = 0
-    resource_network_user_kernel_functions.add_resource(resource_FIFO_d2_w32, num=21)
-    resource_network_user_kernel_functions.add_resource(resource_FIFO_d512_w32, num=32)
-
-    resource_cmac_kernel = Resource()
-    resource_cmac_kernel.LUT = 17256
-    resource_cmac_kernel.FF = 58280
-    resource_cmac_kernel.BRAM_18K = 2 * 18
-    resource_cmac_kernel.URAM = 9
-    resource_cmac_kernel.DSP48E = 0
-    resource_cmac_kernel.HBM_bank = 0
+    #####     Shell     ####
 
     resourece_dynamic_region = Resource()
     resourece_dynamic_region.LUT = 92244
@@ -241,7 +193,7 @@ elif args.device == 'U50':
     resourece_static_region.DSP48E = 4
     resourece_static_region.HBM_bank = 0
 
-    component_list_shell = [resource_network_kernel, resource_network_user_kernel_functions, resource_cmac_kernel, resourece_dynamic_region, resourece_static_region]
+    component_list_shell = [resourece_dynamic_region, resourece_static_region]
     # component_list_shell = [resourece_dynamic_region, resourece_static_region]
     shell_consumption = sum_resource(component_list_shell)
 
@@ -419,6 +371,9 @@ if __name__ == "__main__":
 
     # unit_test(FREQ, MAX_URAM, MAX_HBM_bank)
     best_solution_name = None
+    best_solution_nlist = None
+    best_solution_nprobe = None
+    best_solution_OPQ_enable = None
     best_solution_QPS = 0 
     best_solution_stage_option_list = None 
     best_solution_PE_num_list = None
@@ -457,6 +412,9 @@ if __name__ == "__main__":
 
         if current_solution_QPS > best_solution_QPS:
             best_solution_name = index_key
+            best_solution_nlist = nlist
+            best_solution_nprobe = nprobe
+            best_solution_OPQ_enable=OPQ_enable
             best_solution_QPS = current_solution_QPS
             best_solution_stage_option_list = current_solution_stage_option_list
             best_solution_PE_num_list = current_solution_PE_num_list
@@ -467,52 +425,194 @@ if __name__ == "__main__":
         for option in current_solution_stage_option_list:
             option.print_attributes()
 
-    print("\n\n======== Result =========\n")
-    print("best option name", best_solution_name)
-    print("nprobe: {}".format(d_nprobes[args.dbname][best_solution_name][topK][recall_goal]))
-    print("QPS", best_solution_QPS)
-    print("stage_option_list")
-    for option in best_solution_stage_option_list:
-        option.print_attributes()
-    print("total_valid_design:", total_valid_design)
+    # Redirect the best option print to config, also show in stdout
+    # https://stackoverflow.com/questions/16571150/how-to-capture-stdout-output-from-a-python-function-call
 
-    if len(best_solution_stage_option_list) == 5: # without OPQ
-        total_consumption_obj = get_resource_consumption(
-            best_solution_stage_option_list, 
-            TOTAL_BRAM_18K, 
-            TOTAL_DSP48E, 
-            TOTAL_FF, 
-            TOTAL_LUT, 
-            TOTAL_URAM,
-            PE_num_list=[1,1,1,1,1], 
-            shell_consumption=shell_consumption,
-            count_shell=True)
-        print("Total resource consumption:")
-        total_consumption_obj.print_resource()
-        print("Utilization rate:\n{}".format(get_utilization_rate(
-            total_consumption_obj,
-            TOTAL_BRAM_18K, 
-            TOTAL_DSP48E, 
-            TOTAL_FF, 
-            TOTAL_LUT, 
-            TOTAL_URAM)))
-    elif len(best_solution_stage_option_list) == 6: # with OPQ
-        total_consumption_obj = get_resource_consumption(
-            best_solution_stage_option_list, 
-            TOTAL_BRAM_18K, 
-            TOTAL_DSP48E, 
-            TOTAL_FF, 
-            TOTAL_LUT, 
-            TOTAL_URAM,
-            PE_num_list=[1,1,1,1,1,1], 
-            shell_consumption=shell_consumption,
-            count_shell=True)
-        print("Total resource consumption:")
-        total_consumption_obj.print_resource()
-        print("Utilization rate:\n{}".format(get_utilization_rate(
-            total_consumption_obj,
-            TOTAL_BRAM_18K, 
-            TOTAL_DSP48E, 
-            TOTAL_FF, 
-            TOTAL_LUT, 
-            TOTAL_URAM)))
+    f = io.StringIO()
+    with redirect_stdout(f):
+        print("\n\n======== Result =========\n")
+        print("best option name", best_solution_name)
+        print("nprobe: {}".format(d_nprobes[args.dbname][best_solution_name][topK][recall_goal]))
+        print("QPS", best_solution_QPS)
+        print("stage_option_list")
+        for option in best_solution_stage_option_list:
+            option.print_attributes()
+        print("total_valid_design:", total_valid_design)
+
+        if len(best_solution_stage_option_list) == 5: # without OPQ
+            total_consumption_obj = get_resource_consumption(
+                best_solution_stage_option_list, 
+                TOTAL_BRAM_18K, 
+                TOTAL_DSP48E, 
+                TOTAL_FF, 
+                TOTAL_LUT, 
+                TOTAL_URAM,
+                PE_num_list=[1,1,1,1,1], 
+                shell_consumption=shell_consumption,
+                count_shell=True)
+            total_consumption_obj_accelerator_kernel = get_resource_consumption(
+                best_solution_stage_option_list, 
+                TOTAL_BRAM_18K, 
+                TOTAL_DSP48E, 
+                TOTAL_FF, 
+                TOTAL_LUT, 
+                TOTAL_URAM,
+                PE_num_list=[1,1,1,1,1], 
+                shell_consumption=shell_consumption,
+                count_shell=False)
+            print("Total resource consumption: (with shell)")
+            total_consumption_obj.print_resource()
+            print("Total resource consumption: (accelerator kernel without shell)")
+            total_consumption_obj_accelerator_kernel.print_resource()
+            print("Per Stage Utilization rate (Total = FPGA):\n")
+            for i in range(len(best_solution_stage_option_list)):
+                print("Stage {}: {}".format(
+                    i + 2, 
+                    get_utilization_rate(
+                        best_solution_stage_option_list[i],
+                        TOTAL_BRAM_18K, 
+                        TOTAL_DSP48E, 
+                        TOTAL_FF, 
+                        TOTAL_LUT, 
+                        TOTAL_URAM)))
+            print("Per Stage Utilization rate (Total = Accelerator Kernel (without shell)):\n")
+            for i in range(len(best_solution_stage_option_list)):
+                print("Stage {}: {}".format(
+                    i + 2, 
+                    get_utilization_rate(
+                        best_solution_stage_option_list[i],
+                        total_consumption_obj_accelerator_kernel.BRAM_18K, 
+                        total_consumption_obj_accelerator_kernel.DSP48E, 
+                        total_consumption_obj_accelerator_kernel.FF, 
+                        total_consumption_obj_accelerator_kernel.LUT, 
+                        total_consumption_obj_accelerator_kernel.URAM)))
+            print("Total Utilization rate:\n{}".format(get_utilization_rate(
+                total_consumption_obj,
+                TOTAL_BRAM_18K, 
+                TOTAL_DSP48E, 
+                TOTAL_FF, 
+                TOTAL_LUT, 
+                TOTAL_URAM)))
+        elif len(best_solution_stage_option_list) == 6: # with OPQ
+            total_consumption_obj = get_resource_consumption(
+                best_solution_stage_option_list, 
+                TOTAL_BRAM_18K, 
+                TOTAL_DSP48E, 
+                TOTAL_FF, 
+                TOTAL_LUT, 
+                TOTAL_URAM,
+                PE_num_list=[1,1,1,1,1,1], 
+                shell_consumption=shell_consumption,
+                count_shell=True)
+            total_consumption_obj_accelerator_kernel = get_resource_consumption(
+                best_solution_stage_option_list, 
+                TOTAL_BRAM_18K, 
+                TOTAL_DSP48E, 
+                TOTAL_FF, 
+                TOTAL_LUT, 
+                TOTAL_URAM,
+                PE_num_list=[1,1,1,1,1,1], 
+                shell_consumption=shell_consumption,
+                count_shell=False)
+            print("Total resource consumption: (with shell)")
+            total_consumption_obj.print_resource()
+            print("Total resource consumption: (accelerator kernel without shell)")
+            total_consumption_obj_accelerator_kernel.print_resource()
+            print("\nPer Stage Utilization rate (Total = FPGA):")
+            for i in range(len(best_solution_stage_option_list)):
+                print("Stage {}: {}".format(
+                    i + 1, 
+                    get_utilization_rate(
+                        best_solution_stage_option_list[i],
+                        TOTAL_BRAM_18K, 
+                        TOTAL_DSP48E, 
+                        TOTAL_FF, 
+                        TOTAL_LUT, 
+                        TOTAL_URAM)))
+            print("\nPer Stage Utilization rate (Total = Accelerator Kernel (without shell)):")
+            for i in range(len(best_solution_stage_option_list)):
+                print("Stage {}: {}".format(
+                    i + 1, 
+                    get_utilization_rate(
+                        best_solution_stage_option_list[i],
+                        total_consumption_obj_accelerator_kernel.BRAM_18K, 
+                        total_consumption_obj_accelerator_kernel.DSP48E, 
+                        total_consumption_obj_accelerator_kernel.FF, 
+                        total_consumption_obj_accelerator_kernel.LUT, 
+                        total_consumption_obj_accelerator_kernel.URAM))) 
+            print("\nTotal Utilization rate:\n{}".format(get_utilization_rate(
+                total_consumption_obj,
+                TOTAL_BRAM_18K, 
+                TOTAL_DSP48E, 
+                TOTAL_FF, 
+                TOTAL_LUT, 
+                TOTAL_URAM)))
+    s_best_option = f.getvalue()
+    print(s_best_option)
+
+    s_best_option_comment = ""
+    for line in s_best_option.splitlines():
+        s_best_option_comment += "  # {}\n".format(line) 
+
+    """ 
+    Write config file 
+    """
+    template_dir = './config_template.yaml'
+    template_str = None
+    with open(template_dir) as f:
+        template_str = f.read()
+
+    template_fill_dict = dict()
+    template_fill_dict["best_option"] = s_best_option_comment
+    template_fill_dict["nlist"] = best_solution_nlist
+    template_fill_dict["nprobe"] = best_solution_nprobe
+    template_fill_dict["topk"] = topK
+    # stage 1
+    template_fill_dict["OPQ_enable"] = best_solution_OPQ_enable
+    if best_solution_OPQ_enable:
+        array_offset = -1
+        template_fill_dict["OPQ_unroll_factor"] = best_solution_stage_option_list[1 + array_offset].OPQ_UNROLL_FACTOR
+    else:
+        array_offset = -2
+    # stage 2
+    template_fill_dict["STAGE2_ON_CHIP"] = best_solution_stage_option_list[2 + array_offset].STAGE2_ON_CHIP
+    template_fill_dict["PE_NUM_CENTER_DIST_COMP"] = best_solution_stage_option_list[2 + array_offset].PE_NUM_CENTER_DIST_COMP
+    # stage 3
+    template_fill_dict["STAGE_3_PRIORITY_QUEUE_LEVEL"] = best_solution_stage_option_list[3 + array_offset].STAGE_3_PRIORITY_QUEUE_LEVEL
+    template_fill_dict["STAGE_3_PRIORITY_QUEUE_L1_NUM"] = best_solution_stage_option_list[3 + array_offset].STAGE_3_PRIORITY_QUEUE_L1_NUM
+    # stage 4
+    template_fill_dict["PE_NUM_TABLE_CONSTRUCTION"] = best_solution_stage_option_list[4 + array_offset].PE_NUM_TABLE_CONSTRUCTION
+    # stage 5
+    template_fill_dict["HBM_CHANNEL_NUM"] = best_solution_stage_option_list[5 + array_offset].HBM_CHANNEL_NUM
+    template_fill_dict["STAGE5_COMP_PE_NUM"] = best_solution_stage_option_list[5 + array_offset].STAGE5_COMP_PE_NUM
+    # stage 6
+    template_fill_dict["SORT_GROUP_ENABLE"] = best_solution_stage_option_list[6 + array_offset].SORT_GROUP_ENABLE
+    if best_solution_stage_option_list[6 + array_offset].SORT_GROUP_ENABLE:
+        template_fill_dict["SORT_GROUP_NUM"] = best_solution_stage_option_list[6 + array_offset].SORT_GROUP_NUM
+    else:
+        template_fill_dict["SORT_GROUP_NUM"] = 0
+    template_fill_dict["STAGE_6_PRIORITY_QUEUE_LEVEL"] = best_solution_stage_option_list[6 + array_offset].STAGE_6_PRIORITY_QUEUE_LEVEL
+
+
+    if args.dbname == 'SIFT100M':
+        template_fill_dict["DB_SCALE"] = "100M"
+    elif args.dbname == 'SIFT500M':
+        template_fill_dict["DB_SCALE"] = "500M"
+    elif args.dbname == 'SIFT1000M':
+        template_fill_dict["DB_SCALE"] = "1000M"
+    else:
+        print("Unknown db name, unable to write DB_SCALE to config")
+        raise ValueError
+    template_fill_dict["DEVICE"] = args.device
+    template_fill_dict["FREQ"] = args.freq
+
+    for k in template_fill_dict:
+        template_str = template_str.replace("<--{}-->".format(k), str(template_fill_dict[k]))
+    output_str = template_str
+
+    # Save generated file
+    output_dir = './config_outputs/{device}_{dbname}_K{topK}_R{recall}_util_{max_utilization_rate}_{freq}MHz.yaml'.format(
+        l, 
+        max_utilization_rate=args.max_utilization_rate, freq=args.freq)
+    with open(output_dir, "w+") as f:
+        f.write(output_str)
