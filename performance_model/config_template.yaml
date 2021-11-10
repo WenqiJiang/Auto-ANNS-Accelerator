@@ -62,6 +62,7 @@
 
   # Dataset config
   DB_SCALE: <--DB_SCALE--> # 1M to 1000M
+  FPGA_NUM: <--FPGA_NUM--> # e.g., can use 8 FPGAs to serve 1000M dataset, each stores 125M vectors
 
   # Data directory (don't add "/" after the dir)
   #   e.g., dir=/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_HBM_10_banks, 

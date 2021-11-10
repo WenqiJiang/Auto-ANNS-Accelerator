@@ -3,7 +3,7 @@ Given a database, an FPGA device, a resource constraint, and a frequency setting
     search the parameter space (nlist, nprobe, OPQ_enable) and find the best
     hardware solution
 Example usage:
-    python get_best_hardware.py --dbname SIFT100M --topK 10 --recall_goal 0.8 --nprobe_dict_dir './recall_info/cpu_recall_index_nprobe_pairs_SIFT100M.pkl' --device U280 --max_utilization_rate 80 --freq 140 > out
+    python get_best_hardware.py --dbname SIFT100M --FPGA_num 1 --topK 10 --recall_goal 0.8 --nprobe_dict_dir './recall_info/cpu_recall_index_nprobe_pairs_SIFT100M.pkl' --device U280 --max_utilization_rate 80 --freq 140 > out
 """
 
 import numpy as np
@@ -22,6 +22,7 @@ import argparse
 parser = argparse.ArgumentParser()
 # DB-related parameters
 parser.add_argument('--dbname', type=str, default='', help="e.g., SIFT100M")
+parser.add_argument('--FPGA_num', type=int, default=1, help="number of FPGAs to serve a dataset, e.g., may use 8 to serve SIFT1B")
 parser.add_argument('--topK', type=int, default=10, help="return the topK results")
 parser.add_argument('--recall_goal', type=float, default=0.8, help="recall goal, e.g., 0.8 (80%)")
 parser.add_argument('--nprobe_dict_dir', type=str, default='./recall_info/cpu_recall_index_nprobe_pairs_SIFT100M.pkl', help="a dictionary of d[dbname][index_key][topK][recall_goal] -> nprobe")
@@ -43,41 +44,47 @@ max_utilization_rate=args.max_utilization_rate, freq=args.freq))
 
 assert args.dbname != '', "Please fill the DB name, e.g., SITF100M"
 if args.dbname == 'SIFT100M':
-    TOTAL_VECTORS = 1e8
-    """
-    An example of expected scanned ratio of a single index
-
-    e.g., suppose the query vectors has the same distribution as the trained vectors, 
-        then the larger a Voronoi cell, the more likely they will be searched
-    e.g., searching 32 cells over 8192 in 100 M dataset will not scan 32 / 8192 * 1e8 entries on average,
-        we need to scan more
-    """
-    scan_ratio_with_OPQ = {
-        1024: 1.102495894347366,
-        2048: 1.12463916710666,
-        4096: 1.12302396550103,
-        8192: 1.135891773928242,
-        16384: 1.1527141392580655,
-        32768: 1.1441353378627621,
-        65536: 1.1411144965226643,
-        131072: 1.1476783059960072,
-        262144: 1.1543383003102523
-    }
-    scan_ratio_without_OPQ = {
-        1024: 1.1023307648983034,
-        2048: 1.1245342465011723,
-        4096: 1.1230564521721877,
-        8192: 1.135866022841546, 
-        16384: 1.1523836603564073, 
-        32768: 1.1440334275739672,
-        65536: 1.1410689577844846,
-        131072: 1.1476378583040157,
-        262144: 1.1543274466049378
-    }
+    TOTAL_VECTORS = int(1e8 / args.FPGA_num)
+elif args.dbname == 'SIFT500M':
+    TOTAL_VECTORS = int(5e8 / args.FPGA_num)
+elif args.dbname == 'SIFT1000M':
+    TOTAL_VECTORS = int(1e9 / args.FPGA_num)
 else:
     print("Unsupported dataset")
     raise ValueError
-    
+
+"""
+WENQI: the numbers below are got from the 100M dataset, more precise estimation TBD
+An example of expected scanned ratio of a single index
+
+e.g., suppose the query vectors has the same distribution as the trained vectors, 
+    then the larger a Voronoi cell, the more likely they will be searched
+e.g., searching 32 cells over 8192 in 100 M dataset will not scan 32 / 8192 * 1e8 entries on average,
+    we need to scan more
+"""
+scan_ratio_with_OPQ = {
+    1024: 1.102495894347366,
+    2048: 1.12463916710666,
+    4096: 1.12302396550103,
+    8192: 1.135891773928242,
+    16384: 1.1527141392580655,
+    32768: 1.1441353378627621,
+    65536: 1.1411144965226643,
+    131072: 1.1476783059960072,
+    262144: 1.1543383003102523
+}
+scan_ratio_without_OPQ = {
+    1024: 1.1023307648983034,
+    2048: 1.1245342465011723,
+    4096: 1.1230564521721877,
+    8192: 1.135866022841546, 
+    16384: 1.1523836603564073, 
+    32768: 1.1440334275739672,
+    65536: 1.1410689577844846,
+    131072: 1.1476378583040157,
+    262144: 1.1543274466049378
+}
+
 d_nprobes = None
 if os.path.exists(args.nprobe_dict_dir):
     with open(args.nprobe_dict_dir, 'rb') as f:
@@ -109,7 +116,21 @@ if args.device == 'U280':
     if args.dbname == 'SIFT100M':
         # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
         # 100M / 12582912 = 7.94 (without considering padding)
-        MIN_HBM_bank = 9 # at least 9 banks to hold PQ16 version
+        total_size = 100 * 1e6 * 20 * 64 / 60 
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / args.FPGA_num)) # at least 9 banks to hold PQ16 version
+    elif args.dbname == 'SIFT500M':
+        # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
+        # 100M / 12582912 = 7.94 (without considering padding)
+        total_size = 500 * 1e6 * 20 * 64 / 60 
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / args.FPGA_num))
+    elif args.dbname == 'SIFT1000M':
+        # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
+        # 100M / 12582912 = 7.94 (without considering padding)
+        total_size = 1000 * 1e6 * 20 * 64 / 60 
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / args.FPGA_num))
     else:
         print("Unsupported dataset")
         raise ValueError
@@ -584,7 +605,7 @@ if __name__ == "__main__":
     template_fill_dict["PE_NUM_TABLE_CONSTRUCTION"] = best_solution_stage_option_list[4 + array_offset].PE_NUM_TABLE_CONSTRUCTION
     # stage 5
     template_fill_dict["HBM_CHANNEL_NUM"] = best_solution_stage_option_list[5 + array_offset].HBM_CHANNEL_NUM
-    template_fill_dict["STAGE5_COMP_PE_NUM"] = best_solution_stage_option_list[5 + array_offset].STAGE5_COMP_PE_NUM
+    template_fill_dict["STAGE5_COMP_PE_NUM"] = int(best_solution_stage_option_list[5 + array_offset].STAGE5_COMP_PE_NUM)
     # stage 6
     template_fill_dict["SORT_GROUP_ENABLE"] = best_solution_stage_option_list[6 + array_offset].SORT_GROUP_ENABLE
     if best_solution_stage_option_list[6 + array_offset].SORT_GROUP_ENABLE:
@@ -603,6 +624,8 @@ if __name__ == "__main__":
     else:
         print("Unknown db name, unable to write DB_SCALE to config")
         raise ValueError
+    
+    template_fill_dict["FPGA_NUM"] = args.FPGA_num
     template_fill_dict["DEVICE"] = args.device
     template_fill_dict["FREQ"] = args.freq
 
@@ -612,7 +635,7 @@ if __name__ == "__main__":
 
     # Save generated file
     output_dir = './config_outputs/{device}_{dbname}_K{topK}_R{recall}_util_{max_utilization_rate}_{freq}MHz.yaml'.format(
-        l, 
+        device=args.device, dbname=args.dbname, topK=args.topK, recall=int(args.recall_goal * 100), 
         max_utilization_rate=args.max_utilization_rate, freq=args.freq)
     with open(output_dir, "w+") as f:
         f.write(output_str)

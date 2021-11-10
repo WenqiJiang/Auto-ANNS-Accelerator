@@ -33,46 +33,53 @@ OPQ_enable = config["OPQ_ENABLE"]
 topK = config["TOPK"]
 FREQ = config["FREQ"] * 1e6
 device = config["DEVICE"]
+DB_SCALE = config["DB_SCALE"]
+FPGA_num = config["FPGA_NUM"]
 
 MAX_UTIL_PERC = 1 # no resource constraint applied herer
 
-if config["DB_SCALE"] == '100M':
-    dbname = 'SIFT100M'
-    TOTAL_VECTORS = 1e8
-    """
-    An example of expected scanned ratio of a single index
-
-    e.g., suppose the query vectors has the same distribution as the trained vectors, 
-        then the larger a Voronoi cell, the more likely they will be searched
-    e.g., searching 32 cells over 8192 in 100 M dataset will not scan 32 / 8192 * 1e8 entries on average,
-        we need to scan more
-    """
-    scan_ratio_with_OPQ = {
-        1024: 1.102495894347366,
-        2048: 1.12463916710666,
-        4096: 1.12302396550103,
-        8192: 1.135891773928242,
-        16384: 1.1527141392580655,
-        32768: 1.1441353378627621,
-        65536: 1.1411144965226643,
-        131072: 1.1476783059960072,
-        262144: 1.1543383003102523
-    }
-    scan_ratio_without_OPQ = {
-        1024: 1.1023307648983034,
-        2048: 1.1245342465011723,
-        4096: 1.1230564521721877,
-        8192: 1.135866022841546, 
-        16384: 1.1523836603564073, 
-        32768: 1.1440334275739672,
-        65536: 1.1410689577844846,
-        131072: 1.1476378583040157,
-        262144: 1.1543274466049378
-    }
+assert args.dbname != '', "Please fill the DB name, e.g., SITF100M"
+if DB_SCALE == '100M':
+    TOTAL_VECTORS = int(1e8 / FPGA_num)
+elif DB_SCALE == '500M':
+    TOTAL_VECTORS = int(5e8 / FPGA_num)
+elif DB_SCALE == '1000M':
+    TOTAL_VECTORS = int(1e9 / FPGA_num)
 else:
     print("Unsupported dataset")
     raise ValueError
-    
+
+"""
+WENQI: the numbers below are got from the 100M dataset, more precise estimation TBD
+An example of expected scanned ratio of a single index
+
+e.g., suppose the query vectors has the same distribution as the trained vectors, 
+    then the larger a Voronoi cell, the more likely they will be searched
+e.g., searching 32 cells over 8192 in 100 M dataset will not scan 32 / 8192 * 1e8 entries on average,
+    we need to scan more
+"""
+scan_ratio_with_OPQ = {
+    1024: 1.102495894347366,
+    2048: 1.12463916710666,
+    4096: 1.12302396550103,
+    8192: 1.135891773928242,
+    16384: 1.1527141392580655,
+    32768: 1.1441353378627621,
+    65536: 1.1411144965226643,
+    131072: 1.1476783059960072,
+    262144: 1.1543383003102523
+}
+scan_ratio_without_OPQ = {
+    1024: 1.1023307648983034,
+    2048: 1.1245342465011723,
+    4096: 1.1230564521721877,
+    8192: 1.135866022841546, 
+    16384: 1.1523836603564073, 
+    32768: 1.1440334275739672,
+    65536: 1.1410689577844846,
+    131072: 1.1476378583040157,
+    262144: 1.1543274466049378
+}
 
 if device == 'U280':
     """ Resource related constants """

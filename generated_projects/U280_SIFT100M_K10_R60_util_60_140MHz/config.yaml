@@ -4,121 +4,121 @@
   # 
   # ======== Result =========
   # 
-  # best option name IVF1024,PQ16
-  # nprobe: 2
+  # best option name IVF4096,PQ16
+  # nprobe: 3
   # QPS 31876.138433515483
   # stage_option_list
   # Stage 2:
   # 
   #         HBM_bank: 0
   #         BRAM_18K: 1.0
-  #         URAM: 32.0
-  #         FF: 46139
-  #         LUT: 35958
-  #         DSP48E: 232
+  #         URAM: 128.0
+  #         FF: 184199
+  #         LUT: 143310
+  #         DSP48E: 928
   #         
   # QPS: 33065.658951346246
   # Cycles per query: 4234
   # STAGE2_ON_CHIP: True
   # STAGE2_OFF_CHIP_START_CHANNEL:None
-  # PE_NUM_CENTER_DIST_COMP: 4
+  # PE_NUM_CENTER_DIST_COMP: 16
   # Stage 3:
   # 
   #         HBM_bank: 0
-  #         BRAM_18K: 1.0
+  #         BRAM_18K: 6.0
   #         URAM: 0
-  #         FF: 487.14
-  #         LUT: 484.98
+  #         FF: 2334.63
+  #         LUT: 2263.41
   #         DSP48E: 0
   #         
-  # QPS: 67961.16504854368
-  # Cycles per query: 2060
-  # STAGE_3_PRIORITY_QUEUE_LEVEL: 1
-  # STAGE_3_PRIORITY_QUEUE_L1_NUM: 1
+  # QPS: 34071.550255536626
+  # Cycles per query: 4109
+  # STAGE_3_PRIORITY_QUEUE_LEVEL: 2
+  # STAGE_3_PRIORITY_QUEUE_L1_NUM: 2
   # Stage 4:
   # 
   #         HBM_bank: 0
-  #         BRAM_18K: 54.0
-  #         URAM: 32
-  #         FF: 17562
-  #         LUT: 13946
-  #         DSP48E: 108
+  #         BRAM_18K: 73.0
+  #         URAM: 88
+  #         FF: 25583
+  #         LUT: 20487
+  #         DSP48E: 162
   #         
   # QPS: 31876.138433515483
   # Cycles per query: 4392
-  # PE_NUM_TABLE_CONSTRUCTION: 2
+  # PE_NUM_TABLE_CONSTRUCTION: 3
   # Stage 5:
   # 
-  #         HBM_bank: 20.0
-  #         BRAM_18K: 1260.0
+  #         HBM_bank: 25.0
+  #         BRAM_18K: 525.0
   #         URAM: 0.0
-  #         FF: 352860.0
-  #         LUT: 328280.0
-  #         DSP48E: 1800.0
+  #         FF: 147025.0
+  #         LUT: 136783.3333333333
+  #         DSP48E: 750.0
   #         
-  # QPS: 32183.908045977012
-  # Cycles per query: 4350
-  # HBM_CHANNEL_NUM: 20
-  # STAGE5_COMP_PE_NUM: 60
+  # QPS: 32362.45954692557
+  # Cycles per query: 4326
+  # HBM_CHANNEL_NUM: 25
+  # STAGE5_COMP_PE_NUM: 25
   # Stage 6:
   # 
   #         HBM_bank: 0
-  #         BRAM_18K: 2.0
+  #         BRAM_18K: 102.0
   #         URAM: 0
-  #         FF: 133794.7
-  #         LUT: 113336.9
+  #         FF: 109685.7
+  #         LUT: 115407.90000000001
   #         DSP48E: 0
   #         
-  # QPS: 38997.214484679665
-  # Cycles per query: 3590
+  # QPS: 42296.07250755287
+  # Cycles per query: 3310
   # 
-  # SORT_GROUP_ENABLE: True
-  # SORT_GROUP_NUM: 4
+  # SORT_GROUP_ENABLE: False
+  # SORT_GROUP_NUM: None
   # STAGE_6_PRIORITY_QUEUE_LEVEL: 2
   # STAGE_6_PRIORITY_QUEUE_L2_NUM: None
   # STAGE_6_STREAM_PER_L2_QUEUE_LARGER: None
   # STAGE_6_STREAM_PER_L2_QUEUE_SMALLER: None
   #         
-  # total_valid_design: 29553646
+  # total_valid_design: 19275943
   # Total resource consumption: (with shell)
   # 
-  #         HBM_bank: 20.0
-  #         BRAM_18K: 1758.0
-  #         URAM: 64.0
-  #         FF: 874986.8400000001
-  #         LUT: 685766.88
-  #         DSP48E: 2144.0
+  #         HBM_bank: 25.0
+  #         BRAM_18K: 1147.0
+  #         URAM: 216.0
+  #         FF: 792971.3300000001
+  #         LUT: 612012.6433333333
+  #         DSP48E: 1844.0
   #         
   # Total resource consumption: (accelerator kernel without shell)
   # 
-  #         HBM_bank: 20.0
-  #         BRAM_18K: 1318.0
-  #         URAM: 64.0
-  #         FF: 550842.8400000001
-  #         LUT: 492005.88
-  #         DSP48E: 2140.0
+  #         HBM_bank: 25.0
+  #         BRAM_18K: 707.0
+  #         URAM: 216.0
+  #         FF: 468827.33
+  #         LUT: 418251.6433333333
+  #         DSP48E: 1840.0
   #         
   # Per Stage Utilization rate (Total = FPGA):
   # 
-  # Stage 2: {'BRAM_18K': '0.0248015873015873%', 'DSP48E': '2.5709219858156027%', 'FF': '1.7695676853215512%', 'LUT': '2.7581921944035344%', 'URAM': '3.3333333333333335%'}
-  # Stage 3: {'BRAM_18K': '0.0248015873015873%', 'DSP48E': '0.0%', 'FF': '0.018683265832106038%', 'LUT': '0.0372008468335788%', 'URAM': '0.0%'}
-  # Stage 4: {'BRAM_18K': '1.3392857142857142%', 'DSP48E': '1.196808510638298%', 'FF': '0.6735548600883653%', 'LUT': '1.0697410407461954%', 'URAM': '3.3333333333333335%'}
-  # Stage 5: {'BRAM_18K': '31.25%', 'DSP48E': '19.9468085106383%', 'FF': '13.533229013254786%', 'LUT': '25.181026018654883%', 'URAM': '0.0%'}
-  # Stage 6: {'BRAM_18K': '0.0496031746031746%', 'DSP48E': '0.0%', 'FF': '5.131424122484045%', 'LUT': '8.693613463426606%', 'URAM': '0.0%'}
+  # Stage 2: {'BRAM_18K': '0.0248015873015873%', 'DSP48E': '10.28368794326241%', 'FF': '7.064578730976927%', 'LUT': '10.992728276877761%', 'URAM': '13.333333333333334%'}
+  # Stage 3: {'BRAM_18K': '0.1488095238095238%', 'DSP48E': '0.0%', 'FF': '0.08953999447717231%', 'LUT': '0.17361699189985272%', 'URAM': '0.0%'}
+  # Stage 4: {'BRAM_18K': '1.8105158730158732%', 'DSP48E': '1.795212765957447%', 'FF': '0.9811840328915071%', 'LUT': '1.5714745949926363%', 'URAM': '9.166666666666666%'}
+  # Stage 5: {'BRAM_18K': '13.020833333333334%', 'DSP48E': '8.311170212765957%', 'FF': '5.638845422189495%', 'LUT': '10.492094174439535%', 'URAM': '0.0%'}
+  # Stage 6: {'BRAM_18K': '2.5297619047619047%', 'DSP48E': '0.0%', 'FF': '4.206772367452135%', 'LUT': '8.85247146539028%', 'URAM': '0.0%'}
   # Per Stage Utilization rate (Total = Accelerator Kernel (without shell)):
   # 
-  # Stage 2: {'BRAM_18K': '0.07587253414264036%', 'DSP48E': '10.841121495327103%', 'FF': '8.376073291612538%', 'LUT': '7.308449240484687%', 'URAM': '50.0%'}
-  # Stage 3: {'BRAM_18K': '0.07587253414264036%', 'DSP48E': '0.0%', 'FF': '0.08843538748729128%', 'LUT': '0.0985719926761851%', 'URAM': '0.0%'}
-  # Stage 4: {'BRAM_18K': '4.09711684370258%', 'DSP48E': '5.046728971962617%', 'FF': '3.1882051875268083%', 'LUT': '2.8345189695700386%', 'URAM': '50.0%'}
-  # Stage 5: {'BRAM_18K': '95.59939301972686%', 'DSP48E': '84.11214953271028%', 'FF': '64.05819852355708%', 'LUT': '66.7227798171843%', 'URAM': '0.0%'}
-  # Stage 6: {'BRAM_18K': '0.15174506828528073%', 'DSP48E': '0.0%', 'FF': '24.289087609816256%', 'LUT': '23.03567998008479%', 'URAM': '0.0%'}
+  # Stage 2: {'BRAM_18K': '0.14144271570014144%', 'DSP48E': '50.43478260869565%', 'FF': '39.28930508381412%', 'LUT': '34.2640614291111%', 'URAM': '59.25925925925925%'}
+  # Stage 3: {'BRAM_18K': '0.8486562942008486%', 'DSP48E': '0.0%', 'FF': '0.4979722491860703%', 'LUT': '0.5411598582043428%', 'URAM': '0.0%'}
+  # Stage 4: {'BRAM_18K': '10.325318246110324%', 'DSP48E': '8.804347826086957%', 'FF': '5.4568064536681335%', 'LUT': '4.898247341415108%', 'URAM': '40.74074074074074%'}
+  # Stage 5: {'BRAM_18K': '74.25742574257426%', 'DSP48E': '40.76086956521739%', 'FF': '31.360159826859924%', 'LUT': '32.70359734709311%', 'URAM': '0.0%'}
+  # Stage 6: {'BRAM_18K': '14.427157001414429%', 'DSP48E': '0.0%', 'FF': '23.395756386471753%', 'LUT': '27.59293402417634%', 'URAM': '0.0%'}
   # Total Utilization rate:
-  # {'BRAM_18K': '43.601190476190474%', 'DSP48E': '23.75886524822695%', 'FF': '33.55834407216495%', 'LUT': '52.60239322533137%', 'URAM': '6.666666666666667%'}
+  # {'BRAM_18K': '28.447420634920633%', 'DSP48E': '20.43439716312057%', 'FF': '30.412805673171334%', 'LUT': '46.94500516486663%', 'URAM': '22.5%'}
 
 
   # Constants
-  NLIST: 1024
-  NPROBE: 2
+  NLIST: 4096
+  NPROBE: 3
   D: 128
   M: 16
   K: 256
@@ -137,33 +137,33 @@
   #   each of the first 14 PEs construct 547 tables (8192 / 15 round up), 
   #   while the last constructs 534: 14 * 547 + 534 = 8192
   STAGE2_ON_CHIP: True
-  PE_NUM_CENTER_DIST_COMP: 4
+  PE_NUM_CENTER_DIST_COMP: 16
 
   # stage 3
-  STAGE_3_PRIORITY_QUEUE_LEVEL: 1 # support 1 or 2
-  STAGE_3_PRIORITY_QUEUE_L1_NUM: 1 # only used when STAGE_3_PRIORITY_QUEUE_LEVEL=2
+  STAGE_3_PRIORITY_QUEUE_LEVEL: 2 # support 1 or 2
+  STAGE_3_PRIORITY_QUEUE_L1_NUM: 2 # only used when STAGE_3_PRIORITY_QUEUE_LEVEL=2
 
   # stage 4
   # except last PE: construct more tables per query, last one construct less
   # e.g., nprobe = 17, PE num = 6, each of the first 5 PEs construct 3 tables, 
   #   while the last constructs 2: 5 * 3 + 2 = 17
-  PE_NUM_TABLE_CONSTRUCTION: 2
+  PE_NUM_TABLE_CONSTRUCTION: 3
 
   # stage 5
   # (HBM_CHANNEL_NUM * 3 / STAGE5_COMP_PE_NUM) must be integar
   # e.g., default 1 HBM channel -> 3 PQ code streams -> STAGE5_COMP_PE_NUM = 3 * HBM_CHANNEL_NUM
   # e.g., merge content of 1 HBM channel to 1 PQ code stream -> STAGE5_COMP_PE_NUM = HBM_CHANNEL_NUM
   # e.g., merge content of 2 HBM channels to 1 PQ code stream -> STAGE5_COMP_PE_NUM = HBM_CHANNEL_NUM / 2
-  HBM_CHANNEL_NUM: 20 # PQ code stream num = 3 * HBM_CHANNEL_NUM
-  STAGE5_COMP_PE_NUM: 60
+  HBM_CHANNEL_NUM: 25 # PQ code stream num = 3 * HBM_CHANNEL_NUM
+  STAGE5_COMP_PE_NUM: 25
 
   # stage 6
   # there could be a sorting network before the priority queue group (SORT_GROUP_ENABLE)
   #   if not, set SORT_GROUP_ENABLE to False, and SORT_GROUP_NUM to 0 or None
   # number of 16 outputs per cycle, e.g., HBM channel num = 10, comp PE num = 30, then 
   #   SORT_GROUP_NUM = 2; if HBM channel = 12, PE_num = 36, then SORT_GROUP_NUM = 3
-  SORT_GROUP_ENABLE: True
-  SORT_GROUP_NUM: 4 # only used when SORT_GROUP_ENABLE=True
+  SORT_GROUP_ENABLE: False
+  SORT_GROUP_NUM: 0 # only used when SORT_GROUP_ENABLE=True
   STAGE_6_PRIORITY_QUEUE_LEVEL: 2 # supported level num: 2 or 3
   # only fill STAGE_6_PRIORITY_QUEUE_L2_NUM, STAGE_6_STREAM_PER_L2_QUEUE_LARGER, STAGE_6_STREAM_PER_L2_QUEUE_SMALLER
   #   when STAGE_6_PRIORITY_QUEUE_LEVEL = 3, else left them blank
@@ -176,6 +176,7 @@
 
   # Dataset config
   DB_SCALE: 100M # 1M to 1000M
+  FPGA_NUM: 1 # e.g., can use 8 FPGAs to serve 1000M dataset, each stores 125M vectors
 
   # Data directory (don't add "/" after the dir)
   #   e.g., dir=/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_HBM_10_banks, 
