@@ -1,8 +1,8 @@
 /*
 Usage: 
-    ./host <XCLBIN File> <nlist> <nprobe> <OPQ_enable> <data directory> <ground truth dir>
+    ./host <XCLBIN File> <data directory> <ground truth dir>
 Example
-    ./host vadd.xclbin 1 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/gnd
+    ./host vadd.xclbin /mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/gnd
 */
 
 /*

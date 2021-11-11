@@ -1,9 +1,15 @@
 """
-Given a database, an FPGA device, a resource constraint, and a frequency setting,
+Usage 1: Given a database, an FPGA device, a resource constraint, and a frequency setting,
     search the parameter space (nlist, nprobe, OPQ_enable) and find the best
     hardware solution
 Example usage:
-    python get_best_hardware.py --dbname SIFT100M --FPGA_num 1 --topK 10 --recall_goal 0.8 --nprobe_dict_dir './recall_info/cpu_recall_index_nprobe_pairs_SIFT100M.pkl' --device U280 --max_utilization_rate 80 --freq 140 > out
+    python get_best_hardware.py --mode 1 --dbname SIFT100M --FPGA_num 1 --topK 10 --recall_goal 0.8 --nprobe_dict_dir './recall_info/cpu_recall_index_nprobe_pairs_SIFT100M.pkl' --device U280 --max_utilization_rate 60 --freq 140 > out
+
+Usage 2: Same as usage1, but specify a single nlist, also specify with/without OPQ
+    python get_best_hardware.py --mode 2 --dbname SIFT100M --FPGA_num 1 --topK 10 --nlist 8192 --OPQ_enable 1 --recall_goal 0.8 --nprobe_dict_dir './recall_info/cpu_recall_index_nprobe_pairs_SIFT100M.pkl' --device U280 --max_utilization_rate 60 --freq 140 > out
+
+Usage 3: specify nlist, nprobe, with/without OPQ, the recall is decided by these variables, so do not load the recall dictionary.
+    python get_best_hardware.py --mode 3 --dbname SIFT100M --FPGA_num 1 --topK 10 --nlist 8192 --nprobe 17 --OPQ_enable 1 --device U280 --max_utilization_rate 60 --freq 140 > out
 """
 
 import numpy as np
@@ -21,9 +27,13 @@ import argparse
 
 parser = argparse.ArgumentParser()
 # DB-related parameters
+parser.add_argument('--mode', type=int, default=0, help="mode 1 / 2 / 3, see comments at the beginning of the py file")
 parser.add_argument('--dbname', type=str, default='', help="e.g., SIFT100M")
 parser.add_argument('--FPGA_num', type=int, default=1, help="number of FPGAs to serve a dataset, e.g., may use 8 to serve SIFT1B")
 parser.add_argument('--topK', type=int, default=10, help="return the topK results")
+parser.add_argument('--nlist', type=int, default=0, help="mode 2 / 3 specify nlist")
+parser.add_argument('--nprobe', type=int, default=0, help="mode 3 specify nprobe")
+parser.add_argument('--OPQ_enable', type=int, default=0, help="mode 2 / 3 specify whether enable OPQ")
 parser.add_argument('--recall_goal', type=float, default=0.8, help="recall goal, e.g., 0.8 (80%)")
 parser.add_argument('--nprobe_dict_dir', type=str, default='./recall_info/cpu_recall_index_nprobe_pairs_SIFT100M.pkl', help="a dictionary of d[dbname][index_key][topK][recall_goal] -> nprobe")
 # FPGA-related parameters
@@ -84,14 +94,6 @@ scan_ratio_without_OPQ = {
     131072: 1.1476378583040157,
     262144: 1.1543274466049378
 }
-
-d_nprobes = None
-if os.path.exists(args.nprobe_dict_dir):
-    with open(args.nprobe_dict_dir, 'rb') as f:
-        d_nprobes = pickle.load(f)
-else:
-    print("ERROR! input dictionary does not exists")
-    raise ValueError
 
 topK = args.topK
 recall_goal = args.recall_goal
@@ -399,52 +401,86 @@ if __name__ == "__main__":
     best_solution_stage_option_list = None 
     best_solution_PE_num_list = None
 
-    for index_key in d_nprobes[args.dbname]:
 
-        index_array = index_key.split(",")
-        if len(index_array) == 2: # "IVF4096,PQ16" 
-            s = index_array[0]
-            if s[:3]  == "IVF":
-                nlist = int(s[3:])
-                OPQ_enable = False
-            elif s[:3] == "IMI":
-                continue
-            else:
-                raise ValueError
-        elif len(index_array) == 3: # "OPQ16,IVF4096,PQ16"
-            s = index_array[1]
-            if s[:3]  == "IVF":
-                nlist = int(s[3:])
-                OPQ_enable = True
-            elif s[:3] == "IMI":
-                continue
-            else:
-                raise ValueError
+    if args.mode == 1 or args.mode == 2:
+        
+        d_nprobes = None
+        if os.path.exists(args.nprobe_dict_dir):
+            with open(args.nprobe_dict_dir, 'rb') as f:
+                d_nprobes = pickle.load(f)
         else:
+            print("ERROR! input dictionary does not exists")
             raise ValueError
 
-        nprobe = d_nprobes[args.dbname][index_key][topK][recall_goal]
-        if not nprobe: # nprobe can be None if it cannot reach the recall goal
-            continue
+        for index_key in d_nprobes[args.dbname]:
 
-        print(index_key, nlist, nprobe, OPQ_enable)
+            index_array = index_key.split(",")
+            if len(index_array) == 2: # "IVF4096,PQ16" 
+                s = index_array[0]
+                if s[:3]  == "IVF":
+                    nlist = int(s[3:])
+                    OPQ_enable = False
+                elif s[:3] == "IMI":
+                    continue
+                else:
+                    raise ValueError
+            elif len(index_array) == 3: # "OPQ16,IVF4096,PQ16"
+                s = index_array[1]
+                if s[:3]  == "IVF":
+                    nlist = int(s[3:])
+                    OPQ_enable = True
+                elif s[:3] == "IMI":
+                    continue
+                else:
+                    raise ValueError
+            else:
+                raise ValueError
+
+            if args.mode == 2 and (nlist != args.nlist or OPQ_enable != args.OPQ_enable):
+                continue
+
+            nprobe = d_nprobes[args.dbname][index_key][topK][recall_goal]
+            if not nprobe: # nprobe can be None if it cannot reach the recall goal
+                continue
+
+            print(index_key, nlist, nprobe, OPQ_enable)
+            current_solution_QPS, current_solution_stage_option_list, current_solution_PE_num_list = \
+                get_best_hardware(nlist=nlist, nprobe=nprobe, OPQ_enable=OPQ_enable)
+
+            if current_solution_QPS > best_solution_QPS:
+                best_solution_name = index_key
+                best_solution_nlist = nlist
+                best_solution_nprobe = nprobe
+                best_solution_OPQ_enable=OPQ_enable
+                best_solution_QPS = current_solution_QPS
+                best_solution_stage_option_list = current_solution_stage_option_list
+                best_solution_PE_num_list = current_solution_PE_num_list
+                
+            print("index key", index_key)
+            print("QPS", current_solution_QPS)
+            print("stage_option_list")
+            for option in current_solution_stage_option_list:
+                option.print_attributes()
+    elif args.mode == 3:
         current_solution_QPS, current_solution_stage_option_list, current_solution_PE_num_list = \
-            get_best_hardware(nlist=nlist, nprobe=nprobe, OPQ_enable=OPQ_enable)
+            get_best_hardware(nlist=args.nlist, nprobe=args.nprobe, OPQ_enable=args.OPQ_enable)
 
         if current_solution_QPS > best_solution_QPS:
-            best_solution_name = index_key
-            best_solution_nlist = nlist
-            best_solution_nprobe = nprobe
-            best_solution_OPQ_enable=OPQ_enable
+            best_solution_name = "nlist_{}_nprobe_{}_OPQ_{}".format(args.nlist, args.nprobe, args.OPQ_enable)
+            best_solution_nlist = args.nlist
+            best_solution_nprobe = args.nprobe
+            best_solution_OPQ_enable = args.OPQ_enable
             best_solution_QPS = current_solution_QPS
             best_solution_stage_option_list = current_solution_stage_option_list
             best_solution_PE_num_list = current_solution_PE_num_list
             
-        print("index key", index_key)
         print("QPS", current_solution_QPS)
         print("stage_option_list")
         for option in current_solution_stage_option_list:
             option.print_attributes()
+    else:
+        print("Supported mode: 1 / 2 / 3")
+        raise ValueError
 
     # Redirect the best option print to config, also show in stdout
     # https://stackoverflow.com/questions/16571150/how-to-capture-stdout-output-from-a-python-function-call
@@ -453,7 +489,10 @@ if __name__ == "__main__":
     with redirect_stdout(f):
         print("\n\n======== Result =========\n")
         print("best option name", best_solution_name)
-        print("nprobe: {}".format(d_nprobes[args.dbname][best_solution_name][topK][recall_goal]))
+        if args.mode == 1 or args.mode == 2:
+            print("nprobe: {}".format(d_nprobes[args.dbname][best_solution_name][topK][recall_goal]))
+        else:
+            print("nprobe: {}".format(args.nprobe))
         print("QPS", best_solution_QPS)
         print("stage_option_list")
         for option in best_solution_stage_option_list:
@@ -634,8 +673,29 @@ if __name__ == "__main__":
     output_str = template_str
 
     # Save generated file
-    output_dir = './config_outputs/{device}_{dbname}_K{topK}_R{recall}_util_{max_utilization_rate}_{freq}MHz.yaml'.format(
-        device=args.device, dbname=args.dbname, topK=args.topK, recall=int(args.recall_goal * 100), 
-        max_utilization_rate=args.max_utilization_rate, freq=args.freq)
+    if args.mode == 1:
+        output_dir = './config_outputs/{device}_{dbname}_K{topK}_R{recall}_util_{max_utilization_rate}_{freq}MHz.yaml'.format(
+            device=args.device, dbname=args.dbname, topK=args.topK, recall=int(args.recall_goal * 100), 
+            max_utilization_rate=args.max_utilization_rate, freq=args.freq)
+    elif args.mode == 2:
+        if args.OPQ_enable:
+            OPQ_enable = 1
+        else:
+            OPQ_enable = 0
+        output_dir = './config_outputs/{device}_{dbname}_K{topK}_R{recall}_nlist_{nlist}_OPQ_{OPQ}_util_{max_utilization_rate}_{freq}MHz.yaml'.format(
+            device=args.device, dbname=args.dbname, topK=args.topK, recall=int(args.recall_goal * 100), 
+            nlist=args.nlist, OPQ=OPQ_enable, max_utilization_rate=args.max_utilization_rate, freq=args.freq)
+    elif args.mode == 3:
+        if args.OPQ_enable:
+            OPQ_enable = 1
+        else:
+            OPQ_enable = 0
+        output_dir = './config_outputs/{device}_{dbname}_K{topK}_nlist_{nlist}_nprobe_{nprobe}_OPQ_{OPQ}_util_{max_utilization_rate}_{freq}MHz.yaml'.format(
+            device=args.device, dbname=args.dbname, topK=args.topK,  nlist=args.nlist, nprobe=args.nprobe,
+            OPQ=OPQ_enable, max_utilization_rate=args.max_utilization_rate, freq=args.freq)
+    else:
+        print("Supported mode: 1 / 2/ 3")
+        raise ValueError
+
     with open(output_dir, "w+") as f:
         f.write(output_str)
