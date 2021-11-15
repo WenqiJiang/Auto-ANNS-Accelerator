@@ -72,22 +72,6 @@ void vadd(
     const ap_uint512_t* HBM_in6,
     const ap_uint512_t* HBM_in7,
     const ap_uint512_t* HBM_in8,
-    const ap_uint512_t* HBM_in9,
-    const ap_uint512_t* HBM_in10,
-    const ap_uint512_t* HBM_in11,
-    const ap_uint512_t* HBM_in12,
-    const ap_uint512_t* HBM_in13,
-    const ap_uint512_t* HBM_in14,
-    const ap_uint512_t* HBM_in15,
-    const ap_uint512_t* HBM_in16,
-    const ap_uint512_t* HBM_in17,
-    const ap_uint512_t* HBM_in18,
-    const ap_uint512_t* HBM_in19,
-    const ap_uint512_t* HBM_in20,
-    const ap_uint512_t* HBM_in21,
-    const ap_uint512_t* HBM_in22,
-    const ap_uint512_t* HBM_in23,
-    const ap_uint512_t* HBM_in24,
 
 
     // HBM_meta_info containing several parts:
@@ -116,22 +100,6 @@ void vadd(
 #pragma HLS INTERFACE m_axi port=HBM_in6 offset=slave bundle=gmem6
 #pragma HLS INTERFACE m_axi port=HBM_in7 offset=slave bundle=gmem7
 #pragma HLS INTERFACE m_axi port=HBM_in8 offset=slave bundle=gmem8
-#pragma HLS INTERFACE m_axi port=HBM_in9 offset=slave bundle=gmem9
-#pragma HLS INTERFACE m_axi port=HBM_in10 offset=slave bundle=gmem10
-#pragma HLS INTERFACE m_axi port=HBM_in11 offset=slave bundle=gmem11
-#pragma HLS INTERFACE m_axi port=HBM_in12 offset=slave bundle=gmem12
-#pragma HLS INTERFACE m_axi port=HBM_in13 offset=slave bundle=gmem13
-#pragma HLS INTERFACE m_axi port=HBM_in14 offset=slave bundle=gmem14
-#pragma HLS INTERFACE m_axi port=HBM_in15 offset=slave bundle=gmem15
-#pragma HLS INTERFACE m_axi port=HBM_in16 offset=slave bundle=gmem16
-#pragma HLS INTERFACE m_axi port=HBM_in17 offset=slave bundle=gmem17
-#pragma HLS INTERFACE m_axi port=HBM_in18 offset=slave bundle=gmem18
-#pragma HLS INTERFACE m_axi port=HBM_in19 offset=slave bundle=gmem19
-#pragma HLS INTERFACE m_axi port=HBM_in20 offset=slave bundle=gmem20
-#pragma HLS INTERFACE m_axi port=HBM_in21 offset=slave bundle=gmem21
-#pragma HLS INTERFACE m_axi port=HBM_in22 offset=slave bundle=gmem22
-#pragma HLS INTERFACE m_axi port=HBM_in23 offset=slave bundle=gmem23
-#pragma HLS INTERFACE m_axi port=HBM_in24 offset=slave bundle=gmem24
 
 
 
@@ -149,22 +117,6 @@ void vadd(
 #pragma HLS INTERFACE s_axilite port=HBM_in6
 #pragma HLS INTERFACE s_axilite port=HBM_in7
 #pragma HLS INTERFACE s_axilite port=HBM_in8
-#pragma HLS INTERFACE s_axilite port=HBM_in9
-#pragma HLS INTERFACE s_axilite port=HBM_in10
-#pragma HLS INTERFACE s_axilite port=HBM_in11
-#pragma HLS INTERFACE s_axilite port=HBM_in12
-#pragma HLS INTERFACE s_axilite port=HBM_in13
-#pragma HLS INTERFACE s_axilite port=HBM_in14
-#pragma HLS INTERFACE s_axilite port=HBM_in15
-#pragma HLS INTERFACE s_axilite port=HBM_in16
-#pragma HLS INTERFACE s_axilite port=HBM_in17
-#pragma HLS INTERFACE s_axilite port=HBM_in18
-#pragma HLS INTERFACE s_axilite port=HBM_in19
-#pragma HLS INTERFACE s_axilite port=HBM_in20
-#pragma HLS INTERFACE s_axilite port=HBM_in21
-#pragma HLS INTERFACE s_axilite port=HBM_in22
-#pragma HLS INTERFACE s_axilite port=HBM_in23
-#pragma HLS INTERFACE s_axilite port=HBM_in24
 
 
 
@@ -408,22 +360,6 @@ void vadd(
         HBM_in6,
         HBM_in7,
         HBM_in8,
-        HBM_in9,
-        HBM_in10,
-        HBM_in11,
-        HBM_in12,
-        HBM_in13,
-        HBM_in14,
-        HBM_in15,
-        HBM_in16,
-        HBM_in17,
-        HBM_in18,
-        HBM_in19,
-        HBM_in20,
-        HBM_in21,
-        HBM_in22,
-        HBM_in23,
-        HBM_in24,
 
         s_start_addr_every_cell,
         s_scanned_entries_every_cell_Load_unit,

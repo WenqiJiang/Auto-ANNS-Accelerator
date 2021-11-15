@@ -57,12 +57,12 @@ Variable to be replaced (<--variable_name-->):
 
 // stage 2
 // 16 = 15 equal one + 1 (all equal) diff must be 1!
+#define STAGE2_ON_CHIP 1
+#define PE_NUM_CENTER_DIST_COMP 16
 
-#define PE_NUM_CENTER_DIST_COMP 15
-
-#define PE_NUM_CENTER_DIST_COMP_EVEN 14
-#define CENTROIDS_PER_PARTITION_EVEN 2185
-#define CENTROIDS_PER_PARTITION_LAST_PE 2178
+#define PE_NUM_CENTER_DIST_COMP_EVEN 15
+#define CENTROIDS_PER_PARTITION_EVEN 2048
+#define CENTROIDS_PER_PARTITION_LAST_PE 2048
 
 
 // stage 3

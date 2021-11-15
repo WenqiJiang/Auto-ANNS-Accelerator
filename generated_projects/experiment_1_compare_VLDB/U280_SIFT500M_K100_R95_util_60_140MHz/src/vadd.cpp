@@ -78,14 +78,6 @@ void vadd(
     const ap_uint512_t* HBM_in12,
     const ap_uint512_t* HBM_in13,
 
-    const ap_uint512_t* HBM_centroid_vectors_stage2_0,
-    const ap_uint512_t* HBM_centroid_vectors_stage2_1,
-    const ap_uint512_t* HBM_centroid_vectors_stage2_2,
-    const ap_uint512_t* HBM_centroid_vectors_stage2_3,
-    const ap_uint512_t* HBM_centroid_vectors_stage2_4,
-    const ap_uint512_t* HBM_centroid_vectors_stage2_5,
-    const ap_uint512_t* HBM_centroid_vectors_stage2_6,
-    const ap_uint512_t* HBM_centroid_vectors_stage2_7,
 
     // HBM_meta_info containing several parts:
     //   (1) HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid: size = 3 * nlist
@@ -119,14 +111,6 @@ void vadd(
 #pragma HLS INTERFACE m_axi port=HBM_in12 offset=slave bundle=gmem12
 #pragma HLS INTERFACE m_axi port=HBM_in13 offset=slave bundle=gmem13
 
-#pragma HLS INTERFACE m_axi port=HBM_centroid_vectors_stage2_0  offset=slave bundle=gmemC0
-#pragma HLS INTERFACE m_axi port=HBM_centroid_vectors_stage2_1  offset=slave bundle=gmemC1
-#pragma HLS INTERFACE m_axi port=HBM_centroid_vectors_stage2_2  offset=slave bundle=gmemC2
-#pragma HLS INTERFACE m_axi port=HBM_centroid_vectors_stage2_3  offset=slave bundle=gmemC3
-#pragma HLS INTERFACE m_axi port=HBM_centroid_vectors_stage2_4  offset=slave bundle=gmemC4
-#pragma HLS INTERFACE m_axi port=HBM_centroid_vectors_stage2_5  offset=slave bundle=gmemC5
-#pragma HLS INTERFACE m_axi port=HBM_centroid_vectors_stage2_6  offset=slave bundle=gmemC6
-#pragma HLS INTERFACE m_axi port=HBM_centroid_vectors_stage2_7  offset=slave bundle=gmemC7
 
 
 #pragma HLS INTERFACE m_axi port=HBM_meta_info  offset=slave bundle=gmemA
@@ -149,14 +133,6 @@ void vadd(
 #pragma HLS INTERFACE s_axilite port=HBM_in12
 #pragma HLS INTERFACE s_axilite port=HBM_in13
 
-#pragma HLS INTERFACE s_axilite port=HBM_centroid_vectors_stage2_0
-#pragma HLS INTERFACE s_axilite port=HBM_centroid_vectors_stage2_1
-#pragma HLS INTERFACE s_axilite port=HBM_centroid_vectors_stage2_2
-#pragma HLS INTERFACE s_axilite port=HBM_centroid_vectors_stage2_3
-#pragma HLS INTERFACE s_axilite port=HBM_centroid_vectors_stage2_4
-#pragma HLS INTERFACE s_axilite port=HBM_centroid_vectors_stage2_5
-#pragma HLS INTERFACE s_axilite port=HBM_centroid_vectors_stage2_6
-#pragma HLS INTERFACE s_axilite port=HBM_centroid_vectors_stage2_7
 
 
 #pragma HLS INTERFACE s_axilite port=HBM_meta_info 
@@ -267,16 +243,8 @@ void vadd(
         centroids_per_partition_even, 
         centroids_per_partition_last_PE, 
         nlist,
-        HBM_centroid_vectors_stage2_0,
-        HBM_centroid_vectors_stage2_1,
-        HBM_centroid_vectors_stage2_2,
-        HBM_centroid_vectors_stage2_3,
-        HBM_centroid_vectors_stage2_4,
-        HBM_centroid_vectors_stage2_5,
-        HBM_centroid_vectors_stage2_6,
-        HBM_centroid_vectors_stage2_7,
-
-        s_preprocessed_query_vectors_distance_computation_PE,
+        s_center_vectors_init_distance_computation_PE, 
+        s_preprocessed_query_vectors_distance_computation_PE, 
         s_merged_cell_distance);
 
     ////////////////////     Select Scanned Cells     ////////////////////    

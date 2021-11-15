@@ -79,7 +79,7 @@
   # STAGE_6_STREAM_PER_L2_QUEUE_LARGER: None
   # STAGE_6_STREAM_PER_L2_QUEUE_SMALLER: None
   #         
-  # total_valid_design: 45631938
+  # total_valid_design: 14810581
   # Total resource consumption: (with shell)
   # 
   #         HBM_bank: 20.0
@@ -176,6 +176,7 @@
 
   # Dataset config
   DB_SCALE: 100M # 1M to 1000M
+  FPGA_NUM: 1 # e.g., can use 8 FPGAs to serve 1000M dataset, each stores 125M vectors
 
   # Data directory (don't add "/" after the dir)
   #   e.g., dir=/home/wejiang/saved_npy_data/FPGA_data_SIFT100M_OPQ16,IVF8192,PQ16_HBM_10_banks, 

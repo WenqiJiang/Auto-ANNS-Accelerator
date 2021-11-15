@@ -272,7 +272,7 @@ def get_options_stage_4_distance_LUT_construction(nlist, nprobe, FREQ):
 
     return option_list
 
-def get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, FREQ, MIN_HBM_bank, MAX_HBM_bank, TOTAL_VECTORS, scan_ratio_with_OPQ, scan_ratio_without_OPQ, OPQ_enable=True):
+def get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, FREQ, MIN_HBM_bank, MAX_HBM_bank, TOTAL_VECTORS, scan_ratio_with_OPQ, scan_ratio_without_OPQ, OPQ_enable=True, max_PE_num=100):
     
     """ this function returns a list of the performance and resource consumption of
           the entire systolic array """
@@ -283,14 +283,19 @@ def get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, FREQ, MIN_HBM_
 
         # several options: 1 HBM = 3 streams; 1 HBM = 1 streams; 2 HBM = 1 stream; 3 HBM = 1 stream; 4 HBM = 1 stream
         PE_num_list = []
-        PE_num_list.append(3 * HBM_bank)
-        PE_num_list.append(HBM_bank)
+        if 3 * HBM_bank <= max_PE_num:
+            PE_num_list.append(3 * HBM_bank)
+        if HBM_bank <= max_PE_num:
+            PE_num_list.append(HBM_bank)
         if HBM_bank % 2 == 0:
-            PE_num_list.append(HBM_bank / 2)
+            if HBM_bank / 2 <= max_PE_num:
+                PE_num_list.append(int(HBM_bank / 2))
         if HBM_bank % 3 == 0:
-            PE_num_list.append(HBM_bank / 3)
+            if HBM_bank / 3 <= max_PE_num:
+                PE_num_list.append(int(HBM_bank / 3))
         if HBM_bank % 4 == 0:
-            PE_num_list.append(HBM_bank / 4)
+            if HBM_bank / 4 <= max_PE_num:
+                PE_num_list.append(int(HBM_bank / 4))
         
         for PE_num in PE_num_list:
 

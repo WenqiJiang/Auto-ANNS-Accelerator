@@ -108,7 +108,8 @@ if args.device == 'U280':
     TOTAL_LUT = 1303680
     TOTAL_URAM = 960
 
-    MAX_HBM_bank = 32 - 2 - 2 - 1 # reserve 30, 31 unused due to their overlap with PCIe; 2 for Network; 1 for value init
+    # MAX_HBM_bank = 32 - 2 - 2 - 1 # reserve 30, 31 unused due to their overlap with PCIe; 2 for Network; 1 for value init
+    MAX_HBM_bank = 20 # use 20 as a conservative constraints, as larger values can lead to routing error
     MAX_BRAM_18K = TOTAL_BRAM_18K * MAX_UTIL_PERC
     MAX_DSP48E = TOTAL_DSP48E * MAX_UTIL_PERC
     MAX_FF = TOTAL_FF * MAX_UTIL_PERC
@@ -118,7 +119,8 @@ if args.device == 'U280':
     if args.dbname == 'SIFT100M':
         # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
         # 100M / 12582912 = 7.94 (without considering padding)
-        total_size = 100 * 1e6 * 20 * 64 / 60 
+        padding_factor = 1.05
+        total_size = 100 * 1e6 * 20 * 64 / 60 * 1.05
         per_bank_size = 256 * 1024 * 1024
         MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / args.FPGA_num)) # at least 9 banks to hold PQ16 version
     elif args.dbname == 'SIFT500M':
@@ -183,7 +185,8 @@ elif args.device == 'U50':
     TOTAL_LUT = 871680
     TOTAL_URAM = 640
 
-    MAX_HBM_bank = 32 - 2 # reserve 30, 31 unused due to their overlap with PCIe
+    # MAX_HBM_bank = 32 - 2 # reserve 30, 31 unused due to their overlap with PCIe
+    MAX_HBM_bank = 20 # use 20 as a conservative constraints, as larger values can lead to routing error
     MAX_BRAM_18K = TOTAL_BRAM_18K * MAX_UTIL_PERC
     MAX_DSP48E = TOTAL_DSP48E * MAX_UTIL_PERC
     MAX_FF = TOTAL_FF * MAX_UTIL_PERC
@@ -228,7 +231,7 @@ elif args.device == 'U250':
     TOTAL_LUT = 1728000
     TOTAL_URAM = 1280
 
-    MAX_HBM_bank = 4 # reserve 30, 31 unused due to their overlap with PCIe; 2 for Network; 1 for value init
+    MAX_HBM_bank = 4
     MAX_BRAM_18K = TOTAL_BRAM_18K * MAX_UTIL_PERC
     MAX_DSP48E = TOTAL_DSP48E * MAX_UTIL_PERC
     MAX_FF = TOTAL_FF * MAX_UTIL_PERC
@@ -285,7 +288,12 @@ def get_best_hardware(nlist, nprobe, OPQ_enable=True):
         get_options_stage_2_cluster_distance_computation(nlist, FREQ, MAX_URAM)
     options_stage_3_select_Voronoi_cells = get_options_stage_3_select_Voronoi_cells(nlist, nprobe, FREQ)
     options_stage_4_distance_LUT_construction = get_options_stage_4_distance_LUT_construction(nlist, nprobe, FREQ)
-    options_stage_5_distance_estimation_by_LUT = get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, FREQ, MIN_HBM_bank, MAX_HBM_bank, TOTAL_VECTORS, scan_ratio_with_OPQ, scan_ratio_without_OPQ, OPQ_enable)
+    if topK == 1:
+        max_PE_num = MAX_HBM_bank * 3
+    else: # K=10,100
+        # prevent routing error
+        max_PE_num = 36
+    options_stage_5_distance_estimation_by_LUT = get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, FREQ, MIN_HBM_bank, MAX_HBM_bank, TOTAL_VECTORS, scan_ratio_with_OPQ, scan_ratio_without_OPQ, OPQ_enable, max_PE_num)
 
     if OPQ_enable:
 
@@ -546,6 +554,16 @@ if __name__ == "__main__":
                         total_consumption_obj_accelerator_kernel.FF, 
                         total_consumption_obj_accelerator_kernel.LUT, 
                         total_consumption_obj_accelerator_kernel.URAM)))
+                print("LUT only:")
+                print("Stage {}: {}".format(
+                    i + 2, 
+                    get_utilization_rate(
+                        best_solution_stage_option_list[i],
+                        total_consumption_obj_accelerator_kernel.BRAM_18K, 
+                        total_consumption_obj_accelerator_kernel.DSP48E, 
+                        total_consumption_obj_accelerator_kernel.FF, 
+                        total_consumption_obj_accelerator_kernel.LUT, 
+                        total_consumption_obj_accelerator_kernel.URAM)['LUT'])) 
             print("Total Utilization rate:\n{}".format(get_utilization_rate(
                 total_consumption_obj,
                 TOTAL_BRAM_18K, 
@@ -600,6 +618,16 @@ if __name__ == "__main__":
                         total_consumption_obj_accelerator_kernel.FF, 
                         total_consumption_obj_accelerator_kernel.LUT, 
                         total_consumption_obj_accelerator_kernel.URAM))) 
+                print("LUT only:")
+                print("Stage {}: {}".format(
+                    i + 1, 
+                    get_utilization_rate(
+                        best_solution_stage_option_list[i],
+                        total_consumption_obj_accelerator_kernel.BRAM_18K, 
+                        total_consumption_obj_accelerator_kernel.DSP48E, 
+                        total_consumption_obj_accelerator_kernel.FF, 
+                        total_consumption_obj_accelerator_kernel.LUT, 
+                        total_consumption_obj_accelerator_kernel.URAM)['LUT'])) 
             print("\nTotal Utilization rate:\n{}".format(get_utilization_rate(
                 total_consumption_obj,
                 TOTAL_BRAM_18K, 

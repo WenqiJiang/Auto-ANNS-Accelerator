@@ -42,7 +42,7 @@ Variable to be replaced (<--variable_name-->):
 
 #pragma once
 
-#define NLIST 1024
+#define NLIST 4096
 #define NPROBE 2
 #define D 128
 #define M 16
@@ -58,17 +58,17 @@ Variable to be replaced (<--variable_name-->):
 // stage 2
 // 16 = 15 equal one + 1 (all equal) diff must be 1!
 #define STAGE2_ON_CHIP 1
-#define PE_NUM_CENTER_DIST_COMP 4
+#define PE_NUM_CENTER_DIST_COMP 16
 
-#define PE_NUM_CENTER_DIST_COMP_EVEN 3
+#define PE_NUM_CENTER_DIST_COMP_EVEN 15
 #define CENTROIDS_PER_PARTITION_EVEN 256
 #define CENTROIDS_PER_PARTITION_LAST_PE 256
 
 
 // stage 3
 // 2 levels, first level 2 queue, second level 1 queue
-#define STAGE_3_PRIORITY_QUEUE_LEVEL 1
-#define STAGE_3_PRIORITY_QUEUE_L1_NUM 1
+#define STAGE_3_PRIORITY_QUEUE_LEVEL 2
+#define STAGE_3_PRIORITY_QUEUE_L1_NUM 2
 
 // stage 4
 // first PE: construct 9 tables per query, last one construct 8
@@ -79,13 +79,13 @@ Variable to be replaced (<--variable_name-->):
 
 
 // stage 5
-#define HBM_CHANNEL_NUM 25
-#define STAGE5_COMP_PE_NUM 75
-#define PQ_CODE_CHANNELS_PER_STREAM 1
+#define HBM_CHANNEL_NUM 19
+#define STAGE5_COMP_PE_NUM 19
+#define PQ_CODE_CHANNELS_PER_STREAM 3
 
 
 // number of 16 outputs per cycle, e.g., HBM channel num = 10, comp PE num = 30, then 
 //   SORT_GROUP_NUM = 2; if HBM channel = 12, PE_num = 36, then SORT_GROUP_NUM = 3
 #define SORT_GROUP_NUM 0
 #define STAGE_6_PRIORITY_QUEUE_LEVEL 2
-#define STAGE_6_PRIORITY_QUEUE_L1_NUM 150
+#define STAGE_6_PRIORITY_QUEUE_L1_NUM 38
