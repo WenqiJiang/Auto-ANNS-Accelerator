@@ -43,7 +43,7 @@ Variable to be replaced (<--variable_name-->):
 #pragma once
 
 #define NLIST 8192
-#define NPROBE 1
+#define NPROBE 17
 #define D 128
 #define M 16
 #define K 256
@@ -79,13 +79,13 @@ Variable to be replaced (<--variable_name-->):
 
 
 // stage 5
-#define HBM_CHANNEL_NUM 9
-#define STAGE5_COMP_PE_NUM 3
-#define PQ_CODE_CHANNELS_PER_STREAM 9
+#define HBM_CHANNEL_NUM 4
+#define STAGE5_COMP_PE_NUM 12
+#define PQ_CODE_CHANNELS_PER_STREAM 1
 
 
 // number of 16 outputs per cycle, e.g., HBM channel num = 10, comp PE num = 30, then 
 //   SORT_GROUP_NUM = 2; if HBM channel = 12, PE_num = 36, then SORT_GROUP_NUM = 3
 #define SORT_GROUP_NUM 0
 #define STAGE_6_PRIORITY_QUEUE_LEVEL 2
-#define STAGE_6_PRIORITY_QUEUE_L1_NUM 6
+#define STAGE_6_PRIORITY_QUEUE_L1_NUM 24

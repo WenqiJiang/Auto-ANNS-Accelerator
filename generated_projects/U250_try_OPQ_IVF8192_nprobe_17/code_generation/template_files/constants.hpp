@@ -42,50 +42,44 @@ Variable to be replaced (<--variable_name-->):
 
 #pragma once
 
-#define NLIST 8192
-#define NPROBE 1
-#define D 128
-#define M 16
-#define K 256
-#define TOPK 10
+#define NLIST <--NLIST-->
+#define NPROBE <--NPROBE-->
+#define D <--D-->
+#define M <--M-->
+#define K <--K-->
+#define TOPK <--TOPK-->
 
-#define OPQ_ENABLE 1
+<--OPQ_ENABLE-->
 
-#define QUERY_NUM 10000
+#define QUERY_NUM <--QUERY_NUM-->
 
-#define LARGE_NUM 99999999 // used to init the heap
+#define LARGE_NUM <--LARGE_NUM--> // used to init the heap
 
 // stage 2
 // 16 = 15 equal one + 1 (all equal) diff must be 1!
-#define STAGE2_ON_CHIP 1
-#define PE_NUM_CENTER_DIST_COMP 16
-
-#define PE_NUM_CENTER_DIST_COMP_EVEN 15
-#define CENTROIDS_PER_PARTITION_EVEN 512
-#define CENTROIDS_PER_PARTITION_LAST_PE 512
-
+<--STAGE2_ON_CHIP-->
+#define PE_NUM_CENTER_DIST_COMP <--PE_NUM_CENTER_DIST_COMP-->
+<--stage_2_specification-->
 
 // stage 3
 // 2 levels, first level 2 queue, second level 1 queue
-#define STAGE_3_PRIORITY_QUEUE_LEVEL 2
-#define STAGE_3_PRIORITY_QUEUE_L1_NUM 2
+#define STAGE_3_PRIORITY_QUEUE_LEVEL <--STAGE_3_PRIORITY_QUEUE_LEVEL-->
+#define STAGE_3_PRIORITY_QUEUE_L1_NUM <--STAGE_3_PRIORITY_QUEUE_L1_NUM-->
 
 // stage 4
 // first PE: construct 9 tables per query, last one construct 8
-#define PE_NUM_TABLE_CONSTRUCTION 1
-
-#define PE_NUM_TABLE_CONSTRUCTION_LARGER 1
-#define PE_NUM_TABLE_CONSTRUCTION_SMALLER 0
-
+#define PE_NUM_TABLE_CONSTRUCTION <--PE_NUM_TABLE_CONSTRUCTION-->
+<--stage_4_specification-->
 
 // stage 5
-#define HBM_CHANNEL_NUM 9
-#define STAGE5_COMP_PE_NUM 3
-#define PQ_CODE_CHANNELS_PER_STREAM 9
+#define HBM_CHANNEL_NUM <--HBM_CHANNEL_NUM-->
+#define STAGE5_COMP_PE_NUM <--STAGE5_COMP_PE_NUM-->
+#define PQ_CODE_CHANNELS_PER_STREAM <--PQ_CODE_CHANNELS_PER_STREAM-->
 
 
 // number of 16 outputs per cycle, e.g., HBM channel num = 10, comp PE num = 30, then 
 //   SORT_GROUP_NUM = 2; if HBM channel = 12, PE_num = 36, then SORT_GROUP_NUM = 3
-#define SORT_GROUP_NUM 0
-#define STAGE_6_PRIORITY_QUEUE_LEVEL 2
-#define STAGE_6_PRIORITY_QUEUE_L1_NUM 6
+#define SORT_GROUP_NUM <--SORT_GROUP_NUM-->
+#define STAGE_6_PRIORITY_QUEUE_LEVEL <--STAGE_6_PRIORITY_QUEUE_LEVEL-->
+#define STAGE_6_PRIORITY_QUEUE_L1_NUM <--STAGE_6_PRIORITY_QUEUE_L1_NUM-->
+<--STAGE_6_L3_MACRO-->

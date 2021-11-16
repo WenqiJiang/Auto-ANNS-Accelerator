@@ -63,7 +63,10 @@ if config["PE_NUM_TABLE_CONSTRUCTION"] > 1:
 """.format(PE_NUM_TABLE_CONSTRUCTION_LARGER=PE_NUM_TABLE_CONSTRUCTION_LARGER,
     PE_NUM_TABLE_CONSTRUCTION_SMALLER=PE_NUM_TABLE_CONSTRUCTION_SMALLER)
 else:
-    template_fill_dict["stage_4_specification"] = ""
+    template_fill_dict["stage_4_specification"] = """
+#define PE_NUM_TABLE_CONSTRUCTION_LARGER 1
+#define PE_NUM_TABLE_CONSTRUCTION_SMALLER 0
+"""
 
 
 # stage 5
