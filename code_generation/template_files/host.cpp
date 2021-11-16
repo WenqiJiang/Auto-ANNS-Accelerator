@@ -149,20 +149,22 @@ int main(int argc, char** argv)
     int centroids_per_partition_last_PE = CENTROIDS_PER_PARTITION_LAST_PE;
 
     int nprobe_stage4 = nprobe;
-    int nprobe_per_table_construction_pe_larger = -1;
+    int nprobe_per_table_construction_pe_larger = ceil(float(nprobe) / float(PE_NUM_TABLE_CONSTRUCTION));
     int nprobe_per_table_construction_pe_smaller = -1;
-    while (nprobe_per_table_construction_pe_smaller < 1) {
-        nprobe_per_table_construction_pe_larger = ceil(float(nprobe_stage4) / float(PE_NUM_TABLE_CONSTRUCTION));
-        nprobe_per_table_construction_pe_smaller = 
-            nprobe_stage4 - PE_NUM_TABLE_CONSTRUCTION_LARGER * nprobe_per_table_construction_pe_larger;
-        if (nprobe_per_table_construction_pe_smaller < 1) {
-            nprobe_stage4++;
-            std::cout << "Increasing nprobe_stage4 due to stage 4 hardware compatibility reason," <<
-                "current nprobe_stage4: " << nprobe_stage4 << std::endl;
-        }
-    }
     if (PE_NUM_TABLE_CONSTRUCTION == 1) {
         nprobe_per_table_construction_pe_smaller = nprobe_per_table_construction_pe_larger;
+    }
+    else {
+        while (nprobe_per_table_construction_pe_smaller < 1) {
+            nprobe_per_table_construction_pe_larger = ceil(float(nprobe_stage4) / float(PE_NUM_TABLE_CONSTRUCTION));
+            nprobe_per_table_construction_pe_smaller = 
+                nprobe_stage4 - PE_NUM_TABLE_CONSTRUCTION_LARGER * nprobe_per_table_construction_pe_larger;
+            if (nprobe_per_table_construction_pe_smaller < 1) {
+                nprobe_stage4++;
+                std::cout << "Increasing nprobe_stage4 due to stage 4 hardware compatibility reason," <<
+                    "current nprobe_stage4: " << nprobe_stage4 << std::endl;
+            }
+        }
     }
 
     std::cout << "Inferred parameters:" << std::endl <<

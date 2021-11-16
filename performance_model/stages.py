@@ -285,17 +285,10 @@ def get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, FREQ, MIN_HBM_
         PE_num_list = []
         if 3 * HBM_bank <= max_PE_num:
             PE_num_list.append(3 * HBM_bank)
-        if HBM_bank <= max_PE_num:
-            PE_num_list.append(HBM_bank)
-        if HBM_bank % 2 == 0:
-            if HBM_bank / 2 <= max_PE_num:
-                PE_num_list.append(int(HBM_bank / 2))
-        if HBM_bank % 3 == 0:
-            if HBM_bank / 3 <= max_PE_num:
-                PE_num_list.append(int(HBM_bank / 3))
-        if HBM_bank % 4 == 0:
-            if HBM_bank / 4 <= max_PE_num:
-                PE_num_list.append(int(HBM_bank / 4))
+        for i in range(1, 10 + 1):  # n channels in 1 PE
+            if HBM_bank % i == 0:
+                if HBM_bank / i <= max_PE_num:
+                    PE_num_list.append(int(HBM_bank / i))
         
         for PE_num in PE_num_list:
 
