@@ -120,19 +120,21 @@ if args.device == 'U280':
         # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
         # 100M / 12582912 = 7.94 (without considering padding)
         padding_factor = 1.05
-        total_size = 100 * 1e6 * 20 * 64 / 60 * 1.05
+        total_size = 100 * 1e6 * 20 * 64 / 60 * padding_factor
         per_bank_size = 256 * 1024 * 1024
         MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / args.FPGA_num)) # at least 9 banks to hold PQ16 version
     elif args.dbname == 'SIFT500M':
         # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
         # 100M / 12582912 = 7.94 (without considering padding)
-        total_size = 500 * 1e6 * 20 * 64 / 60 
+        padding_factor = 1.05
+        total_size = 500 * 1e6 * 20 * 64 / 60 * padding_factor
         per_bank_size = 256 * 1024 * 1024
         MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / args.FPGA_num))
     elif args.dbname == 'SIFT1000M':
         # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
         # 100M / 12582912 = 7.94 (without considering padding)
-        total_size = 1000 * 1e6 * 20 * 64 / 60 
+        padding_factor = 1.05
+        total_size = 1000 * 1e6 * 20 * 64 / 60 * padding_factor
         per_bank_size = 256 * 1024 * 1024
         MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / args.FPGA_num))
     else:
@@ -193,10 +195,28 @@ elif args.device == 'U50':
     MAX_LUT = TOTAL_LUT * MAX_UTIL_PERC
     MAX_URAM = TOTAL_URAM * MAX_UTIL_PERC
 
+
     if args.dbname == 'SIFT100M':
         # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
         # 100M / 12582912 = 7.94 (without considering padding)
-        MIN_HBM_bank = 9 # at least 9 banks to hold PQ16 version
+        padding_factor = 1.05
+        total_size = 100 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / args.FPGA_num)) # at least 9 banks to hold PQ16 version
+    elif args.dbname == 'SIFT500M':
+        # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
+        # 100M / 12582912 = 7.94 (without considering padding)
+        padding_factor = 1.05
+        total_size = 500 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / args.FPGA_num))
+    elif args.dbname == 'SIFT1000M':
+        # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
+        # 100M / 12582912 = 7.94 (without considering padding)
+        padding_factor = 1.05
+        total_size = 1000 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / args.FPGA_num))
     else:
         print("Unsupported dataset")
         raise ValueError
@@ -238,9 +258,22 @@ elif args.device == 'U250':
     MAX_LUT = TOTAL_LUT * MAX_UTIL_PERC
     MAX_URAM = TOTAL_URAM * MAX_UTIL_PERC
 
+    # 1 DRAM bank = 16 GB
     if args.dbname == 'SIFT100M':
-        # 1 Bank = 16 GB
-        MIN_HBM_bank = 1 # at least 9 banks to hold PQ16 version
+        padding_factor = 1.05
+        total_size = 100 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 16 * 1024 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / args.FPGA_num)) # at least 9 banks to hold PQ16 version
+    elif args.dbname == 'SIFT500M':
+        padding_factor = 1.05
+        total_size = 500 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 16 * 1024 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / args.FPGA_num))
+    elif args.dbname == 'SIFT1000M':
+        padding_factor = 1.05
+        total_size = 1000 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 16 * 1024 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / args.FPGA_num))
     else:
         print("Unsupported dataset")
         raise ValueError

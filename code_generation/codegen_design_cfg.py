@@ -78,7 +78,7 @@ elif config["DEVICE"]== "U250":
 
     assert config["HBM_CHANNEL_NUM"] <= 4, "U250 only has 4 DDR channels"
     if not config["STAGE2_ON_CHIP"]:
-        assert config["HBM_CHANNEL_NUM"] + config["PE_NUM_CENTER_DIST_COMP"] <= 4, \
+        assert config["HBM_CHANNEL_NUM"] + int(np.ceil(config["PE_NUM_CENTER_DIST_COMP"] / 2.0)) <= 4, \
             "U250 only has 4 DDR channels"
 
     template_fill_dict["sp_memory_channel"] = ""
@@ -93,8 +93,8 @@ elif config["DEVICE"]== "U250":
         # 1 HBM channel per 2 PE
         HBM_channel_num_stage2 = int(np.ceil(config["PE_NUM_CENTER_DIST_COMP"] / 2.0))
         connectivity_str = "" 
-        for i in range(config[HBM_channel_num_stage2]):
-            connectivity_str += "sp=vadd_1.HBM_centroid_vectors_{i}:DDR[{c}]\n".format(
+        for i in range(HBM_channel_num_stage2):
+            connectivity_str += "sp=vadd_1.HBM_centroid_vectors_stage2_{i}:DDR[{c}]\n".format(
                 i=i, c=channel_iterator.get_next_channel_id())
         template_fill_dict["stage2_memory_channel"] = connectivity_str
 

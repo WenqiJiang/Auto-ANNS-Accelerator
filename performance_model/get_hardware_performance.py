@@ -38,12 +38,14 @@ FPGA_num = config["FPGA_NUM"]
 
 MAX_UTIL_PERC = 1 # no resource constraint applied herer
 
-assert args.dbname != '', "Please fill the DB name, e.g., SITF100M"
 if DB_SCALE == '100M':
+    dbname = 'SIFT100M'
     TOTAL_VECTORS = int(1e8 / FPGA_num)
 elif DB_SCALE == '500M':
+    dbname = 'SIFT500M'
     TOTAL_VECTORS = int(5e8 / FPGA_num)
 elif DB_SCALE == '1000M':
+    dbname = 'SIFT1000M'
     TOTAL_VECTORS = int(1e9 / FPGA_num)
 else:
     print("Unsupported dataset")
@@ -99,7 +101,24 @@ if device == 'U280':
     if dbname == 'SIFT100M':
         # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
         # 100M / 12582912 = 7.94 (without considering padding)
-        MIN_HBM_bank = 9 # at least 9 banks to hold PQ16 version
+        padding_factor = 1.05
+        total_size = 100 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num)) # at least 9 banks to hold PQ16 version
+    elif dbname == 'SIFT500M':
+        # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
+        # 100M / 12582912 = 7.94 (without considering padding)
+        padding_factor = 1.05
+        total_size = 500 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num))
+    elif dbname == 'SIFT1000M':
+        # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
+        # 100M / 12582912 = 7.94 (without considering padding)
+        padding_factor = 1.05
+        total_size = 1000 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num))
     else:
         print("Unsupported dataset")
         raise ValueError
@@ -160,7 +179,24 @@ elif device == 'U50':
     if dbname == 'SIFT100M':
         # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
         # 100M / 12582912 = 7.94 (without considering padding)
-        MIN_HBM_bank = 9 # at least 9 banks to hold PQ16 version
+        padding_factor = 1.05
+        total_size = 100 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num)) # at least 9 banks to hold PQ16 version
+    elif dbname == 'SIFT500M':
+        # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
+        # 100M / 12582912 = 7.94 (without considering padding)
+        padding_factor = 1.05
+        total_size = 500 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num))
+    elif dbname == 'SIFT1000M':
+        # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
+        # 100M / 12582912 = 7.94 (without considering padding)
+        padding_factor = 1.05
+        total_size = 1000 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num))
     else:
         print("Unsupported dataset")
         raise ValueError
@@ -202,9 +238,22 @@ elif device == 'U250':
     MAX_LUT = TOTAL_LUT * MAX_UTIL_PERC
     MAX_URAM = TOTAL_URAM * MAX_UTIL_PERC
 
+    # 1 DRAM bank = 16 GB
     if dbname == 'SIFT100M':
-        # 1 Bank = 16 GB
-        MIN_HBM_bank = 1 # at least 9 banks to hold PQ16 version
+        padding_factor = 1.05
+        total_size = 100 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 16 * 1024 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num)) # at least 9 banks to hold PQ16 version
+    elif dbname == 'SIFT500M':
+        padding_factor = 1.05
+        total_size = 500 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 16 * 1024 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num))
+    elif dbname == 'SIFT1000M':
+        padding_factor = 1.05
+        total_size = 1000 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 16 * 1024 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num))
     else:
         print("Unsupported dataset")
         raise ValueError

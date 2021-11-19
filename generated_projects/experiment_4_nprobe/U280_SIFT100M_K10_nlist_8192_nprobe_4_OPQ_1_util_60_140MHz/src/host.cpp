@@ -853,16 +853,16 @@ int main(int argc, char** argv)
     HBM_embedding1Ext.flags = bank[2];
     HBM_embedding2Ext.obj = HBM_embedding2.data();
     HBM_embedding2Ext.param = 0;
-    HBM_embedding2Ext.flags = bank[4];
+    HBM_embedding2Ext.flags = bank[3];
     HBM_embedding3Ext.obj = HBM_embedding3.data();
     HBM_embedding3Ext.param = 0;
-    HBM_embedding3Ext.flags = bank[5];
+    HBM_embedding3Ext.flags = bank[4];
     HBM_embedding4Ext.obj = HBM_embedding4.data();
     HBM_embedding4Ext.param = 0;
-    HBM_embedding4Ext.flags = bank[7];
+    HBM_embedding4Ext.flags = bank[6];
     HBM_embedding5Ext.obj = HBM_embedding5.data();
     HBM_embedding5Ext.param = 0;
-    HBM_embedding5Ext.flags = bank[8];
+    HBM_embedding5Ext.flags = bank[9];
     HBM_embedding6Ext.obj = HBM_embedding6.data();
     HBM_embedding6Ext.param = 0;
     HBM_embedding6Ext.flags = bank[10];
@@ -892,7 +892,7 @@ int main(int argc, char** argv)
     HBM_embedding14Ext.flags = bank[23];
     HBM_embedding15Ext.obj = HBM_embedding15.data();
     HBM_embedding15Ext.param = 0;
-    HBM_embedding15Ext.flags = bank[24];
+    HBM_embedding15Ext.flags = bank[25];
 
 
 
@@ -907,11 +907,11 @@ int main(int argc, char** argv)
 
     HBM_meta_infoExt.obj = HBM_meta_info.data();
     HBM_vector_quantizerExt.param = 0;
-    HBM_vector_quantizerExt.flags = bank[26];
+    HBM_vector_quantizerExt.flags = bank[27];
 
     HBM_vector_quantizerExt.obj = HBM_vector_quantizer.data();
     HBM_vector_quantizerExt.param = 0;
-    HBM_vector_quantizerExt.flags = bank[27];
+    HBM_vector_quantizerExt.flags = bank[28];
 
     // HBM_product_quantizerExt.obj = HBM_product_quantizer.data();
     // HBM_product_quantizerExt.param = 0;
