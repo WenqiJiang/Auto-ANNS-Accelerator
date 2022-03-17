@@ -56,28 +56,28 @@
 # PE_NUM_TABLE_CONSTRUCTION: 4
 # Stage 5:
 # 
-#         HBM_bank: 12.0
-#         BRAM_18K: 84.0
+#         HBM_bank: 16.0
+#         BRAM_18K: 336.0
 #         URAM: 0.0
-#         FF: 23524.0
-#         LUT: 21885.333333333332
-#         DSP48E: 120.0
+#         FF: 94096.0
+#         LUT: 87541.33333333333
+#         DSP48E: 480.0
 #         
-# QPS: 1439.1447368421052
-# Cycles per query: 97280
-# HBM_CHANNEL_NUM: 12
-# STAGE5_COMP_PE_NUM: 4
+# QPS: 2457.865168539326
+# Cycles per query: 56960
+# HBM_CHANNEL_NUM: 16
+# STAGE5_COMP_PE_NUM: 16
 # Stage 6:
 # 
 #         HBM_bank: 0
-#         BRAM_18K: 18.0
+#         BRAM_18K: 66.0
 #         URAM: 0
-#         FF: 178173.0
-#         LUT: 194913.0
+#         FF: 70973.09999999999
+#         LUT: 74675.7
 #         DSP48E: 0
 #         
-# QPS: 2503.666082477914
-# Cycles per query: 55918
+# QPS: 10020.040080160321
+# Cycles per query: 13972
 # 
 # SORT_GROUP_ENABLE: False
 # SORT_GROUP_NUM: None
@@ -88,15 +88,15 @@
 #         
 # Total resource consumption:
 # 
-#         HBM_bank: 18.0
-#         BRAM_18K: 1702.0
+#         HBM_bank: 22.0
+#         BRAM_18K: 2002.0
 #         URAM: 32.0
-#         FF: 850413.88
-#         LUT: 667741.4933333334
-#         DSP48E: 940.0
+#         FF: 813785.98
+#         LUT: 613160.1933333334
+#         DSP48E: 1300.0
 #         
 # Utilization rate:
-# {'BRAM_18K': '42.21230158730159%', 'DSP48E': '10.416666666666668%', 'FF': '32.61589807314679%', 'LUT': '51.21973899525446%', 'URAM': '3.3333333333333335%'}
+# {'BRAM_18K': '49.65277777777778%', 'DSP48E': '14.406028368794328%', 'FF': '31.21110932130584%', 'LUT': '47.03302906643758%', 'URAM': '3.3333333333333335%'}
 
 ---
 
@@ -106,7 +106,7 @@
   D: 128
   M: 16
   K: 256
-  TOPK: 100
+  TOPK: 10
 
   QUERY_NUM: 10000
 
@@ -122,7 +122,7 @@
   #   while the last constructs 534: 14 * 547 + 534 = 8192
   STAGE2_ON_CHIP: False
   # preferably STAGE2_OFF_CHIP_START_CHANNEL = 25 - PE_NUM_CENTER_DIST_COMP / 2
-  STAGE2_OFF_CHIP_START_CHANNEL: 19 # Only used when STAGE2_ON_CHIP = True
+  STAGE2_OFF_CHIP_START_CHANNEL: 22 # Only used when STAGE2_ON_CHIP = True
   PE_NUM_CENTER_DIST_COMP: 10
 
   # stage 3
@@ -140,8 +140,8 @@
   # e.g., default 1 HBM channel -> 3 PQ code streams -> STAGE5_COMP_PE_NUM = 3 * HBM_CHANNEL_NUM
   # e.g., merge content of 1 HBM channel to 1 PQ code stream -> STAGE5_COMP_PE_NUM = HBM_CHANNEL_NUM
   # e.g., merge content of 2 HBM channels to 1 PQ code stream -> STAGE5_COMP_PE_NUM = HBM_CHANNEL_NUM / 2
-  HBM_CHANNEL_NUM: 12 # PQ code stream num = 3 * HBM_CHANNEL_NUM
-  STAGE5_COMP_PE_NUM: 4
+  HBM_CHANNEL_NUM: 16 # PQ code stream num = 3 * HBM_CHANNEL_NUM
+  STAGE5_COMP_PE_NUM: 16
 
   # stage 6
   # there could be a sorting network before the priority queue group (SORT_GROUP_ENABLE)
