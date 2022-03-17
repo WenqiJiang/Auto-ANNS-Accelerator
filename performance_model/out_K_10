@@ -1,0 +1,102 @@
+FIND SOLUTION
+
+
+======== Result =========
+
+QPS 1025.070290534208
+stage_option_list
+Stage 1:
+
+        HBM_bank: 0
+        BRAM_18K: 37
+        URAM: 0
+        FF: 2659
+        LUT: 2152
+        DSP48E: 20
+        
+QPS: 32014.635261833984
+Cycles per query: 4373.0
+OPQ_ENABLE: True
+OPQ_UNROLL_FACTOR: 4
+Stage 2:
+
+        HBM_bank: 5
+        BRAM_18K: 1.0
+        URAM: 0
+        FF: 115169
+        LUT: 89634
+        DSP48E: 580
+        
+QPS: 1333.3841289191969
+Cycles per query: 104996
+STAGE2_ON_CHIP: False
+STAGE2_OFF_CHIP_START_CHANNEL:None
+PE_NUM_CENTER_DIST_COMP: 10
+Stage 3:
+
+        HBM_bank: 0
+        BRAM_18K: 6.0
+        URAM: 0
+        FF: 75860.88
+        LUT: 83072.16
+        DSP48E: 0
+        
+QPS: 2131.7416329140906
+Cycles per query: 65674
+STAGE_3_PRIORITY_QUEUE_LEVEL: 2
+STAGE_3_PRIORITY_QUEUE_L1_NUM: 2
+Stage 4:
+
+        HBM_bank: 1
+        BRAM_18K: 1116.0
+        URAM: 32
+        FF: 130884
+        LUT: 82324
+        DSP48E: 216
+        
+QPS: 1025.070290534208
+Cycles per query: 136576
+PE_NUM_TABLE_CONSTRUCTION: 4
+Stage 5:
+
+        HBM_bank: 16.0
+        BRAM_18K: 336.0
+        URAM: 0.0
+        FF: 94096.0
+        LUT: 87541.33333333333
+        DSP48E: 480.0
+        
+QPS: 2457.865168539326
+Cycles per query: 56960
+HBM_CHANNEL_NUM: 16
+STAGE5_COMP_PE_NUM: 16
+Stage 6:
+
+        HBM_bank: 0
+        BRAM_18K: 66.0
+        URAM: 0
+        FF: 70973.09999999999
+        LUT: 74675.7
+        DSP48E: 0
+        
+QPS: 10020.040080160321
+Cycles per query: 13972
+
+SORT_GROUP_ENABLE: False
+SORT_GROUP_NUM: None
+STAGE_6_PRIORITY_QUEUE_LEVEL: 2
+STAGE_6_PRIORITY_QUEUE_L2_NUM: None
+STAGE_6_STREAM_PER_L2_QUEUE_LARGER: None
+STAGE_6_STREAM_PER_L2_QUEUE_SMALLER: None
+        
+Total resource consumption:
+
+        HBM_bank: 22.0
+        BRAM_18K: 2002.0
+        URAM: 32.0
+        FF: 813785.98
+        LUT: 613160.1933333334
+        DSP48E: 1300.0
+        
+Utilization rate:
+{'BRAM_18K': '49.65277777777778%', 'DSP48E': '14.406028368794328%', 'FF': '31.21110932130584%', 'LUT': '47.03302906643758%', 'URAM': '3.3333333333333335%'}

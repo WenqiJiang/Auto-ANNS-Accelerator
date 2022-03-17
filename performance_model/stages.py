@@ -272,7 +272,7 @@ def get_options_stage_4_distance_LUT_construction(nlist, nprobe, FREQ):
 
     return option_list
 
-def get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, FREQ, MIN_HBM_bank, MAX_HBM_bank, TOTAL_VECTORS, scan_ratio_with_OPQ, scan_ratio_without_OPQ, OPQ_enable=True):
+def get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, FREQ, MIN_HBM_bank, MAX_HBM_bank, TOTAL_VECTORS, scan_ratio_with_OPQ, scan_ratio_without_OPQ, OPQ_enable=True, max_PE_num=100):
     
     """ this function returns a list of the performance and resource consumption of
           the entire systolic array """
@@ -283,14 +283,12 @@ def get_options_stage_5_distance_estimation_by_LUT(nlist, nprobe, FREQ, MIN_HBM_
 
         # several options: 1 HBM = 3 streams; 1 HBM = 1 streams; 2 HBM = 1 stream; 3 HBM = 1 stream; 4 HBM = 1 stream
         PE_num_list = []
-        PE_num_list.append(3 * HBM_bank)
-        PE_num_list.append(HBM_bank)
-        if HBM_bank % 2 == 0:
-            PE_num_list.append(HBM_bank / 2)
-        if HBM_bank % 3 == 0:
-            PE_num_list.append(HBM_bank / 3)
-        if HBM_bank % 4 == 0:
-            PE_num_list.append(HBM_bank / 4)
+        if 3 * HBM_bank <= max_PE_num:
+            PE_num_list.append(3 * HBM_bank)
+        for i in range(1, 10 + 1):  # n channels in 1 PE
+            if HBM_bank % i == 0:
+                if HBM_bank / i <= max_PE_num:
+                    PE_num_list.append(int(HBM_bank / i))
         
         for PE_num in PE_num_list:
 
@@ -455,131 +453,137 @@ def get_options_stage6_select_topK(input_stream_num, N_insertion_per_stream, top
             option_list.append(perf_resource_obj) 
 
     """ Option 2: sort reduction network """
-    if input_stream_num > topK:
+    """ WENQI: disabled sort-reduction network for the moment
+            I found memory bug when using it (K=10 4 groups), Vitis keep asking memory
+            300 + GB in 8 minutes, and keep growing, there must be something going wrong...
+        last time I encounter this bug is when writing a PE using alternative loop order,
+            there should be nothing wrong in the code, probably because Vitis is doing sth weird
+    """
+    # if input_stream_num > topK:
 
-        perf_resource_obj_bitonic_sort_16 = \
-            get_bitonic_sort_16_info(N_insertion=N_insertion_per_stream, FREQ=FREQ)
-        perf_resource_obj_parallel_merge_32_to_16 = \
-            get_parallel_merge_32_to_16_info(N_insertion=N_insertion_per_stream, FREQ=FREQ)
+    #     perf_resource_obj_bitonic_sort_16 = \
+    #         get_bitonic_sort_16_info(N_insertion=N_insertion_per_stream, FREQ=FREQ)
+    #     perf_resource_obj_parallel_merge_32_to_16 = \
+    #         get_parallel_merge_32_to_16_info(N_insertion=N_insertion_per_stream, FREQ=FREQ)
 
-        if input_stream_num <= 16:
+    #     if input_stream_num <= 16:
 
-            perf_resource_obj = Resource_Performance_Stage6()
-            perf_resource_obj.SORT_GROUP_ENABLE = True
-            perf_resource_obj.SORT_GROUP_NUM = 1
-            perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
+    #         perf_resource_obj = Resource_Performance_Stage6()
+    #         perf_resource_obj.SORT_GROUP_ENABLE = True
+    #         perf_resource_obj.SORT_GROUP_NUM = 1
+    #         perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
 
-            perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
-            perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=1)
-            perf_resource_obj.add_resource(perf_resource_obj_parallel_merge_32_to_16, num=0)
+    #         perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
+    #         perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=1)
+    #         perf_resource_obj.add_resource(perf_resource_obj_parallel_merge_32_to_16, num=0)
             
-            #####   FIFO Consumption (Vivado Measured)   #####
-            perf_resource_obj.add_resource(resource_FIFO_d512_w32, num=2)
-            perf_resource_obj.add_resource(resource_FIFO_d2_w32, num=152)
+    #         #####   FIFO Consumption (Vivado Measured)   #####
+    #         perf_resource_obj.add_resource(resource_FIFO_d512_w32, num=2)
+    #         perf_resource_obj.add_resource(resource_FIFO_d2_w32, num=152)
 
-            perf_resource_obj.cycles_per_query = N_insertion_per_stream
-            perf_resource_obj.QPS = 1 / (perf_resource_obj.cycles_per_query / FREQ)
+    #         perf_resource_obj.cycles_per_query = N_insertion_per_stream
+    #         perf_resource_obj.QPS = 1 / (perf_resource_obj.cycles_per_query / FREQ)
 
-            option_list.append(perf_resource_obj) 
+    #         option_list.append(perf_resource_obj) 
 
-        elif input_stream_num > 16 and input_stream_num <= 32:
+    #     elif input_stream_num > 16 and input_stream_num <= 32:
 
-            perf_resource_obj = Resource_Performance_Stage6()
-            perf_resource_obj.SORT_GROUP_ENABLE = True
-            perf_resource_obj.SORT_GROUP_NUM = 2
-            perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
+    #         perf_resource_obj = Resource_Performance_Stage6()
+    #         perf_resource_obj.SORT_GROUP_ENABLE = True
+    #         perf_resource_obj.SORT_GROUP_NUM = 2
+    #         perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
 
-            perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
-            perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=2)
-            perf_resource_obj.add_resource(perf_resource_obj_parallel_merge_32_to_16, num=1)
+    #         perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
+    #         perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=2)
+    #         perf_resource_obj.add_resource(perf_resource_obj_parallel_merge_32_to_16, num=1)
             
-            #####   FIFO Consumption (Vivado Measured)   #####
-            perf_resource_obj.add_resource(resource_FIFO_d512_w32, num=2)
-            perf_resource_obj.add_resource(resource_FIFO_d2_w32, num=216)
+    #         #####   FIFO Consumption (Vivado Measured)   #####
+    #         perf_resource_obj.add_resource(resource_FIFO_d512_w32, num=2)
+    #         perf_resource_obj.add_resource(resource_FIFO_d2_w32, num=216)
 
-            perf_resource_obj.cycles_per_query = N_insertion_per_stream
-            perf_resource_obj.QPS = 1 / (perf_resource_obj.cycles_per_query / FREQ)
+    #         perf_resource_obj.cycles_per_query = N_insertion_per_stream
+    #         perf_resource_obj.QPS = 1 / (perf_resource_obj.cycles_per_query / FREQ)
 
-            option_list.append(perf_resource_obj) 
+    #         option_list.append(perf_resource_obj) 
 
-        elif input_stream_num > 32 and input_stream_num <= 48:
+    #     elif input_stream_num > 32 and input_stream_num <= 48:
 
-            perf_resource_obj = Resource_Performance_Stage6()
-            perf_resource_obj.SORT_GROUP_ENABLE = True
-            perf_resource_obj.SORT_GROUP_NUM = 3
-            perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
+    #         perf_resource_obj = Resource_Performance_Stage6()
+    #         perf_resource_obj.SORT_GROUP_ENABLE = True
+    #         perf_resource_obj.SORT_GROUP_NUM = 3
+    #         perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
 
-            perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
-            perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=3)
-            perf_resource_obj.add_resource(perf_resource_obj_parallel_merge_32_to_16, num=2)
+    #         perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
+    #         perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=3)
+    #         perf_resource_obj.add_resource(perf_resource_obj_parallel_merge_32_to_16, num=2)
             
-            #####   FIFO Consumption (Vivado Measured)   #####
-            perf_resource_obj.add_resource(resource_FIFO_d512_w32, num=2)
-            perf_resource_obj.add_resource(resource_FIFO_d2_w32, num=280)
+    #         #####   FIFO Consumption (Vivado Measured)   #####
+    #         perf_resource_obj.add_resource(resource_FIFO_d512_w32, num=2)
+    #         perf_resource_obj.add_resource(resource_FIFO_d2_w32, num=280)
     
-            perf_resource_obj.cycles_per_query = N_insertion_per_stream
-            perf_resource_obj.QPS = 1 / (perf_resource_obj.cycles_per_query / FREQ)
+    #         perf_resource_obj.cycles_per_query = N_insertion_per_stream
+    #         perf_resource_obj.QPS = 1 / (perf_resource_obj.cycles_per_query / FREQ)
 
-            option_list.append(perf_resource_obj) 
+    #         option_list.append(perf_resource_obj) 
 
-        elif input_stream_num > 48 and input_stream_num <= 64:
+    #     elif input_stream_num > 48 and input_stream_num <= 64:
 
-            perf_resource_obj = Resource_Performance_Stage6()
-            perf_resource_obj.SORT_GROUP_ENABLE = True
-            perf_resource_obj.SORT_GROUP_NUM = 4
-            perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
+    #         perf_resource_obj = Resource_Performance_Stage6()
+    #         perf_resource_obj.SORT_GROUP_ENABLE = True
+    #         perf_resource_obj.SORT_GROUP_NUM = 4
+    #         perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
 
-            perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
-            perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=4)
-            perf_resource_obj.add_resource(perf_resource_obj_parallel_merge_32_to_16, num=3)
+    #         perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
+    #         perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=4)
+    #         perf_resource_obj.add_resource(perf_resource_obj_parallel_merge_32_to_16, num=3)
             
-            #####   FIFO Consumption (Vivado Measured)   #####
-            perf_resource_obj.add_resource(resource_FIFO_d512_w32, num=2)
-            perf_resource_obj.add_resource(resource_FIFO_d2_w32, num=344)
+    #         #####   FIFO Consumption (Vivado Measured)   #####
+    #         perf_resource_obj.add_resource(resource_FIFO_d512_w32, num=2)
+    #         perf_resource_obj.add_resource(resource_FIFO_d2_w32, num=344)
     
-            perf_resource_obj.cycles_per_query = N_insertion_per_stream
-            perf_resource_obj.QPS = 1 / (perf_resource_obj.cycles_per_query / FREQ)
+    #         perf_resource_obj.cycles_per_query = N_insertion_per_stream
+    #         perf_resource_obj.QPS = 1 / (perf_resource_obj.cycles_per_query / FREQ)
 
-            option_list.append(perf_resource_obj) 
+    #         option_list.append(perf_resource_obj) 
 
-        elif input_stream_num > 64 and input_stream_num <= 80:
+    #     elif input_stream_num > 64 and input_stream_num <= 80:
 
-            perf_resource_obj = Resource_Performance_Stage6()
-            perf_resource_obj.SORT_GROUP_ENABLE = True
-            perf_resource_obj.SORT_GROUP_NUM = 5
-            perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
+    #         perf_resource_obj = Resource_Performance_Stage6()
+    #         perf_resource_obj.SORT_GROUP_ENABLE = True
+    #         perf_resource_obj.SORT_GROUP_NUM = 5
+    #         perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
 
-            perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
-            perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=5)
-            perf_resource_obj.add_resource(perf_resource_obj_parallel_merge_32_to_16, num=4)
+    #         perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
+    #         perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=5)
+    #         perf_resource_obj.add_resource(perf_resource_obj_parallel_merge_32_to_16, num=4)
             
-            #####   FIFO Consumption (Vivado Measured)   #####
-            perf_resource_obj.add_resource(resource_FIFO_d512_w32, num=2)
-            perf_resource_obj.add_resource(resource_FIFO_d2_w32, num=408)
+    #         #####   FIFO Consumption (Vivado Measured)   #####
+    #         perf_resource_obj.add_resource(resource_FIFO_d512_w32, num=2)
+    #         perf_resource_obj.add_resource(resource_FIFO_d2_w32, num=408)
     
-            perf_resource_obj.cycles_per_query = N_insertion_per_stream
-            perf_resource_obj.QPS = 1 / (perf_resource_obj.cycles_per_query / FREQ)
+    #         perf_resource_obj.cycles_per_query = N_insertion_per_stream
+    #         perf_resource_obj.QPS = 1 / (perf_resource_obj.cycles_per_query / FREQ)
 
-            option_list.append(perf_resource_obj) 
+    #         option_list.append(perf_resource_obj) 
 
-        elif input_stream_num > 80 and input_stream_num <= 96:
+    #     elif input_stream_num > 80 and input_stream_num <= 96:
 
-            perf_resource_obj = Resource_Performance_Stage6()
-            perf_resource_obj.SORT_GROUP_ENABLE = True
-            perf_resource_obj.SORT_GROUP_NUM = 6
-            perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
+    #         perf_resource_obj = Resource_Performance_Stage6()
+    #         perf_resource_obj.SORT_GROUP_ENABLE = True
+    #         perf_resource_obj.SORT_GROUP_NUM = 6
+    #         perf_resource_obj.STAGE_6_PRIORITY_QUEUE_LEVEL = 2
 
-            perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
-            perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=6)
-            perf_resource_obj.add_resource(perf_resource_obj_parallel_merge_32_to_16, num=5)
+    #         perf_resource_obj.add_resource(perf_resource_obj_level_A, num=21)
+    #         perf_resource_obj.add_resource(perf_resource_obj_bitonic_sort_16, num=6)
+    #         perf_resource_obj.add_resource(perf_resource_obj_parallel_merge_32_to_16, num=5)
             
-            #####   FIFO Consumption (Vivado Measured)   #####
-            perf_resource_obj.add_resource(resource_FIFO_d512_w32, num=2)
-            perf_resource_obj.add_resource(resource_FIFO_d2_w32, num=472)
+    #         #####   FIFO Consumption (Vivado Measured)   #####
+    #         perf_resource_obj.add_resource(resource_FIFO_d512_w32, num=2)
+    #         perf_resource_obj.add_resource(resource_FIFO_d2_w32, num=472)
         
-            perf_resource_obj.cycles_per_query = N_insertion_per_stream
-            perf_resource_obj.QPS = 1 / (perf_resource_obj.cycles_per_query / FREQ)
+    #         perf_resource_obj.cycles_per_query = N_insertion_per_stream
+    #         perf_resource_obj.QPS = 1 / (perf_resource_obj.cycles_per_query / FREQ)
 
-            option_list.append(perf_resource_obj) 
+    #         option_list.append(perf_resource_obj) 
 
     return option_list

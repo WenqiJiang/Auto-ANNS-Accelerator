@@ -33,46 +33,55 @@ OPQ_enable = config["OPQ_ENABLE"]
 topK = config["TOPK"]
 FREQ = config["FREQ"] * 1e6
 device = config["DEVICE"]
+DB_SCALE = config["DB_SCALE"]
+FPGA_num = config["FPGA_NUM"]
 
 MAX_UTIL_PERC = 1 # no resource constraint applied herer
 
-if config["DB_SCALE"] == '100M':
+if DB_SCALE == '100M':
     dbname = 'SIFT100M'
-    TOTAL_VECTORS = 1e8
-    """
-    An example of expected scanned ratio of a single index
-
-    e.g., suppose the query vectors has the same distribution as the trained vectors, 
-        then the larger a Voronoi cell, the more likely they will be searched
-    e.g., searching 32 cells over 8192 in 100 M dataset will not scan 32 / 8192 * 1e8 entries on average,
-        we need to scan more
-    """
-    scan_ratio_with_OPQ = {
-        1024: 1.102495894347366,
-        2048: 1.12463916710666,
-        4096: 1.12302396550103,
-        8192: 1.135891773928242,
-        16384: 1.1527141392580655,
-        32768: 1.1441353378627621,
-        65536: 1.1411144965226643,
-        131072: 1.1476783059960072,
-        262144: 1.1543383003102523
-    }
-    scan_ratio_without_OPQ = {
-        1024: 1.1023307648983034,
-        2048: 1.1245342465011723,
-        4096: 1.1230564521721877,
-        8192: 1.135866022841546, 
-        16384: 1.1523836603564073, 
-        32768: 1.1440334275739672,
-        65536: 1.1410689577844846,
-        131072: 1.1476378583040157,
-        262144: 1.1543274466049378
-    }
+    TOTAL_VECTORS = int(1e8 / FPGA_num)
+elif DB_SCALE == '500M':
+    dbname = 'SIFT500M'
+    TOTAL_VECTORS = int(5e8 / FPGA_num)
+elif DB_SCALE == '1000M':
+    dbname = 'SIFT1000M'
+    TOTAL_VECTORS = int(1e9 / FPGA_num)
 else:
     print("Unsupported dataset")
     raise ValueError
-    
+
+"""
+WENQI: the numbers below are got from the 100M dataset, more precise estimation TBD
+An example of expected scanned ratio of a single index
+
+e.g., suppose the query vectors has the same distribution as the trained vectors, 
+    then the larger a Voronoi cell, the more likely they will be searched
+e.g., searching 32 cells over 8192 in 100 M dataset will not scan 32 / 8192 * 1e8 entries on average,
+    we need to scan more
+"""
+scan_ratio_with_OPQ = {
+    1024: 1.102495894347366,
+    2048: 1.12463916710666,
+    4096: 1.12302396550103,
+    8192: 1.135891773928242,
+    16384: 1.1527141392580655,
+    32768: 1.1441353378627621,
+    65536: 1.1411144965226643,
+    131072: 1.1476783059960072,
+    262144: 1.1543383003102523
+}
+scan_ratio_without_OPQ = {
+    1024: 1.1023307648983034,
+    2048: 1.1245342465011723,
+    4096: 1.1230564521721877,
+    8192: 1.135866022841546, 
+    16384: 1.1523836603564073, 
+    32768: 1.1440334275739672,
+    65536: 1.1410689577844846,
+    131072: 1.1476378583040157,
+    262144: 1.1543274466049378
+}
 
 if device == 'U280':
     """ Resource related constants """
@@ -92,37 +101,29 @@ if device == 'U280':
     if dbname == 'SIFT100M':
         # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
         # 100M / 12582912 = 7.94 (without considering padding)
-        MIN_HBM_bank = 9 # at least 9 banks to hold PQ16 version
+        padding_factor = 1.05
+        total_size = 100 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num)) # at least 9 banks to hold PQ16 version
+    elif dbname == 'SIFT500M':
+        # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
+        # 100M / 12582912 = 7.94 (without considering padding)
+        padding_factor = 1.05
+        total_size = 500 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num))
+    elif dbname == 'SIFT1000M':
+        # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
+        # 100M / 12582912 = 7.94 (without considering padding)
+        padding_factor = 1.05
+        total_size = 1000 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num))
     else:
         print("Unsupported dataset")
         raise ValueError
 
     #####     Shell     #####
-    resource_network_kernel = Resource()
-    resource_network_kernel.LUT = 126540
-    resource_network_kernel.FF = 197124
-    resource_network_kernel.BRAM_18K = 2 * 430
-    resource_network_kernel.URAM = 9
-    resource_network_kernel.DSP48E = 0
-    resource_network_kernel.HBM_bank = 0
-
-    resource_network_user_kernel_functions = Resource()
-    resource_network_user_kernel_functions.LUT = 11242
-    resource_network_user_kernel_functions.FF = 5124
-    resource_network_user_kernel_functions.BRAM_18K = 2 * 0.5
-    resource_network_user_kernel_functions.URAM = 0
-    resource_network_user_kernel_functions.DSP48E = 0
-    resource_network_user_kernel_functions.HBM_bank = 0
-    resource_network_user_kernel_functions.add_resource(resource_FIFO_d2_w32, num=21)
-    resource_network_user_kernel_functions.add_resource(resource_FIFO_d512_w32, num=32)
-
-    resource_cmac_kernel = Resource()
-    resource_cmac_kernel.LUT = 17256
-    resource_cmac_kernel.FF = 58280
-    resource_cmac_kernel.BRAM_18K = 2 * 18
-    resource_cmac_kernel.URAM = 9
-    resource_cmac_kernel.DSP48E = 0
-    resource_cmac_kernel.HBM_bank = 0
 
     resource_hmss = Resource()
     resource_hmss.LUT = 55643 
@@ -157,8 +158,7 @@ if device == 'U280':
     resourece_static_region.HBM_bank = 0
 
     # component_list_shell = [resource_hmss, resource_System_DPA, resource_xdma, resourece_static_region]
-    component_list_shell = [resource_network_kernel, resource_network_user_kernel_functions,
-        resource_cmac_kernel, resource_hmss, resource_System_DPA, resource_xdma, resourece_static_region]
+    component_list_shell = [resource_hmss, resource_System_DPA, resource_xdma, resourece_static_region]
     shell_consumption = sum_resource(component_list_shell)
 
 elif device == 'U50':
@@ -179,37 +179,29 @@ elif device == 'U50':
     if dbname == 'SIFT100M':
         # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
         # 100M / 12582912 = 7.94 (without considering padding)
-        MIN_HBM_bank = 9 # at least 9 banks to hold PQ16 version
+        padding_factor = 1.05
+        total_size = 100 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num)) # at least 9 banks to hold PQ16 version
+    elif dbname == 'SIFT500M':
+        # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
+        # 100M / 12582912 = 7.94 (without considering padding)
+        padding_factor = 1.05
+        total_size = 500 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num))
+    elif dbname == 'SIFT1000M':
+        # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
+        # 100M / 12582912 = 7.94 (without considering padding)
+        padding_factor = 1.05
+        total_size = 1000 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 256 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num))
     else:
         print("Unsupported dataset")
         raise ValueError
 
     #####     Shell     #####
-    resource_network_kernel = Resource()
-    resource_network_kernel.LUT = 126540
-    resource_network_kernel.FF = 197124
-    resource_network_kernel.BRAM_18K = 2 * 430
-    resource_network_kernel.URAM = 9
-    resource_network_kernel.DSP48E = 0
-    resource_network_kernel.HBM_bank = 0
-
-    resource_network_user_kernel_functions = Resource()
-    resource_network_user_kernel_functions.LUT = 11242
-    resource_network_user_kernel_functions.FF = 5124
-    resource_network_user_kernel_functions.BRAM_18K = 2 * 0.5
-    resource_network_user_kernel_functions.URAM = 0
-    resource_network_user_kernel_functions.DSP48E = 0
-    resource_network_user_kernel_functions.HBM_bank = 0
-    resource_network_user_kernel_functions.add_resource(resource_FIFO_d2_w32, num=21)
-    resource_network_user_kernel_functions.add_resource(resource_FIFO_d512_w32, num=32)
-
-    resource_cmac_kernel = Resource()
-    resource_cmac_kernel.LUT = 17256
-    resource_cmac_kernel.FF = 58280
-    resource_cmac_kernel.BRAM_18K = 2 * 18
-    resource_cmac_kernel.URAM = 9
-    resource_cmac_kernel.DSP48E = 0
-    resource_cmac_kernel.HBM_bank = 0
 
     resourece_dynamic_region = Resource()
     resourece_dynamic_region.LUT = 92244
@@ -227,7 +219,7 @@ elif device == 'U50':
     resourece_static_region.DSP48E = 4
     resourece_static_region.HBM_bank = 0
 
-    component_list_shell = [resource_network_kernel, resource_network_user_kernel_functions, resource_cmac_kernel, resourece_dynamic_region, resourece_static_region]
+    component_list_shell = [resourece_dynamic_region, resourece_static_region]
     # component_list_shell = [resourece_dynamic_region, resourece_static_region]
     shell_consumption = sum_resource(component_list_shell)
 
@@ -246,9 +238,22 @@ elif device == 'U250':
     MAX_LUT = TOTAL_LUT * MAX_UTIL_PERC
     MAX_URAM = TOTAL_URAM * MAX_UTIL_PERC
 
+    # 1 DRAM bank = 16 GB
     if dbname == 'SIFT100M':
-        # 1 Bank = 16 GB
-        MIN_HBM_bank = 1 # at least 9 banks to hold PQ16 version
+        padding_factor = 1.05
+        total_size = 100 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 16 * 1024 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num)) # at least 9 banks to hold PQ16 version
+    elif dbname == 'SIFT500M':
+        padding_factor = 1.05
+        total_size = 500 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 16 * 1024 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num))
+    elif dbname == 'SIFT1000M':
+        padding_factor = 1.05
+        total_size = 1000 * 1e6 * 20 * 64 / 60 * padding_factor
+        per_bank_size = 16 * 1024 * 1024 * 1024
+        MIN_HBM_bank = int(np.ceil(total_size / per_bank_size / FPGA_num))
     else:
         print("Unsupported dataset")
         raise ValueError
@@ -376,7 +381,7 @@ def get_hardware_performance_resource(config):
     option_stage_6 = None
     for option in options_stage_6_sort_reduction:
         if option.SORT_GROUP_ENABLE == config["SORT_GROUP_ENABLE"] and \
-            option.SORT_GROUP_NUM == config["SORT_GROUP_NUM"] and \
+            (option.SORT_GROUP_NUM == config["SORT_GROUP_NUM"] or (not option.SORT_GROUP_NUM and not config["SORT_GROUP_NUM"])) and \
             option.STAGE_6_PRIORITY_QUEUE_LEVEL == config["STAGE_6_PRIORITY_QUEUE_LEVEL"]:
 
             if option.STAGE_6_PRIORITY_QUEUE_LEVEL == 2:
