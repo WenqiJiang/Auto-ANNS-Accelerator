@@ -1,4 +1,15 @@
-# How to build ANNS accelerator and run it?
+# Baseline
+
+This 
+
+## Design principle
+
+
+We fix the max nprobe to 128 (stage 3).
+
+We allow the first half (stage 1, 2, 3, 4) which mainly stands for compute, and the second half (stage 5, 6) consumes more or less the same amount of resources. Stage 1 is relatively cheap, so we keep stage 2, 3, 4 using roughly the same amount of resources (LUT). The PE number of stage 5 and 6 are correlated, thus we just make sure their sum is more or less the same as the first half.
+
+## How to build ANNS accelerator and run it?
 
 First, source the Vitis tool (directory depends on installation). We use 2020.2 here, but 2020.1 should also be fine.
 
@@ -38,3 +49,5 @@ For example,
 ```
 ./host vadd.xclbin 8192 17 0 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_SIFT100M_IVF8192,PQ16_12_banks /mnt/scratch/wenqi/saved_npy_data/gnd 
 ```
+
+To automatically test a bunch of algorithm settings on a bitstream, take a look at auto_perf_test/auto_perf_test.py 
