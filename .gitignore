@@ -1,7 +1,6 @@
 .DS_Store
 */.ipcache/*
 *.str
-*.csv
 */hd_visual/*
 */hd_visual
 */hd_visual/
@@ -15,9 +14,8 @@ hw_emu
 saved_npy_data/
 delete
 *.swp
-*xclbin*
+*run_summary
 */xclbin/*
-host
 */xclbin
 */xclbin/*
 *.run/*
@@ -31,8 +29,8 @@ _v++_*
 emconfig.json
 dltmp*
 xmltmp*
-*.log
 *.jou
+*vadd.link.xclbin.run_summary
 */xclbin
 _x/*
 _x.*
