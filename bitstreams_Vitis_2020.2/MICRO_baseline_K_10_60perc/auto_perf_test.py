@@ -110,10 +110,10 @@ def write_perf(dbname, index_key, topK, recall, QPS, overwrite):
             if recall_goal in d[dbname][index_key][topK]:
                 if overwrite:
                     d[dbname][index_key][topK][recall_goal] = QPS
-                    pickle.dump(d, f, pickle.HIGHEST_PROTOCOL)
+                    pickle.dump(d, f, protocol=4)
             else:
                 d[dbname][index_key][topK][recall_goal] = QPS
-                pickle.dump(d, f, pickle.HIGHEST_PROTOCOL)
+                pickle.dump(d, f, protocol=4)
 
     else: # write new file
         with open(fname, 'wb') as f:
@@ -125,7 +125,7 @@ def write_perf(dbname, index_key, topK, recall, QPS, overwrite):
             d[dbname][index_key] = dict()
             d[dbname][index_key][topK] = dict()
             d[dbname][index_key][topK][recall_goal] = QPS
-            pickle.dump(d, f, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(d, f, protocol=4)
 
 for index_key in d_recall[dbname]:
 
