@@ -15,7 +15,6 @@ hw_emu
 saved_npy_data/
 delete
 *.swp
-*xclbin*
 */xclbin/*
 host
 */xclbin
@@ -41,3 +40,5 @@ v++.compile_summary
 hls_output
 integrated_accelerator/entire-node-systolic-computation-without-FIFO-type-assignment-latest-PE-LUT-construction/hd_visual/
 integrated_accelerator/entire-node-systolic-computation-without-FIFO-type-assignment-latest-PE/hd_visual/
+*vadd.link.xclbin.run_summary
+
