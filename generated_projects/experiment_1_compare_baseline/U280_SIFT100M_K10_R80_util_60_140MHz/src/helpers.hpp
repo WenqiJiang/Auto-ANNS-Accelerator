@@ -73,7 +73,7 @@ void scan_controller(
     hls::stream<int> &s_scanned_entries_every_cell_Load_unit,
     hls::stream<int> &s_scanned_entries_every_cell_PQ_lookup_computation,
     hls::stream<int> &s_last_valid_channel,
-
+    hls::stream<int> &s_scanned_entries_per_query_Sort_and_reduction,
     hls::stream<int> &s_scanned_entries_per_query_Priority_queue);
 
 void write_result(
@@ -334,7 +334,7 @@ void scan_controller(
     hls::stream<int> &s_scanned_entries_every_cell_Load_unit,
     hls::stream<int> &s_scanned_entries_every_cell_PQ_lookup_computation,
     hls::stream<int> &s_last_valid_channel,
-
+    hls::stream<int> &s_scanned_entries_per_query_Sort_and_reduction,
     hls::stream<int> &s_scanned_entries_per_query_Priority_queue) {
    
     // s_last_element_valid_PQ_lookup_computation -> last element of a channel can 
@@ -390,7 +390,7 @@ void scan_controller(
 
             accumulated_scanned_entries_per_query += scanned_entries_every_cell_compute_unit;
         }
-
+        s_scanned_entries_per_query_Sort_and_reduction.write(accumulated_scanned_entries_per_query);
         s_scanned_entries_per_query_Priority_queue.write(accumulated_scanned_entries_per_query);
     }
 }

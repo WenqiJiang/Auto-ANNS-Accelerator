@@ -35,7 +35,7 @@ time make check TARGET=hw DEVICE=xilinx_u280_xdma_201920_3 VER=host_cpp > hw 2>&
 If you make any change on the host code, use the following command to recompile the host:
 
 ```
-g++ -I$XILINX_XRT/include/ -I$XILINX_VIVADO/include/ -Wall -O0 -g -std=c++11 ./src/host.cpp  -o 'host'  -L$XILINX_XRT/lib/ -lOpenCL -lpthread -lrt -lstdc++
+g++ -I$XILINX_XRT/include/ -I$XILINX_VIVADO/include/ -I./includes/xcl2 -Wall -O0 -g -std=c++11 ./src/host.cpp  -o 'host'  -L$XILINX_XRT/lib/ -lOpenCL -lpthread -lrt -lstdc++
 ```
 
 To run the bitstream and get the performance, use the test script within each folder:

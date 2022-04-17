@@ -17,7 +17,7 @@ void PQ_lookup_computation_wrapper(
     hls::stream<distance_LUT_PQ16_t>& s_distance_LUT,
     hls::stream<int>& s_scanned_entries_every_cell_PQ_lookup_computation, 
     hls::stream<int>& s_last_valid_channel, 
-    hls::stream<single_PQ_result> (&s_single_PQ_result)[stream_num]);
+    hls::stream<single_PQ_result> (&s_single_PQ_result)[SORT_GROUP_NUM][16]);
 
 
 void dummy_distance_LUT_sender(
@@ -293,7 +293,7 @@ void PQ_lookup_computation_wrapper(
     hls::stream<distance_LUT_PQ16_t>& s_distance_LUT,
     hls::stream<int>& s_scanned_entries_every_cell_PQ_lookup_computation, 
     hls::stream<int>& s_last_valid_channel, 
-    hls::stream<single_PQ_result> (&s_single_PQ_result)[stream_num]) {
+    hls::stream<single_PQ_result> (&s_single_PQ_result)[SORT_GROUP_NUM][16]) {
 #pragma HLS inline
 
     hls::stream<distance_LUT_PQ16_t> s_distance_LUT_systolic[stream_num];
@@ -307,11 +307,17 @@ void PQ_lookup_computation_wrapper(
 // #pragma HLS RESOURCE variable=s_scanned_entries_every_cell_PQ_lookup_computation_replicated core=FIFO_SRL
 
 
+    hls::stream<int> s_scanned_entries_every_cell_Dummy_replicated[SORT_GROUP_NUM * 16 - stream_num]; // 32 - 3 * 10 = 2
+#pragma HLS stream variable=s_scanned_entries_every_cell_Dummy_replicated depth=8
+#pragma HLS array_partition variable=s_scanned_entries_every_cell_Dummy_replicated complete
+// #pragma HLS RESOURCE variable=s_scanned_entries_every_cell_Dummy_replicated core=FIFO_SRL
+
     replicate_s_scanned_entries_every_cell_PQ_lookup_computation<stream_num>(
-        query_num, 
+        query_num,
         nprobe, 
         s_scanned_entries_every_cell_PQ_lookup_computation, 
-        s_scanned_entries_every_cell_PQ_lookup_computation_replicated);
+        s_scanned_entries_every_cell_PQ_lookup_computation_replicated,
+        s_scanned_entries_every_cell_Dummy_replicated);
 
 
     hls::stream<int> s_last_element_valid_PQ_lookup_computation[stream_num];
@@ -386,6 +392,15 @@ void PQ_lookup_computation_wrapper(
     }
 
 
+    for (int j = stream_num; j < 16; j++) {
+#pragma HLS UNROLL
+        dummy_PQ_result_sender(
+            query_num,
+            nprobe,
+            s_scanned_entries_every_cell_Dummy_replicated[j - stream_num], 
+            s_single_PQ_result[0][j]);
+    }
+    
 
 #elif SORT_GROUP_NUM == 2
     // PE 0, get input from s_distance_LUT
@@ -434,6 +449,15 @@ void PQ_lookup_computation_wrapper(
     }
 
 
+    for (int j = stream_num - 16 * (SORT_GROUP_NUM - 1); j < 16; j++) {
+#pragma HLS UNROLL
+        dummy_PQ_result_sender(
+            query_num,
+            nprobe,
+            s_scanned_entries_every_cell_Dummy_replicated[j - (stream_num - 16 * (SORT_GROUP_NUM - 1))], 
+            s_single_PQ_result[SORT_GROUP_NUM - 1][j]);
+    }
+    
 
 #elif SORT_GROUP_NUM >= 3
     // PE 0, get input from s_distance_LUT
@@ -500,6 +524,15 @@ void PQ_lookup_computation_wrapper(
     }
 
 
+    for (int j = stream_num - 16 * (SORT_GROUP_NUM - 1); j < 16; j++) {
+#pragma HLS UNROLL
+        dummy_PQ_result_sender(
+            query_num,
+            nprobe,
+            s_scanned_entries_every_cell_Dummy_replicated[j - (stream_num - 16 * (SORT_GROUP_NUM - 1))], 
+            s_single_PQ_result[SORT_GROUP_NUM - 1][j]);
+    }
+    
 
 #endif
 

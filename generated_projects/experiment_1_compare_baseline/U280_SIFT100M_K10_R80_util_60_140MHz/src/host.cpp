@@ -812,12 +812,12 @@ int main(int argc, char** argv)
     // HBM_query_vectorExt.flags = bank[22];
 
     HBM_meta_infoExt.obj = HBM_meta_info.data();
-    HBM_vector_quantizerExt.param = 0;
-    HBM_vector_quantizerExt.flags = bank[24];
+    HBM_meta_infoExt.param = 0;
+    HBM_meta_infoExt.flags = bank[1];
 
     HBM_vector_quantizerExt.obj = HBM_vector_quantizer.data();
     HBM_vector_quantizerExt.param = 0;
-    HBM_vector_quantizerExt.flags = bank[26];
+    HBM_vector_quantizerExt.flags = bank[3];
 
     // HBM_product_quantizerExt.obj = HBM_product_quantizer.data();
     // HBM_product_quantizerExt.param = 0;
@@ -831,7 +831,7 @@ int main(int argc, char** argv)
 
     HBM_outExt.obj = HBM_out.data();
     HBM_outExt.param = 0;
-    HBM_outExt.flags = bank[28];
+    HBM_outExt.flags = bank[24];
     
 
 //////////////////////////////   TEMPLATE START  //////////////////////////////

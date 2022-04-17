@@ -411,15 +411,28 @@ void vadd(
         s_single_PQ_result);
 
 
+        ////////////////////     Sort Results     ////////////////////    
+    Sort_reduction<single_PQ_result, SORT_GROUP_NUM * 16, TOPK, Collect_smallest> sort_reduction_module;
+
+    hls::stream<single_PQ_result> s_sorted_PQ_result[TOPK];
+#pragma HLS stream variable=s_sorted_PQ_result depth=8
+#pragma HLS array_partition variable=s_sorted_PQ_result complete
+// #pragma HLS RESOURCE variable=s_sorted_PQ_result core=FIFO_SRL
+
+    sort_reduction_module.sort_and_reduction(
+        query_num,
+        s_scanned_entries_per_query_Sort_and_reduction, 
+        s_single_PQ_result, 
+        s_sorted_PQ_result);
 
     hls::stream<single_PQ_result> s_output; // the top 10 numbers
 #pragma HLS stream variable=s_output depth=512
 // #pragma HLS RESOURCE variable=s_output core=FIFO_BRAM
 
-    stage6_priority_queue_group_L2_wrapper<STAGE5_COMP_PE_NUM>(
+    stage6_priority_queue_group_L2_wrapper<TOPK>(
         query_num,
         s_scanned_entries_per_query_Priority_queue, 
-        s_single_PQ_result,
+        s_sorted_PQ_result,
         s_output);
 
     ////////////////////     Write Results     ////////////////////    

@@ -86,6 +86,6 @@ Variable to be replaced (<--variable_name-->):
 
 // number of 16 outputs per cycle, e.g., HBM channel num = 10, comp PE num = 30, then 
 //   SORT_GROUP_NUM = 2; if HBM channel = 12, PE_num = 36, then SORT_GROUP_NUM = 3
-#define SORT_GROUP_NUM 0
+#define SORT_GROUP_NUM 3
 #define STAGE_6_PRIORITY_QUEUE_LEVEL 2
-#define STAGE_6_PRIORITY_QUEUE_L1_NUM 72
+#define STAGE_6_PRIORITY_QUEUE_L1_NUM 20
