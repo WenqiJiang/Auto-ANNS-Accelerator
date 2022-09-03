@@ -955,7 +955,7 @@ void compute_cell_distance_wrapper(
     compute_cell_distance_tail_PE<CENTROIDS_PER_PARTITION_LAST_PE>(
         query_num, 
         PE_NUM_CENTER_DIST_COMP_EVEN,
-        centroids_per_partition, 
+        centroids_per_partition_last_PE, 
         total_centriods,
         s_centroid_vectors_forward[PE_NUM_CENTER_DIST_COMP_EVEN - 1],
         s_query_vectors_forward[PE_NUM_CENTER_DIST_COMP_EVEN - 1],

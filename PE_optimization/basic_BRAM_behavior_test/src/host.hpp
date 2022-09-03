@@ -17,8 +17,8 @@
 #include <unistd.h>
 #include <iostream>
 #include <fstream>
-#include "cl2.hpp"
-
+#include "opencl.hpp"
+//#include "cl2.hpp"
 
 
 template <typename T>

@@ -53,7 +53,7 @@ Arguments:
 max_utilization_rate=args.max_utilization_rate, freq=args.freq))
 
 assert args.dbname != '', "Please fill the DB name, e.g., SITF100M"
-if args.dbname == 'SIFT100M':
+if args.dbname == 'SIFT100M' or args.dbname == 'Deep100M':
     TOTAL_VECTORS = int(1e8 / args.FPGA_num)
 elif args.dbname == 'SIFT500M':
     TOTAL_VECTORS = int(5e8 / args.FPGA_num)
@@ -116,7 +116,7 @@ if args.device == 'U280':
     MAX_LUT = TOTAL_LUT * MAX_UTIL_PERC
     MAX_URAM = TOTAL_URAM * MAX_UTIL_PERC
 
-    if args.dbname == 'SIFT100M':
+    if args.dbname == 'SIFT100M' or args.dbname == 'Deep100M':
         # 1 Bank = 256 MB = 4194304 512-bit = 4194304 * 3 = 12582912 vectors
         # 100M / 12582912 = 7.94 (without considering padding)
         padding_factor = 1.05
@@ -715,7 +715,7 @@ if __name__ == "__main__":
     template_fill_dict["STAGE_6_PRIORITY_QUEUE_LEVEL"] = best_solution_stage_option_list[6 + array_offset].STAGE_6_PRIORITY_QUEUE_LEVEL
 
 
-    if args.dbname == 'SIFT100M':
+    if args.dbname == 'SIFT100M' or args.dbname == 'Deep100M':
         template_fill_dict["DB_SCALE"] = "100M"
     elif args.dbname == 'SIFT500M':
         template_fill_dict["DB_SCALE"] = "500M"

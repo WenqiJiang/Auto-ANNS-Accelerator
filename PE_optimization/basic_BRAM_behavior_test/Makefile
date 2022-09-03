@@ -34,7 +34,8 @@ CXX := g++
 VPP := $(XILINX_VITIS)/bin/v++
 
 # The below are compile flags are passed to the C++ Compiler
-opencl_CXXFLAGS += -g -I./ -I$(XILINX_XRT)/include -I$(XILINX_VIVADO)/include -Wall -O0 -g -std=c++11
+opencl_CXXFLAGS += -g -I./ -I$(XILINX_XRT)/include -I$(XILINX_HLS)/include -Wall -O0 -g -std=c++11
+#opencl_CXXFLAGS += -g -I./ -I$(XILINX_XRT)/include -I$(XILINX_VIVADO)/include -Wall -O0 -g -std=c++11
 # The below are linking flags for C++ Comnpiler
 opencl_LDFLAGS += -L$(XILINX_XRT)/lib -lOpenCL -lpthread
 

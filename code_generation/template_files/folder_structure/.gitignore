@@ -3,6 +3,7 @@ build_dir.hw.xilinx_u280_xdma_201920_3
 vivado_pid*
 src/hls_output
 hls_output
+xsa.xml
 *csv
 xclbin
 ./xclbin
