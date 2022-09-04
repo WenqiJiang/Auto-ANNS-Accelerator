@@ -5,7 +5,7 @@
   # Constants
   NLIST: <--nlist-->
   NPROBE: <--nprobe-->
-  D: 128
+  D: <--D-->
   M: 16
   K: 256
   TOPK: <--topk-->
@@ -61,6 +61,7 @@
   # STAGE_6_STREAM_PER_L2_QUEUE_SMALLER: 4 # only used when when STAGE_6_PRIORITY_QUEUE_LEVEL = 3
 
   # Dataset config
+  DB_NAME: <--DB_NAME-->
   DB_SCALE: <--DB_SCALE--> # 1M to 1000M
   FPGA_NUM: <--FPGA_NUM--> # e.g., can use 8 FPGAs to serve 1000M dataset, each stores 125M vectors
 

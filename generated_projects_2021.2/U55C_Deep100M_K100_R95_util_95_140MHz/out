@@ -1,0 +1,26 @@
+g++ -g -std=c++11 -I/home/wejiang/opt/xilinx/xrt/include -o host src/host.cpp -L/home/wejiang/opt/xilinx/xrt/lib -lxilinxopencl -pthread -lrt
+Compiled Host Executable: host
+mkdir -p ./xclbin
+v++ -g -t hw --platform xilinx_u55c_gen3x16_xdma_3_202210_1 --save-temps --config design.cfg -c -k vadd --temp_dir ./_x.hw -o xclbin/vadd.hw.xo src/vadd.cpp
+WARNING: [v++ 60-1603] The supplied option 'profile_kernel' is deprecated. The supplied option is replaced by an alternative feature controlled by option ''profile.*''. New options extend profiling beyond kernel and compute units to include additional interfaces.
+Option Map File Used: '/tools/Xilinx/Vitis/2022.1/data/vitis/vpp/optMap.xml'
+INFO: [v++ 82-4274] Default memory will be used for trace offload
+
+****** v++ v2022.1 (64-bit)
+  **** SW Build 3524075 on 2022-04-13-17:42:45
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+INFO: [v++ 60-1306] Additional information associated with this v++ compile can be found at:
+	Reports: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K100_R95_util_95_140MHz/_x.hw/reports/vadd.hw
+	Log files: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K100_R95_util_95_140MHz/_x.hw/logs/vadd.hw
+Running Dispatch Server on port: 38837
+INFO: [v++ 60-1548] Creating build summary session with primary output /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K100_R95_util_95_140MHz/xclbin/vadd.hw.xo.compile_summary, at Sun Sep  4 17:44:25 2022
+INFO: [v++ 60-1316] Initiating connection to rulecheck server, at Sun Sep  4 17:44:25 2022
+INFO: [v++ 60-1315] Creating rulecheck session with output '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K100_R95_util_95_140MHz/_x.hw/reports/vadd.hw/v++_compile_vadd.hw_guidance.html', at Sun Sep  4 17:44:27 2022
+INFO: [v++ 60-895]   Target platform: /opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm
+INFO: [v++ 60-1578]   This platform contains Xilinx Shell Archive '/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/hw/hw.xsa'
+INFO: [v++ 74-78] Compiler Version string: 2022.1
+INFO: [v++ 60-585] Compiling for hardware target
+INFO: [v++ 60-423]   Target device: xilinx_u55c_gen3x16_xdma_3_202210_1
+INFO: [v++ 60-242] Creating kernel: 'vadd'
+INFO: [v++ 60-1616] Creating a HLS clock using kernel_frequency option: 140 MHz

@@ -715,6 +715,15 @@ if __name__ == "__main__":
     template_fill_dict["STAGE_6_PRIORITY_QUEUE_LEVEL"] = best_solution_stage_option_list[6 + array_offset].STAGE_6_PRIORITY_QUEUE_LEVEL
 
 
+    template_fill_dict["DB_NAME"] = args.dbname
+    if args.dbname.startswith('SIFT'):
+        template_fill_dict["D"] = 128
+    elif args.dbname.startswith('Deep'):
+        template_fill_dict["D"] = 96
+    else:
+        print('unknown dataset', args.dbname)
+        raise ValueError
+
     if args.dbname == 'SIFT100M' or args.dbname == 'Deep100M':
         template_fill_dict["DB_SCALE"] = "100M"
     elif args.dbname == 'SIFT500M':
