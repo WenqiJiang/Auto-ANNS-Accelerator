@@ -44,7 +44,7 @@ Variable to be replaced (<--variable_name-->):
 
 #define NLIST_MAX 65536
 #define NPROBE_MAX 128
-#define D 128
+#define D 96
 #define M 16
 #define K 256
 #define TOPK 1

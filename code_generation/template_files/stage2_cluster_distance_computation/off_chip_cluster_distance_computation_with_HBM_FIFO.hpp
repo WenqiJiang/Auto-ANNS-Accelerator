@@ -49,7 +49,7 @@ void load_vector_quantizer_from_HBM(
             // Manually unroll 16, auto-unroll doesn't work well
             for (int d = 0; d < D / 16; d++) {
 #pragma HLS pipeline II=1
-                int addr_HBM = c * 8 + d; // each 512-bit = 16 numbers, 1 vec=8 addresses
+                int addr_HBM = c * (D * 4 / 64) + d; // each 512-bit = 16 numbers, 1 vec=8 addresses
                 ap_uint512_t cell_centroids_uint = HBM_centroid_vectors[addr_HBM];
                 s_HBM_centroid_vectors.write(cell_centroids_uint);
             }

@@ -6,7 +6,7 @@ import numpy as np
 parser = argparse.ArgumentParser()
 parser.add_argument('--input_dir', type=str, default="./template_files", help="template input directory")
 parser.add_argument('--output_dir', type=str, default="./output_files", help="output directory")
-parser.add_argument('--vitis_version', type=str, default="2020.2", help="support 2020.2 and 2021.2")
+parser.add_argument('--vitis_version', type=str, default="2021.2", help="support 2020.2 and 2021.2")
 args = parser.parse_args()
 
 # Load YAML configurations
@@ -141,18 +141,18 @@ if args.vitis_version == '2020.2':
             std::ios::in | std::ios::binary);\n'''
         template_fill_dict["HBM_query_vector_fstream"] = \
             '''
-        std::string HBM_query_vector_dir_suffix = "query_vectors_float32_{QUERY_NUM}_128_raw";
+        std::string HBM_query_vector_dir_suffix = "query_vectors_float32_{QUERY_NUM}_{D}_raw";
         std::string HBM_query_vector_path = dir_concat(data_dir_prefix, HBM_query_vector_dir_suffix);
         std::ifstream HBM_query_vector_fstream(
             HBM_query_vector_path,
-            std::ios::in | std::ios::binary);\n'''.format(QUERY_NUM=config["QUERY_NUM"])
+            std::ios::in | std::ios::binary);\n'''.format(QUERY_NUM=config["QUERY_NUM"], D=config["D"])
         template_fill_dict["HBM_vector_quantizer_fstream"] = \
             '''    
-        std::string HBM_vector_quantizer_dir_suffix = "vector_quantizer_float32_" + std::to_string(nlist) + "_128_raw";
+        std::string HBM_vector_quantizer_dir_suffix = "vector_quantizer_float32_" + std::to_string(nlist) + "_{D}_raw";
         std::string HBM_vector_quantizer_dir = dir_concat(data_dir_prefix, HBM_vector_quantizer_dir_suffix);
         std::ifstream HBM_vector_quantizer_fstream(
             HBM_vector_quantizer_dir, 
-            std::ios::in | std::ios::binary);\n'''
+            std::ios::in | std::ios::binary);\n'''.format(D=config["D"])
         template_fill_dict["HBM_product_quantizer_fstream"] = \
             '''    
         std::string HBM_product_quantizer_suffix_dir = "product_quantizer_float32_{M}_{K}_{PARTITION}_raw";
@@ -319,7 +319,7 @@ elif args.vitis_version == '2021.2':
         template_fill_dict["TOP1_ID"] = "        gt_vec_ID[i] = raw_gt_vec_ID[i * 1001 + 1];"
     elif config["DB_NAME"].startswith('Deep'):
         template_fill_dict["RAW_gt_vec_ID_len"] = "    size_t raw_gt_vec_ID_len = 10000 * 1000; "
-        template_fill_dict["TOP1_ID"] = "        gt_vec_ID[i] = raw_gt_vec_ID[i * 1000];"
+        template_fill_dict["TOP1_ID"] = "        gt_vec_ID[i] = raw_gt_vec_ID[2 + i * 1000];"
     else:
         print("Unknown dataset")
         raise ValueError
@@ -336,7 +336,6 @@ elif args.vitis_version == '2021.2':
     template_fill_dict["HBM_embedding_fstream"] = ""
     template_fill_dict["HBM_embedding_fstream_read"] = ""
     template_fill_dict["HBM_embedding_memcpy"] = ""
-    template_fill_dict["HBM_embedding_char_free"] = ""
     template_fill_dict["buffer_HBM_embedding"] = ""
     template_fill_dict["buffer_HBM_embedding_set_krnl_arg"] = ""
     template_fill_dict["buffer_HBM_embedding_enqueueMigrateMemObjects"] = ""
@@ -366,8 +365,6 @@ elif args.vitis_version == '2021.2':
             exit(1);\n '''.format(i=i) + '    }\n'
         template_fill_dict["HBM_embedding_memcpy"] += \
             "    memcpy(&HBM_embedding{i}[0], HBM_embedding{i}_char, HBM_embedding{i}_size);\n".format(i=i)
-        template_fill_dict["HBM_embedding_char_free"] += \
-            "    free(HBM_embedding{i}_char);\n".format(i=i)
         template_fill_dict["buffer_HBM_embedding"] += \
             '''    OCL_CHECK(err, cl::Buffer buffer_HBM_embedding{i}(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY, 
                 HBM_embedding{i}_size, HBM_embedding{i}.data(), &err));\n'''.format(i=i)
@@ -387,18 +384,18 @@ elif args.vitis_version == '2021.2':
             std::ios::in | std::ios::binary);\n'''
         template_fill_dict["HBM_query_vector_fstream"] = \
             '''
-        std::string HBM_query_vector_dir_suffix = "query_vectors_float32_{QUERY_NUM}_128_raw";
+        std::string HBM_query_vector_dir_suffix = "query_vectors_float32_{QUERY_NUM}_{D}_raw";
         std::string HBM_query_vector_path = dir_concat(data_dir_prefix, HBM_query_vector_dir_suffix);
         std::ifstream HBM_query_vector_fstream(
             HBM_query_vector_path,
-            std::ios::in | std::ios::binary);\n'''.format(QUERY_NUM=config["QUERY_NUM"])
+            std::ios::in | std::ios::binary);\n'''.format(QUERY_NUM=config["QUERY_NUM"], D=config["D"])
         template_fill_dict["HBM_vector_quantizer_fstream"] = \
             '''    
-        std::string HBM_vector_quantizer_dir_suffix = "vector_quantizer_float32_" + std::to_string(nlist) + "_128_raw";
+        std::string HBM_vector_quantizer_dir_suffix = "vector_quantizer_float32_" + std::to_string(nlist) + "_{D}_raw";
         std::string HBM_vector_quantizer_dir = dir_concat(data_dir_prefix, HBM_vector_quantizer_dir_suffix);
         std::ifstream HBM_vector_quantizer_fstream(
             HBM_vector_quantizer_dir, 
-            std::ios::in | std::ios::binary);\n'''
+            std::ios::in | std::ios::binary);\n'''.format(D=config["D"])
         template_fill_dict["HBM_product_quantizer_fstream"] = \
             '''    
         std::string HBM_product_quantizer_suffix_dir = "product_quantizer_float32_{M}_{K}_{PARTITION}_raw";

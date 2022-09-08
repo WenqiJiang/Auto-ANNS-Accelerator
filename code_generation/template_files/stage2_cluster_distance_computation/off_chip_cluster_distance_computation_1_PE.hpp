@@ -53,7 +53,7 @@ void compute_cell_distance_component_A(
             for (int d = 0; d < D / 16; d++) {
 #pragma HLS pipeline II=2
 
-                int addr_HBM = c * 8 + d; // each 512-bit = 16 numbers, 1 vec=8 addresses
+                int addr_HBM = c * (D * 4 / 64) + d; // each 512-bit = 16 numbers, 1 vec=8 addresses
                 ap_uint512_t cell_centroids_uint = HBM_centroid_vectors[addr_HBM];
 
                 ap_uint<32> cell_centroids_0_int = cell_centroids_uint.range((1 + 0) * 32 - 1, 0 * 32);

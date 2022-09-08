@@ -1,4 +1,7 @@
 .DS_Store
+*/ext_metadata.json
+*/*/*.json
+*/*/*summary 
 */.ipcache/*
 *.str
 */hd_visual/*

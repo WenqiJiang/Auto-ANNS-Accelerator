@@ -161,7 +161,7 @@
   # STAGE_6_STREAM_PER_L2_QUEUE_SMALLER: 4 # only used when when STAGE_6_PRIORITY_QUEUE_LEVEL = 3
 
   # Dataset config
-  DB_NAME: Deep100M
+  DB_NAME: SIFT100M
   DB_SCALE: "100M" # 1M to 1000M
 
   # Data directory (don't add "/" after the dir)

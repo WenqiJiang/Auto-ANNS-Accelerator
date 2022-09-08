@@ -103,7 +103,7 @@
   # Constants
   NLIST_MAX: 65536
   NPROBE_MAX: 128 # stage 3 priority queue size
-  D: 128
+  D: 96
   M: 16
   K: 256
   TOPK: 100
