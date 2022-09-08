@@ -51,6 +51,7 @@ Variable to be replaced (<--variable_name-->):
 #include <limits>
 #include <iostream>
 #include <fstream>
+#include <chrono>
 
 #include <stdint.h>
 #include <math.h>  
@@ -307,15 +308,15 @@ int main(int argc, char** argv)
 
     memcpy(&raw_gt_vec_ID[0], raw_gt_vec_ID_char, raw_gt_vec_ID_size);
 
-<--HBM_embedding_char_free-->
+    // don't free, XRT will do it
 
-    free(HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_char);
-    free(HBM_query_vector_char);
-    free(HBM_vector_quantizer_char);
-    free(HBM_product_quantizer_char);
-    free(HBM_OPQ_matrix_char);
+    // free(HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_char);
+    // free(HBM_query_vector_char);
+    // free(HBM_vector_quantizer_char);
+    // free(HBM_product_quantizer_char);
+    // free(HBM_OPQ_matrix_char);
 
-    free(raw_gt_vec_ID_char);
+    // free(raw_gt_vec_ID_char);
     // free(sw_result_vec_ID_char);
     // free(sw_result_dist_char);
 
@@ -454,7 +455,7 @@ int main(int argc, char** argv)
 // Step 2: Copy Input data from Host to Global Memory on the device
 // ------------------------------------------------------
 //////////////////////////////   TEMPLATE START  //////////////////////////////
-    std::cout << "Starting copy from Host to device..." << std::endl;
+    std::cout << "Starting copy from Host to device... (wait for 10 sec to make sure wait finishes)" << std::endl;
     OCL_CHECK(
         err, err = q.enqueueMigrateMemObjects({
 <--buffer_HBM_embedding_enqueueMigrateMemObjects-->
@@ -468,11 +469,13 @@ int main(int argc, char** argv)
 //         buffer_HBM_OPQ_matrix
 // #endif
         }, 0/* 0 means from host*/));	
+    sleep(10);
     std::cout << "Host to device finished..." << std::endl;
 //////////////////////////////   TEMPLATE END  //////////////////////////////
 // ----------------------------------------
 // Step 2: Submit Kernels for Execution
 // ----------------------------------------
+    std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
     OCL_CHECK(err, err = q.enqueueTask(krnl_vector_add));
 // --------------------------------------------------
 // Step 2: Copy Results from Device Global Memory to Host
@@ -480,6 +483,7 @@ int main(int argc, char** argv)
     OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_output},CL_MIGRATE_MEM_OBJECT_HOST));
 
     q.finish();
+    std::chrono::system_clock::time_point end = std::chrono::system_clock::now();
 // OPENCL HOST CODE AREA END
 
     // Compare the results of the Device to the simulation
@@ -520,7 +524,13 @@ int main(int argc, char** argv)
 
     float recall = ((float) match_count / (float) count);
     printf("\n=====  Recall: %.8f  =====\n", recall);
+    double durationUs = (std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
+    std::cout << "duration (sec), including dev->host cp, may have small difference with Vitis profiler:" << durationUs / 1000.0 / 1000.0 << std::endl;
+    std::cout << "QPS: " << query_num / (durationUs / 1000.0 / 1000.0) << std::endl;
+
+    // keep this, otherwise if return 0, XRT has memory free bugs ...
+    exit(0);
 
     // std::cout << "TEST " << (match ? "PASSED" : "FAILED") << std::endl; 
-    return (match ? EXIT_SUCCESS : EXIT_FAILURE);
+    // return (match ? EXIT_SUCCESS : EXIT_FAILURE);
 }

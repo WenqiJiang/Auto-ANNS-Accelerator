@@ -13,7 +13,7 @@ time_str = now.strftime("%Y-%m-%d-%H-%M")
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--output_project_dir', type=str, default="../generated_projects/ANNS_project_{}".format(time_str), help="output project directory")
-parser.add_argument('--vitis_version', type=str, default="2020.2", help="support 2020.2 and 2021.2")
+parser.add_argument('--vitis_version', type=str, default="2021.2", help="support 2020.2 and 2021.2")
 args = parser.parse_args()
 
 # Load YAML configurations

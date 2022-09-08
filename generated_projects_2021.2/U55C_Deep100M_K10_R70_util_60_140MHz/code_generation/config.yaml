@@ -147,7 +147,7 @@
   # Constants
   NLIST: 4096
   NPROBE: 6
-  D: 128
+  D: 96
   M: 16
   K: 256
   TOPK: 10

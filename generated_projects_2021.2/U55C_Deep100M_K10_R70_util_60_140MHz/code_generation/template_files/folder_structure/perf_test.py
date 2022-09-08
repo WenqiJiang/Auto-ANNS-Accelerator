@@ -70,7 +70,7 @@ if FPGA_num == 1:
 else:
     data_dir = "{data_parent_dir}/FPGA_data_{dbname}_{index_key}_{FPGA_num}_FPGA_{bank_num}_banks/FPGA_0".format(
         data_parent_dir=data_parent_dir, dbname=dbname, index_key=index_key, FPGA_num=FPGA_num, bank_num=bank_num)
-cmd = "./host {bitstream_dir} {data_dir} {gt_dir}".format(bitstream_dir=bitstream_dir, data_dir=data_dir, gt_dir=gt_dir)
+cmd = "./host {bitstream_dir} {data_dir} {gt_dir}".format(bitstream_dir=args.bitstream_dir, data_dir=data_dir, gt_dir=gt_dir)
 print("Executing command:\n{}".format(cmd))
 os.system(cmd)
 QPS = load_perf_from_profile_summary()

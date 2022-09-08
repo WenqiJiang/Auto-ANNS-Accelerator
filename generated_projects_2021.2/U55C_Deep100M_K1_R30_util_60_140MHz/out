@@ -13,10 +13,10 @@ INFO: [v++ 82-4274] Default memory will be used for trace offload
 INFO: [v++ 60-1306] Additional information associated with this v++ compile can be found at:
 	Reports: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/reports/vadd.hw
 	Log files: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/logs/vadd.hw
-Running Dispatch Server on port: 36889
-INFO: [v++ 60-1548] Creating build summary session with primary output /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xo.compile_summary, at Sun Sep  4 17:42:13 2022
-INFO: [v++ 60-1316] Initiating connection to rulecheck server, at Sun Sep  4 17:42:13 2022
-INFO: [v++ 60-1315] Creating rulecheck session with output '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/reports/vadd.hw/v++_compile_vadd.hw_guidance.html', at Sun Sep  4 17:42:15 2022
+Running Dispatch Server on port: 33339
+INFO: [v++ 60-1548] Creating build summary session with primary output /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xo.compile_summary, at Thu Sep  8 11:01:24 2022
+INFO: [v++ 60-1316] Initiating connection to rulecheck server, at Thu Sep  8 11:01:24 2022
+INFO: [v++ 60-1315] Creating rulecheck session with output '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/reports/vadd.hw/v++_compile_vadd.hw_guidance.html', at Thu Sep  8 11:01:25 2022
 INFO: [v++ 60-895]   Target platform: /opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm
 INFO: [v++ 60-1578]   This platform contains Xilinx Shell Archive '/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/hw/hw.xsa'
 INFO: [v++ 74-78] Compiler Version string: 2022.1

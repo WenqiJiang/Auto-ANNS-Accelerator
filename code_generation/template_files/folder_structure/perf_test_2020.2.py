@@ -2,7 +2,7 @@
 Usage: copy the config.yaml and perf_test.py to the bitstream folder,
     the bitstream folder should also contain: host vadd.xclbin xrt.ini
 Then, execute the following command, specify data/gt/config dir if needed:
-    python perf_test.py <--config_dir ... --data_parent_dir ... --gt_dir ...>
+    python perf_test.py <--config_dir ... --data_parent_dir ... --bitstream_dir ... --gt_dir ...>
 """
 
 import os
@@ -15,9 +15,9 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--config_dir', type=str, default='./config.yaml', help="the parent data dir")
-parser.add_argument('--dbname', type=str, help="e.g., Deep100M")
+parser.add_argument('--bitstream_dir', type=str, default='./xclbin/vadd.hw.xclbin', help="e.g., ./xclbin/vadd.hw.xclbin")
 parser.add_argument('--data_parent_dir', type=str, default='/mnt/scratch/wenqi/saved_npy_data', help="the parent data dir")
-parser.add_argument('--gt_dir', type=str, default='/mnt/scratch/wenqi/saved_npy_data/gnd', help="the ground truth dir")
+parser.add_argument('--gt_dir', type=str, default='/mnt/scratch/wenqi/saved_npy_data/Deep_gnd', help="the ground truth dir")
 
 # ./host <XCLBIN File> <data directory> <ground truth dir>
 
@@ -30,7 +30,7 @@ gt_dir = args.gt_dir
 config_file = open(config_dir, "r")
 config = yaml.load(config_file)
 
-dbname = args.dbname
+dbname = config["DB_NAME"]
 topK = config["TOPK"]
 nlist = config["NLIST"]
 OPQ_enable = config["OPQ_ENABLE"]
@@ -70,7 +70,7 @@ if FPGA_num == 1:
 else:
     data_dir = "{data_parent_dir}/FPGA_data_{dbname}_{index_key}_{FPGA_num}_FPGA_{bank_num}_banks/FPGA_0".format(
         data_parent_dir=data_parent_dir, dbname=dbname, index_key=index_key, FPGA_num=FPGA_num, bank_num=bank_num)
-cmd = "./host xclbin/vadd.hw.xclbin {data_dir} {gt_dir}".format(data_dir=data_dir, gt_dir=gt_dir)
+cmd = "./host {bitstream_dir} {data_dir} {gt_dir}".format(bitstream_dir=args.bitstream_dir, data_dir=data_dir, gt_dir=gt_dir)
 print("Executing command:\n{}".format(cmd))
 os.system(cmd)
 QPS = load_perf_from_profile_summary()

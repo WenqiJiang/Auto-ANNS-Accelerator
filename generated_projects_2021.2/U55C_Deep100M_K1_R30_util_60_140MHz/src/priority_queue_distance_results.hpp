@@ -6,6 +6,47 @@
 template<typename T, const int queue_size, Order order> 
 class Priority_queue;
 
+#if K == 1
+
+class Priority_queue<single_PQ_result, 1, Collect_smallest> {
+
+    public: 
+
+        Priority_queue() {
+#pragma HLS inline
+        }
+
+        void insert_wrapper(
+            const int query_num,
+            hls::stream<int> &s_control_iter_num_per_query,
+            hls::stream<single_PQ_result> &s_input, 
+            hls::stream<single_PQ_result> &s_output) {
+            
+            single_PQ_result reg_smallest;
+
+            for (int query_id = 0; query_id < query_num; query_id++) {
+
+                int iter_num = s_control_iter_num_per_query.read();
+
+                // init
+                reg_smallest.vec_ID = -1;
+                reg_smallest.dist = LARGE_NUM;
+
+                // insert: 
+                for (int i = 0; i < iter_num; i++) {
+#pragma HLS pipeline II=1
+                    single_PQ_result reg = s_input.read();
+                    reg_smallest = reg_smallest.dist < reg.dist? reg_smallest : reg;
+                }
+
+                // write
+                s_output.write(reg_smallest);
+            }
+        }
+};
+
+#else
+
 template<const int queue_size> 
 class Priority_queue<single_PQ_result, queue_size, Collect_smallest> {
 
@@ -87,3 +128,5 @@ class Priority_queue<single_PQ_result, queue_size, Collect_smallest> {
             }
         }
 };
+
+#endif

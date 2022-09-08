@@ -51,6 +51,7 @@ Variable to be replaced (<--variable_name-->):
 #include <limits>
 #include <iostream>
 #include <fstream>
+#include <chrono>
 
 #include <stdint.h>
 #include <math.h>  
@@ -258,10 +259,10 @@ int main(int argc, char** argv)
 
     int query_num = 10000;
     size_t HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid_len = nlist * 3;
-    size_t HBM_query_vector_len = query_num * 128 < 10000 * 128? query_num * 128: 10000 * 128;
-    size_t HBM_vector_quantizer_len = nlist * 128;
-    size_t HBM_product_quantizer_len = 16 * 256 * (128 / 16);
-    size_t HBM_OPQ_matrix_len = 128 * 128;
+    size_t HBM_query_vector_len = query_num * 96 < 10000 * 96? query_num * 96: 10000 * 96;
+    size_t HBM_vector_quantizer_len = nlist * 96;
+    size_t HBM_product_quantizer_len = 16 * 256 * (96 / 16);
+    size_t HBM_OPQ_matrix_len = 96 * 96;
     size_t HBM_out_len = TOPK * query_num; 
 
     // the storage format of the meta info:
@@ -326,6 +327,7 @@ int main(int argc, char** argv)
     std::vector<float, aligned_allocator<float>> HBM_vector_quantizer(HBM_vector_quantizer_len, 0);
     std::vector<float, aligned_allocator<float>> HBM_product_quantizer(HBM_product_quantizer_len, 0);
     std::vector<float, aligned_allocator<float>> HBM_OPQ_matrix(HBM_OPQ_matrix_len, 0);
+    // uint32_t* HBM_out = new uint32_t[HBM_out_len];
     std::vector<uint32_t, aligned_allocator<uint32_t>> HBM_out(HBM_out_len, 0);
     std::vector<float, aligned_allocator<float>> HBM_meta_info(HBM_meta_info_len, 0);
     
@@ -367,21 +369,21 @@ int main(int argc, char** argv)
             std::ios::in | std::ios::binary);
 
 
-        std::string HBM_query_vector_dir_suffix = "query_vectors_float32_10000_128_raw";
+        std::string HBM_query_vector_dir_suffix = "query_vectors_float32_10000_96_raw";
         std::string HBM_query_vector_path = dir_concat(data_dir_prefix, HBM_query_vector_dir_suffix);
         std::ifstream HBM_query_vector_fstream(
             HBM_query_vector_path,
             std::ios::in | std::ios::binary);
 
     
-        std::string HBM_vector_quantizer_dir_suffix = "vector_quantizer_float32_" + std::to_string(nlist) + "_128_raw";
+        std::string HBM_vector_quantizer_dir_suffix = "vector_quantizer_float32_" + std::to_string(nlist) + "_96_raw";
         std::string HBM_vector_quantizer_dir = dir_concat(data_dir_prefix, HBM_vector_quantizer_dir_suffix);
         std::ifstream HBM_vector_quantizer_fstream(
             HBM_vector_quantizer_dir, 
             std::ios::in | std::ios::binary);
 
     
-        std::string HBM_product_quantizer_suffix_dir = "product_quantizer_float32_16_256_8_raw";
+        std::string HBM_product_quantizer_suffix_dir = "product_quantizer_float32_16_256_6_raw";
         std::string HBM_product_quantizer_dir = dir_concat(data_dir_prefix, HBM_product_quantizer_suffix_dir);
         std::ifstream HBM_product_quantizer_fstream(
             HBM_product_quantizer_dir,
@@ -389,7 +391,7 @@ int main(int argc, char** argv)
 
 
     if (OPQ_enable) {
-        std::string HBM_OPQ_matrix_suffix_dir = "OPQ_matrix_float32_128_128_raw";
+        std::string HBM_OPQ_matrix_suffix_dir = "OPQ_matrix_float32_96_96_raw";
         std::string HBM_OPQ_matrix_dir = dir_concat(data_dir_prefix, HBM_OPQ_matrix_suffix_dir);
         std::ifstream HBM_OPQ_matrix_fstream(
             HBM_OPQ_matrix_dir,
@@ -571,6 +573,7 @@ int main(int argc, char** argv)
 
     memcpy(&raw_gt_vec_ID[0], raw_gt_vec_ID_char, raw_gt_vec_ID_size);
 
+    /*
     free(HBM_embedding0_char);
     free(HBM_embedding1_char);
     free(HBM_embedding2_char);
@@ -592,6 +595,7 @@ int main(int argc, char** argv)
     free(HBM_OPQ_matrix_char);
 
     free(raw_gt_vec_ID_char);
+    */
     // free(sw_result_vec_ID_char);
     // free(sw_result_dist_char);
 
@@ -604,7 +608,7 @@ int main(int argc, char** argv)
     // 10000 rows in total, 10000 * 1001 elements, 10000 * 1001 * 4 bytes
     for (int i = 0; i < 10000; i++) {
         // gt_vec_ID[i] = raw_gt_vec_ID[i * 1001 + 1];
-        gt_vec_ID[i] = raw_gt_vec_ID[i * 1000];
+        gt_vec_ID[i] = raw_gt_vec_ID[2 + i * 1000];
     }
 
 // OPENCL HOST CODE AREA START
@@ -720,6 +724,7 @@ int main(int argc, char** argv)
 // .......................................................
     OCL_CHECK(err, cl::Buffer buffer_output(
         context, CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY, 
+        // HBM_out_size, HBM_out, &err));
         HBM_out_size, HBM_out.data(), &err));
 
 // ============================================================================
@@ -767,6 +772,9 @@ int main(int argc, char** argv)
 // ------------------------------------------------------
 //////////////////////////////   TEMPLATE START  //////////////////////////////
     std::cout << "Starting copy from Host to device..." << std::endl;
+    // cl_event event_cp[100];
+    // cl::vector<cl::Event> event_cp_vec;
+    // cl_event event_cp_array;
     OCL_CHECK(
         err, err = q.enqueueMigrateMemObjects({
         buffer_HBM_embedding0,
@@ -792,18 +800,31 @@ int main(int argc, char** argv)
 //         buffer_HBM_OPQ_matrix
 // #endif
         }, 0/* 0 means from host*/));	
+        //}, 0/* 0 means from host*/, &event_cp_vec));	
+    //cl_event event_cp_array = event_cp[0];
+    //clEnqueueWaitForEvents(q);
+    //q.enqueueWaitForEvents();
+    // kernel_wait_events.resize(0);
+    // kernel_wait_events.push_back(event_cp_vec[0]);
+    // q.wait();
+    //enqueueWaitForEvents(&event_cp_vec);
+    //clWaitForEvents(1, &event_cp_array);
+    sleep(5);
     std::cout << "Host to device finished..." << std::endl;
 //////////////////////////////   TEMPLATE END  //////////////////////////////
 // ----------------------------------------
 // Step 2: Submit Kernels for Execution
 // ----------------------------------------
+
+    std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
     OCL_CHECK(err, err = q.enqueueTask(krnl_vector_add));
-// --------------------------------------------------
-// Step 2: Copy Results from Device Global Memory to Host
-// --------------------------------------------------
+// // --------------------------------------------------
+// // Step 2: Copy Results from Device Global Memory to Host
+// // --------------------------------------------------
     OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_output},CL_MIGRATE_MEM_OBJECT_HOST));
 
     q.finish();
+    std::chrono::system_clock::time_point end = std::chrono::system_clock::now();
 // OPENCL HOST CODE AREA END
 
     // Compare the results of the Device to the simulation
@@ -832,9 +853,9 @@ int main(int argc, char** argv)
         
         // Check correctness
         count++;
-        // std::cout << "query id" << query_id << std::endl;
+        std::cout << "query id" << query_id << std::endl;
         for (int k = 0; k < TOPK; k++) {
-            // std::cout << "hw: " << hw_result_vec_ID_partial[k] << "gt: " << gt_vec_ID[query_id] << std::endl;
+            std::cout << "hw: " << hw_result_vec_ID_partial[k] << "gt: " << gt_vec_ID[query_id] << std::endl;
             if (hw_result_vec_ID_partial[k] == gt_vec_ID[query_id]) {
                 match_count++;
                 break;
@@ -844,7 +865,14 @@ int main(int argc, char** argv)
 
     float recall = ((float) match_count / (float) count);
     printf("\n=====  Recall: %.8f  =====\n", recall);
+    double durationUs = (std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
+    std::cout << "duration (sec), including dev->host cp, may have small difference with Vitis profiler:" << durationUs / 1000.0 / 1000.0 << std::endl;
+    std::cout << "QPS: " << query_num / (durationUs / 1000.0 / 1000.0) << std::endl;
+
+    // buffer_output = nullptr;
+    // keep this, otherwise if return 0, XRT has memory free bugs ...
+    exit(0);
 
     // std::cout << "TEST " << (match ? "PASSED" : "FAILED") << std::endl; 
-    return (match ? EXIT_SUCCESS : EXIT_FAILURE);
+    //return (match ? EXIT_SUCCESS : EXIT_FAILURE);
 }
