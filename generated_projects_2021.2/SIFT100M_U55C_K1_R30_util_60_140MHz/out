@@ -1,0 +1,340 @@
+mkdir -p ./xclbin
+v++ -g -t hw --platform xilinx_u55c_gen3x16_xdma_3_202210_1 --save-temps --config design.cfg -l --temp_dir ./_x.hw -o xclbin/vadd.hw.xclbin xclbin/vadd.hw.xo # 
+WARNING: [v++ 60-1603] The supplied option 'profile_kernel' is deprecated. The supplied option is replaced by an alternative feature controlled by option ''profile.*''. New options extend profiling beyond kernel and compute units to include additional interfaces.
+Option Map File Used: '/tools/Xilinx/Vitis/2022.1/data/vitis/vpp/optMap.xml'
+INFO: [v++ 82-4274] Default memory will be used for trace offload
+
+****** v++ v2022.1 (64-bit)
+  **** SW Build 3524075 on 2022-04-13-17:42:45
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+INFO: [v++ 60-1306] Additional information associated with this v++ link can be found at:
+	Reports: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/reports/link
+	Log files: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/logs/link
+Running Dispatch Server on port: 44659
+INFO: [v++ 60-1548] Creating build summary session with primary output /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xclbin.link_summary, at Thu Sep  8 16:23:16 2022
+INFO: [v++ 60-1316] Initiating connection to rulecheck server, at Thu Sep  8 16:23:16 2022
+INFO: [v++ 60-1315] Creating rulecheck session with output '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/reports/link/v++_link_vadd.hw_guidance.html', at Thu Sep  8 16:23:18 2022
+INFO: [v++ 60-895]   Target platform: /opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm
+INFO: [v++ 60-1578]   This platform contains Xilinx Shell Archive '/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/hw/hw.xsa'
+INFO: [v++ 74-78] Compiler Version string: 2022.1
+INFO: [v++ 82-4274] Default memory will be used for trace offload
+INFO: [v++ 60-629] Linking for hardware target
+INFO: [v++ 60-423]   Target device: xilinx_u55c_gen3x16_xdma_3_202210_1
+INFO: [v++ 60-1332] Run 'run_link' status: Not started
+INFO: [v++ 60-1443] [16:25:15] Run run_link: Step system_link: Started
+INFO: [v++ 60-1453] Command Line: system_link --xo /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xo -keep --config /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/syslinkConfig.ini --xpfm /opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm --target hw --output_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int --temp_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link
+INFO: [v++ 60-1454] Run Directory: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/run_link
+INFO: [SYSTEM_LINK 60-1316] Initiating connection to rulecheck server, at Thu Sep  8 16:25:17 2022
+INFO: [SYSTEM_LINK 82-70] Extracting xo v3 file /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xo
+INFO: [SYSTEM_LINK 82-53] Creating IP database /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/_sysl/.cdb/xd_ip_db.xml
+INFO: [SYSTEM_LINK 82-38] [16:26:15] build_xd_ip_db started: /tools/Xilinx/Vitis/2022.1/bin/build_xd_ip_db -ip_search 0  -sds-pf /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/hw.hpfm -clkid 0 -ip /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/iprepo/xilinx_com_hls_vadd_1_0,vadd -o /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/_sysl/.cdb/xd_ip_db.xml
+INFO: [SYSTEM_LINK 82-37] [16:26:24] build_xd_ip_db finished successfully
+Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 2269.457 ; gain = 0.000 ; free physical = 29294 ; free virtual = 173724
+INFO: [SYSTEM_LINK 82-51] Create system connectivity graph
+INFO: [SYSTEM_LINK 82-102] Applying explicit connections to the system connectivity graph: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/cfgraph/cfgen_cfgraph.xml
+INFO: [SYSTEM_LINK 82-38] [16:26:24] cfgen started: /tools/Xilinx/Vitis/2022.1/bin/cfgen  -nk vadd:1:vadd_1 -sp vadd_1.HBM_in0:HBM[0] -sp vadd_1.HBM_in1:HBM[2] -sp vadd_1.HBM_in2:HBM[3] -sp vadd_1.HBM_in3:HBM[5] -sp vadd_1.HBM_in4:HBM[6] -sp vadd_1.HBM_in5:HBM[7] -sp vadd_1.HBM_in6:HBM[9] -sp vadd_1.HBM_in7:HBM[10] -sp vadd_1.HBM_in8:HBM[11] -sp vadd_1.HBM_in9:HBM[13] -sp vadd_1.HBM_in10:HBM[14] -sp vadd_1.HBM_in11:HBM[15] -sp vadd_1.HBM_in12:HBM[17] -sp vadd_1.HBM_in13:HBM[18] -sp vadd_1.HBM_in14:HBM[20] -sp vadd_1.HBM_in15:HBM[21] -sp vadd_1.HBM_in16:HBM[22] -sp vadd_1.HBM_in17:HBM[24] -sp vadd_1.HBM_in18:HBM[25] -sp vadd_1.HBM_meta_info:HBM[26] -sp vadd_1.HBM_vector_quantizer:HBM[28] -sp vadd_1.HBM_out:HBM[29] -dmclkid 0 -r /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/_sysl/.cdb/xd_ip_db.xml -o /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/cfgraph/cfgen_cfgraph.xml
+INFO: [CFGEN 83-0] Kernel Specs: 
+INFO: [CFGEN 83-0]   kernel: vadd, num: 1  {vadd_1}
+INFO: [CFGEN 83-0] Port Specs: 
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in0, sptag: HBM[0]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in1, sptag: HBM[2]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in2, sptag: HBM[3]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in3, sptag: HBM[5]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in4, sptag: HBM[6]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in5, sptag: HBM[7]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in6, sptag: HBM[9]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in7, sptag: HBM[10]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in8, sptag: HBM[11]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in9, sptag: HBM[13]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in10, sptag: HBM[14]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in11, sptag: HBM[15]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in12, sptag: HBM[17]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in13, sptag: HBM[18]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in14, sptag: HBM[20]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in15, sptag: HBM[21]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in16, sptag: HBM[22]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in17, sptag: HBM[24]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in18, sptag: HBM[25]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_meta_info, sptag: HBM[26]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_vector_quantizer, sptag: HBM[28]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_out, sptag: HBM[29]
+INFO: [SYSTEM_LINK 82-37] [16:26:33] cfgen finished successfully
+Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 2269.457 ; gain = 0.000 ; free physical = 29515 ; free virtual = 174101
+INFO: [SYSTEM_LINK 82-52] Create top-level block diagram
+INFO: [SYSTEM_LINK 82-38] [16:26:33] cf2bd started: /tools/Xilinx/Vitis/2022.1/bin/cf2bd  --linux --trace_buffer 1024 --input_file /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/cfgraph/cfgen_cfgraph.xml --ip_db /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/_sysl/.cdb/xd_ip_db.xml --cf_name dr --working_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/_sysl/.xsd --temp_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link --output_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int --target_bd ulp.bd
+INFO: [CF2BD 82-31] Launching cf2xd: cf2xd -linux -trace-buffer 1024 -i /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/cfgraph/cfgen_cfgraph.xml -r /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/_sysl/.cdb/xd_ip_db.xml -o dr.xml
+INFO: [CF2BD 82-28] cf2xd finished successfully
+INFO: [CF2BD 82-31] Launching cf_xsd: cf_xsd -disable-address-gen -bd ulp.bd -dn dr -dp /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/_sysl/.xsd
+INFO: [CF2BD 82-28] cf_xsd finished successfully
+INFO: [SYSTEM_LINK 82-37] [16:26:38] cf2bd finished successfully
+Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 2269.457 ; gain = 0.000 ; free physical = 30145 ; free virtual = 174792
+INFO: [v++ 60-1441] [16:26:38] Run run_link: Step system_link: Completed
+Time (s): cpu = 00:00:31 ; elapsed = 00:01:23 . Memory (MB): peak = 2234.488 ; gain = 0.000 ; free physical = 30347 ; free virtual = 174993
+INFO: [v++ 60-1443] [16:26:38] Run run_link: Step cf2sw: Started
+INFO: [v++ 60-1453] Command Line: cf2sw -sdsl /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/sdsl.dat -rtd /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/cf2sw.rtd -nofilter /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/cf2sw_full.rtd -xclbin /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/xclbin_orig.xml -o /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/xclbin_orig.1.xml
+INFO: [v++ 60-1454] Run Directory: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/run_link
+INFO: [v++ 60-1441] [16:26:45] Run run_link: Step cf2sw: Completed
+Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2234.488 ; gain = 0.000 ; free physical = 30833 ; free virtual = 175548
+INFO: [v++ 60-1443] [16:26:45] Run run_link: Step rtd2_system_diagram: Started
+INFO: [v++ 60-1453] Command Line: rtd2SystemDiagram
+INFO: [v++ 60-1454] Run Directory: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/run_link
+INFO: [v++ 60-1441] [16:26:46] Run run_link: Step rtd2_system_diagram: Completed
+Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:01 . Memory (MB): peak = 2234.488 ; gain = 0.000 ; free physical = 30557 ; free virtual = 175278
+INFO: [v++ 60-1443] [16:26:46] Run run_link: Step vpl: Started
+INFO: [v++ 60-1453] Command Line: vpl -t hw -f xilinx_u55c_gen3x16_xdma_3_202210_1 -g --kernel_frequency 140 --remote_ip_cache /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/.ipcache -s --trace_memory HBM[0] --profile_kernel data:all:all:all --output_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int --log_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/logs/link --report_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/reports/link --config /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/vplConfig.ini -k /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/kernel_info.dat --webtalk_flag Vitis --temp_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link --no-info --iprepo /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/xo/ip_repo/xilinx_com_hls_vadd_1_0 --messageDb /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/run_link/vpl.pb /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/dr.bd.tcl
+INFO: [v++ 60-1454] Run Directory: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/run_link
+
+****** vpl v2022.1 (64-bit)
+  **** SW Build 3524075 on 2022-04-13-17:42:45
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+INFO: [VPL 60-839] Read in kernel information from file '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/kernel_info.dat'.
+INFO: [VPL 74-78] Compiler Version string: 2022.1
+INFO: [VPL 60-423]   Target device: xilinx_u55c_gen3x16_xdma_3_202210_1
+INFO: [VPL 82-4282] Memory used for trace offload is HBM 0 
+INFO: [VPL 60-1032] Extracting hardware platform to /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/vivado/vpl/.local/hw_platform
+[16:27:03] Run vpl: Step create_project: Started
+Creating Vivado project.
+[16:27:08] Run vpl: Step create_project: Completed
+[16:27:08] Run vpl: Step create_bd: Started
+[16:28:15] Run vpl: Step create_bd: Completed
+[16:28:15] Run vpl: Step update_bd: Started
+WARNING: [VPL-1] The use of profile options turned on trace, which uses a memory resource in one SLR; however kernels or compute units could potentially be located in multiple SLRs. This may impact timing due to SLR crossing. To improve timing, please consider implementing trace memory in every SLRs used via the linker option: --profile.trace_memory <memory>:<SLR>. SLRs present on the design : SLR0 SLR1 SLR2
+[16:29:13] Run vpl: Step update_bd: Completed
+[16:29:13] Run vpl: Step generate_target: Started
+[16:30:30] Run vpl: Step generate_target: RUNNING...
+[16:31:48] Run vpl: Step generate_target: RUNNING...
+[16:33:09] Run vpl: Step generate_target: RUNNING...
+[16:33:40] Run vpl: Step generate_target: Completed
+[16:33:40] Run vpl: Step config_hw_runs: Started
+[16:33:55] Run vpl: Step config_hw_runs: Completed
+[16:33:55] Run vpl: Step synth: Started
+[16:36:12] Block-level synthesis in progress, 0 of 55 jobs complete, 8 jobs running.
+[16:36:46] Block-level synthesis in progress, 0 of 55 jobs complete, 8 jobs running.
+[16:37:19] Block-level synthesis in progress, 8 of 55 jobs complete, 3 jobs running.
+[16:37:52] Block-level synthesis in progress, 21 of 55 jobs complete, 3 jobs running.
+[16:38:26] Block-level synthesis in progress, 34 of 55 jobs complete, 3 jobs running.
+[16:38:59] Block-level synthesis in progress, 46 of 55 jobs complete, 4 jobs running.
+[16:39:32] Block-level synthesis in progress, 54 of 55 jobs complete, 1 job running.
+[16:40:04] Block-level synthesis in progress, 54 of 55 jobs complete, 1 job running.
+[16:40:37] Block-level synthesis in progress, 54 of 55 jobs complete, 1 job running.
+[16:41:10] Block-level synthesis in progress, 54 of 55 jobs complete, 1 job running.
+[16:41:42] Block-level synthesis in progress, 54 of 55 jobs complete, 1 job running.
+[16:42:12] Run vpl: Step synth: Completed
+[16:42:12] Run vpl: Step impl: Started
+[17:20:30] Finished 2nd of 6 tasks (FPGA linking synthesized kernels to platform). Elapsed time: 00h 53m 41s 
+
+[17:20:30] Starting logic optimization..
+[17:23:49] Phase 1 Retarget
+[17:25:28] Phase 2 Constant propagation
+[17:26:02] Phase 3 Sweep
+[17:28:48] Phase 4 BUFG optimization
+[17:29:21] Phase 5 Shift Register Optimization
+[17:29:54] Phase 6 Post Processing Netlist
+[17:36:33] Finished 3rd of 6 tasks (FPGA logic optimization). Elapsed time: 00h 16m 03s 
+
+[17:36:33] Starting logic placement..
+[17:38:13] Phase 1 Placer Initialization
+[17:38:13] Phase 1.1 Placer Initialization Netlist Sorting
+[17:43:12] Phase 1.2 IO Placement/ Clock Placement/ Build Placer Device
+[17:47:05] Phase 1.3 Build Placer Netlist Model
+[17:55:22] Phase 1.4 Constrain Clocks/Macros
+[17:57:35] Phase 2 Global Placement
+[17:57:35] Phase 2.1 Floorplanning
+[18:01:28] Phase 2.1.1 Partition Driven Placement
+[18:01:28] Phase 2.1.1.1 PBP: Partition Driven Placement
+[18:08:09] Phase 2.1.1.2 PBP: Clock Region Placement
+[18:10:24] Phase 2.1.1.3 PBP: Discrete Incremental
+[18:10:57] Phase 2.1.1.4 PBP: Compute Congestion
+[18:10:57] Phase 2.1.1.5 PBP: Macro Placement
+[18:11:31] Phase 2.1.1.6 PBP: UpdateTiming
+[18:13:12] Phase 2.1.1.7 PBP: Add part constraints
+[18:13:12] Phase 2.2 Physical Synthesis After Floorplan
+[18:15:26] Phase 2.3 Update Timing before SLR Path Opt
+[18:15:26] Phase 2.4 Post-Processing in Floorplanning
+[18:15:26] Phase 2.5 Global Placement Core
+[18:44:32] Phase 2.5.1 Physical Synthesis In Placer
+[18:52:22] Phase 3 Detail Placement
+[18:53:30] Phase 3.1 Commit Multi Column Macros
+[18:54:03] Phase 3.2 Commit Most Macros & LUTRAMs
+[18:59:04] Phase 3.3 Small Shape DP
+[18:59:04] Phase 3.3.1 Small Shape Clustering
+[18:59:38] Phase 3.3.2 Flow Legalize Slice Clusters
+[19:00:12] Phase 3.3.3 Slice Area Swap
+[19:00:12] Phase 3.3.3.1 Slice Area Swap Initial
+[19:05:14] Phase 3.4 Place Remaining
+[19:05:14] Phase 3.5 Re-assign LUT pins
+[19:06:55] Phase 3.6 Pipeline Register Optimization
+[19:07:28] Phase 3.7 Fast Optimization
+[19:10:49] Phase 4 Post Placement Optimization and Clean-Up
+[19:10:49] Phase 4.1 Post Commit Optimization
+[19:16:58] Phase 4.1.1 Post Placement Optimization
+[19:19:12] Phase 4.1.1.1 BUFG Insertion
+[19:19:12] Phase 1 Physical Synthesis Initialization
+[19:31:31] Phase 4.1.1.2 BUFG Replication
+[19:32:38] Phase 4.1.1.3 Post Placement Timing Optimization
+[19:44:23] Phase 4.1.1.4 Replication
+[19:48:17] Phase 4.2 Post Placement Cleanup
+[19:48:17] Phase 4.3 Placer Reporting
+[19:48:17] Phase 4.3.1 Print Estimated Congestion
+[19:48:51] Phase 4.4 Final Placement Cleanup
+[20:00:02] Finished 4th of 6 tasks (FPGA logic placement). Elapsed time: 02h 23m 28s 
+
+[20:00:02] Starting logic routing..
+[20:05:38] Phase 1 Build RT Design
+[20:13:27] Phase 2 Router Initialization
+[20:13:27] Phase 2.1 Fix Topology Constraints
+[20:14:01] Phase 2.2 Pre Route Cleanup
+[20:15:42] Phase 2.3 Global Clock Net Routing
+[20:18:30] Phase 2.4 Update Timing
+[20:29:09] Phase 2.5 Update Timing for Bus Skew
+[20:29:09] Phase 2.5.1 Update Timing
+[20:34:13] Phase 3 Initial Routing
+[20:34:13] Phase 3.1 Global Routing
+[20:34:13] Phase 3.1.1 SLL Assignment
+[20:42:44] Phase 4 Rip-up And Reroute
+[20:42:44] Phase 4.1 Global Iteration 0
+[21:38:34] Phase 4.2 Global Iteration 1
+[21:54:20] Phase 4.3 Global Iteration 2
+[22:05:04] Phase 4.4 Global Iteration 3
+[22:13:34] Phase 5 Delay and Skew Optimization
+[22:13:34] Phase 5.1 Delay CleanUp
+[22:13:34] Phase 5.1.1 Update Timing
+[22:16:57] Phase 5.1.2 Update Timing
+[22:20:54] Phase 5.2 Clock Skew Optimization
+[22:22:35] Phase 6 Post Hold Fix
+[22:22:35] Phase 6.1 Hold Fix Iter
+[22:22:35] Phase 6.1.1 Update Timing
+[22:27:39] Phase 7 Route finalize
+[22:28:46] Phase 8 Verifying routed nets
+[22:29:54] Phase 9 Depositing Routes
+[22:32:08] Phase 10 Leaf Clock Prog Delay Opt
+[22:38:19] Phase 10.1 Delay CleanUp
+[22:38:19] Phase 10.1.1 Update Timing
+[22:41:41] Phase 10.1.2 Update Timing
+[22:45:03] Phase 10.2 Hold Fix Iter
+[22:45:03] Phase 10.2.1 Update Timing
+[22:54:36] Phase 11 Depositing Routes
+[22:56:51] Phase 12 Resolve XTalk
+[22:57:59] Phase 13 Post Router Timing
+[23:02:29] Phase 14 Physical Synthesis in Router
+[23:02:29] Phase 14.1 Physical Synthesis Initialization
+[23:16:33] Phase 14.2 Critical Path Optimization
+[23:28:21] Phase 15 Route finalize
+[23:29:29] Finished 5th of 6 tasks (FPGA routing). Elapsed time: 03h 29m 27s 
+
+[23:29:29] Starting bitstream generation..
+[00:08:00] Creating bitmap...
+[00:16:28] Writing bitstream ./level0_i_ulp_my_rm_partial.bit...
+[00:16:28] Finished 6th of 6 tasks (FPGA bitstream generation). Elapsed time: 00h 46m 59s 
+[00:17:07] Run vpl: Step impl: Completed
+[00:17:10] Run vpl: FINISHED. Run Status: impl Complete!
+INFO: [v++ 60-1441] [00:17:12] Run run_link: Step vpl: Completed
+Time (s): cpu = 00:06:42 ; elapsed = 07:50:26 . Memory (MB): peak = 2234.488 ; gain = 0.000 ; free physical = 83833 ; free virtual = 215431
+INFO: [v++ 60-1443] [00:17:12] Run run_link: Step rtdgen: Started
+INFO: [v++ 60-1453] Command Line: rtdgen
+INFO: [v++ 60-1454] Run Directory: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/run_link
+INFO: [v++ 60-991] clock name 'ulp_ucs/aclk_kernel_01' (clock ID '1') is being mapped to clock name 'KERNEL_CLK' in the xclbin
+INFO: [v++ 60-991] clock name 'ulp_ucs/aclk_kernel_00' (clock ID '0') is being mapped to clock name 'DATA_CLK' in the xclbin
+INFO: [v++ 60-991] clock name 'hbm_aclk' (clock ID '') is being mapped to clock name 'hbm_aclk' in the xclbin
+INFO: [v++ 60-1230] The compiler selected the following frequencies for the runtime controllable kernel clock(s) and scalable system clock(s): System (SYSTEM) clock: hbm_aclk = 441, Kernel (KERNEL) clock: ulp_ucs/aclk_kernel_01 = 500, Kernel (DATA) clock: ulp_ucs/aclk_kernel_00 = 140
+INFO: [v++ 60-1453] Command Line: cf2sw -force-enable-memory HBM[0] -a /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/address_map.xml -sdsl /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/sdsl.dat -xclbin /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/xclbin_orig.xml -rtd /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw.rtd -o /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw.xml
+INFO: [v++ 60-1652] Cf2sw returned exit code: 0
+INFO: [v++ 60-1441] [00:17:18] Run run_link: Step rtdgen: Completed
+Time (s): cpu = 00:00:06 ; elapsed = 00:00:06 . Memory (MB): peak = 2234.488 ; gain = 0.000 ; free physical = 87922 ; free virtual = 219514
+INFO: [v++ 60-1443] [00:17:18] Run run_link: Step xclbinutil: Started
+INFO: [v++ 60-1453] Command Line: xclbinutil --add-section DEBUG_IP_LAYOUT:JSON:/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/debug_ip_layout.rtd --add-section BITSTREAM:RAW:/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/partial.bit --force --target hw --key-value SYS:dfx_enable:true --add-section :JSON:/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw.rtd --append-section :JSON:/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/appendSection.rtd --add-section CLOCK_FREQ_TOPOLOGY:JSON:/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw_xml.rtd --add-section BUILD_METADATA:JSON:/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw_build.rtd --add-section EMBEDDED_METADATA:RAW:/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw.xml --add-section SYSTEM_METADATA:RAW:/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/systemDiagramModelSlrBaseAddress.json --key-value SYS:PlatformVBNV:xilinx_u55c_gen3x16_xdma_3_202210_1 --output /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xclbin
+INFO: [v++ 60-1454] Run Directory: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/run_link
+XRT Build Version: 2.13.466 (2022.1)
+       Build Date: 2022-04-14 17:43:11
+          Hash ID: f5505e402c2ca1ffe45eb6d3a9399b23a0dc8776
+Creating a default 'in-memory' xclbin image.
+
+Section: 'DEBUG_IP_LAYOUT'(9) was successfully added.
+Size   : 3608 bytes
+Format : JSON
+File   : '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/debug_ip_layout.rtd'
+
+Section: 'BITSTREAM'(0) was successfully added.
+Size   : 77317170 bytes
+Format : RAW
+File   : '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/partial.bit'
+
+Section: 'MEM_TOPOLOGY'(6) was successfully added.
+Format : JSON
+File   : 'mem_topology'
+
+Section: 'IP_LAYOUT'(8) was successfully added.
+Format : JSON
+File   : 'ip_layout'
+
+Section: 'CONNECTIVITY'(7) was successfully added.
+Format : JSON
+File   : 'connectivity'
+
+Section: 'CLOCK_FREQ_TOPOLOGY'(11) was successfully added.
+Size   : 410 bytes
+Format : JSON
+File   : '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw_xml.rtd'
+
+Section: 'BUILD_METADATA'(14) was successfully added.
+Size   : 9004 bytes
+Format : JSON
+File   : '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw_build.rtd'
+
+Section: 'EMBEDDED_METADATA'(2) was successfully added.
+Size   : 1064705 bytes
+Format : RAW
+File   : '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw.xml'
+
+Section: 'SYSTEM_METADATA'(22) was successfully added.
+Size   : 59993 bytes
+Format : RAW
+File   : '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/int/systemDiagramModelSlrBaseAddress.json'
+
+Section: 'PARTITION_METADATA'(20) was successfully appended to.
+Format : JSON
+File   : 'partition_metadata'
+
+Section: 'IP_LAYOUT'(8) was successfully appended to.
+Format : JSON
+File   : 'ip_layout'
+Successfully wrote (78497053 bytes) to the output file: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xclbin
+Leaving xclbinutil.
+INFO: [v++ 60-1441] [00:17:19] Run run_link: Step xclbinutil: Completed
+Time (s): cpu = 00:00:00.14 ; elapsed = 00:00:01 . Memory (MB): peak = 2234.488 ; gain = 0.000 ; free physical = 87663 ; free virtual = 219328
+INFO: [v++ 60-1443] [00:17:19] Run run_link: Step xclbinutilinfo: Started
+INFO: [v++ 60-1453] Command Line: xclbinutil --quiet --force --info /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xclbin.info --input /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xclbin
+INFO: [v++ 60-1454] Run Directory: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/run_link
+INFO: [v++ 60-1441] [00:17:20] Run run_link: Step xclbinutilinfo: Completed
+Time (s): cpu = 00:00:00.77 ; elapsed = 00:00:00.89 . Memory (MB): peak = 2234.488 ; gain = 0.000 ; free physical = 87578 ; free virtual = 219244
+INFO: [v++ 60-1443] [00:17:20] Run run_link: Step generate_sc_driver: Started
+INFO: [v++ 60-1453] Command Line: 
+INFO: [v++ 60-1454] Run Directory: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/link/run_link
+INFO: [v++ 60-1441] [00:17:20] Run run_link: Step generate_sc_driver: Completed
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.01 . Memory (MB): peak = 2234.488 ; gain = 0.000 ; free physical = 87570 ; free virtual = 219234
+INFO: [v++ 60-244] Generating system estimate report...
+INFO: [v++ 60-1092] Generated system estimate report: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/reports/link/system_estimate_vadd.hw.xtxt
+INFO: [v++ 60-586] Created /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.ltx
+INFO: [v++ 60-586] Created xclbin/vadd.hw.xclbin
+INFO: [v++ 60-1307] Run completed. Additional information can be found in:
+	Guidance: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/reports/link/v++_link_vadd.hw_guidance.html
+	Timing Report: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/reports/link/imp/impl_1_hw_bb_locked_timing_summary_routed.rpt
+	Vivado Log: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/logs/link/vivado.log
+	Steps Log File: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/_x.hw/logs/link/link.steps.log
+
+INFO: [v++ 60-2343] Use the vitis_analyzer tool to visualize and navigate the relevant reports. Run the following command. 
+    vitis_analyzer /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_SIFT100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xclbin.link_summary 
+INFO: [v++ 60-791] Total elapsed time: 7h 54m 36s
+INFO: [v++ 60-1653] Closing dispatch client.
+/tools/Xilinx//Vitis/2022.1/bin/emconfigutil --nd 1 --od . --platform xilinx_u55c_gen3x16_xdma_3_202210_1
+
+****** configutil v2022.1 (64-bit)
+  **** SW Build 3524075 on 2022-04-13-17:42:45
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+INFO: [ConfigUtil 60-895]   Target platform: /opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm
+INFO: [ConfigUtil 60-1578]   This platform contains Xilinx Shell Archive '/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/hw/hw.xsa'
+INFO: [ConfigUtil 60-1032] Extracting hardware platform to .
+emulation configuration file `emconfig.json` is created in . directory 

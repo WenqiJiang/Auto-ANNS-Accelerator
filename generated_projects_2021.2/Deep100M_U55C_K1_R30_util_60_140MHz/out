@@ -1,0 +1,696 @@
+g++ -g -std=c++11 -I/home/wejiang/opt/xilinx/xrt/include -o host src/host.cpp -L/home/wejiang/opt/xilinx/xrt/lib -lxilinxopencl -pthread -lrt
+Compiled Host Executable: host
+mkdir -p ./xclbin
+v++ -g -t hw --platform xilinx_u55c_gen3x16_xdma_3_202210_1 --save-temps --config design.cfg -c -k vadd --temp_dir ./_x.hw -o xclbin/vadd.hw.xo src/vadd.cpp
+WARNING: [v++ 60-1603] The supplied option 'profile_kernel' is deprecated. The supplied option is replaced by an alternative feature controlled by option ''profile.*''. New options extend profiling beyond kernel and compute units to include additional interfaces.
+Option Map File Used: '/tools/Xilinx/Vitis/2022.1/data/vitis/vpp/optMap.xml'
+INFO: [v++ 82-4274] Default memory will be used for trace offload
+
+****** v++ v2022.1 (64-bit)
+  **** SW Build 3524075 on 2022-04-13-17:42:45
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+INFO: [v++ 60-1306] Additional information associated with this v++ compile can be found at:
+	Reports: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/reports/vadd.hw
+	Log files: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/logs/vadd.hw
+Running Dispatch Server on port: 33339
+INFO: [v++ 60-1548] Creating build summary session with primary output /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xo.compile_summary, at Thu Sep  8 11:01:24 2022
+INFO: [v++ 60-1316] Initiating connection to rulecheck server, at Thu Sep  8 11:01:24 2022
+INFO: [v++ 60-1315] Creating rulecheck session with output '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/reports/vadd.hw/v++_compile_vadd.hw_guidance.html', at Thu Sep  8 11:01:25 2022
+INFO: [v++ 60-895]   Target platform: /opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm
+INFO: [v++ 60-1578]   This platform contains Xilinx Shell Archive '/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/hw/hw.xsa'
+INFO: [v++ 74-78] Compiler Version string: 2022.1
+INFO: [v++ 60-585] Compiling for hardware target
+INFO: [v++ 60-423]   Target device: xilinx_u55c_gen3x16_xdma_3_202210_1
+INFO: [v++ 60-242] Creating kernel: 'vadd'
+INFO: [v++ 60-1616] Creating a HLS clock using kernel_frequency option: 140 MHz
+
+===>The following messages were generated while  performing high-level synthesis for kernel: vadd Log file: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/vadd.hw/vadd/vitis_hls.log :
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_104_1'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_104_1'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_118_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_118_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_130_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_130_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_146_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 4, loop 'VITIS_LOOP_146_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_204_1'.
+INFO: [v++ 200-1470] Pipelining result : Target II = NA, Final II = 1, Depth = 3, loop 'VITIS_LOOP_204_1'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_29_1_VITIS_LOOP_30_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_29_1_VITIS_LOOP_30_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_46_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_46_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_52_5_VITIS_LOOP_54_6'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 20, loop 'VITIS_LOOP_52_5_VITIS_LOOP_54_6'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_73_7'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_73_7'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_183_1_VITIS_LOOP_185_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_183_1_VITIS_LOOP_185_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_59_1_VITIS_LOOP_60_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 2, Depth = 3, loop 'VITIS_LOOP_59_1_VITIS_LOOP_60_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_82_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_82_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_90_5_VITIS_LOOP_95_6'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 10, loop 'VITIS_LOOP_90_5_VITIS_LOOP_95_6'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 64, loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 16, Final II = 16, Depth = 34, loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 2, Depth = 3, loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_270_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_270_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 10, loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 64, loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 16, Final II = 16, Depth = 34, loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 2, Depth = 3, loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_270_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_270_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 10, loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 64, loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 16, Final II = 16, Depth = 34, loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 2, Depth = 3, loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_270_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_270_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 10, loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 64, loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 16, Final II = 16, Depth = 34, loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 2, Depth = 3, loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_270_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_270_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 10, loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 64, loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 16, Final II = 16, Depth = 34, loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 2, Depth = 3, loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_270_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_270_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 10, loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 64, loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 16, Final II = 16, Depth = 34, loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 2, Depth = 3, loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_270_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_270_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 10, loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 64, loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 16, Final II = 16, Depth = 34, loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 2, Depth = 3, loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_270_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_270_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 10, loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 64, loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 16, Final II = 16, Depth = 34, loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 2, Depth = 3, loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_270_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_270_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 10, loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 64, loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 16, Final II = 16, Depth = 34, loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 2, Depth = 3, loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_270_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_270_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 10, loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 64, loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 16, Final II = 16, Depth = 34, loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 2, Depth = 3, loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_270_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_270_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 10, loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 64, loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 16, Final II = 16, Depth = 34, loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 2, Depth = 3, loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_270_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_270_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 10, loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 64, loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 16, Final II = 16, Depth = 34, loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 2, Depth = 3, loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_270_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_270_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 10, loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 64, loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 16, Final II = 16, Depth = 34, loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 2, Depth = 3, loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_270_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_270_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 10, loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 64, loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 16, Final II = 16, Depth = 34, loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 2, Depth = 3, loop 'VITIS_LOOP_249_1_VITIS_LOOP_250_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_270_4'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 2, loop 'VITIS_LOOP_270_4'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 10, loop 'VITIS_LOOP_278_5_VITIS_LOOP_283_6'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 2, Final II = 2, Depth = 64, loop 'VITIS_LOOP_596_1_VITIS_LOOP_598_2_VITIS_LOOP_601_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 16, Final II = 16, Depth = 34, loop 'VITIS_LOOP_658_1_VITIS_LOOP_661_2'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 1, Depth = 3, loop 'VITIS_LOOP_690_1_VITIS_LOOP_693_2_VITIS_LOOP_696_3'
+INFO: [v++ 204-61] Pipelining loop 'VITIS_LOOP_433_1_VITIS_LOOP_434_2'.
+INFO: [v++ 17-14] Message 'v++ 204-61' appears 100 times and further instances of the messages will be disabled.
+INFO: [v++ 200-1470] Pipelining result : Target II = 1, Final II = 2, Depth = 3, loop 'VITIS_LOOP_433_1_VITIS_LOOP_434_2'
+INFO: [v++ 17-14] Message 'v++ 200-1470' appears 100 times and further instances of the messages will be disabled.
+INFO: [v++ 200-790] **** Loop Constraint Status: All loop constraints were NOT satisfied.
+INFO: [v++ 200-789] **** Estimated Fmax: 191.78 MHz
+INFO: [v++ 60-594] Finished kernel compilation
+INFO: [v++ 60-244] Generating system estimate report...
+INFO: [v++ 60-1092] Generated system estimate report: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/reports/vadd.hw/system_estimate_vadd.hw.xtxt
+INFO: [v++ 60-586] Created xclbin/vadd.hw.xo
+INFO: [v++ 60-2343] Use the vitis_analyzer tool to visualize and navigate the relevant reports. Run the following command. 
+    vitis_analyzer /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xo.compile_summary 
+INFO: [v++ 60-791] Total elapsed time: 0h 56m 26s
+INFO: [v++ 60-1653] Closing dispatch client.
+mkdir -p ./xclbin
+v++ -g -t hw --platform xilinx_u55c_gen3x16_xdma_3_202210_1 --save-temps --config design.cfg -l --temp_dir ./_x.hw -o xclbin/vadd.hw.xclbin xclbin/vadd.hw.xo # 
+WARNING: [v++ 60-1603] The supplied option 'profile_kernel' is deprecated. The supplied option is replaced by an alternative feature controlled by option ''profile.*''. New options extend profiling beyond kernel and compute units to include additional interfaces.
+Option Map File Used: '/tools/Xilinx/Vitis/2022.1/data/vitis/vpp/optMap.xml'
+INFO: [v++ 82-4274] Default memory will be used for trace offload
+
+****** v++ v2022.1 (64-bit)
+  **** SW Build 3524075 on 2022-04-13-17:42:45
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+INFO: [v++ 60-1306] Additional information associated with this v++ link can be found at:
+	Reports: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/reports/link
+	Log files: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/logs/link
+Running Dispatch Server on port: 41871
+INFO: [v++ 60-1548] Creating build summary session with primary output /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xclbin.link_summary, at Thu Sep  8 11:57:53 2022
+INFO: [v++ 60-1316] Initiating connection to rulecheck server, at Thu Sep  8 11:57:53 2022
+INFO: [v++ 60-1315] Creating rulecheck session with output '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/reports/link/v++_link_vadd.hw_guidance.html', at Thu Sep  8 11:57:55 2022
+INFO: [v++ 60-895]   Target platform: /opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm
+INFO: [v++ 60-1578]   This platform contains Xilinx Shell Archive '/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/hw/hw.xsa'
+INFO: [v++ 74-78] Compiler Version string: 2022.1
+INFO: [v++ 82-4274] Default memory will be used for trace offload
+INFO: [v++ 60-629] Linking for hardware target
+INFO: [v++ 60-423]   Target device: xilinx_u55c_gen3x16_xdma_3_202210_1
+INFO: [v++ 60-1332] Run 'run_link' status: Not started
+INFO: [v++ 60-1443] [11:58:55] Run run_link: Step system_link: Started
+INFO: [v++ 60-1453] Command Line: system_link --xo /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xo -keep --config /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/syslinkConfig.ini --xpfm /opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm --target hw --output_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int --temp_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link
+INFO: [v++ 60-1454] Run Directory: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/run_link
+INFO: [SYSTEM_LINK 60-1316] Initiating connection to rulecheck server, at Thu Sep  8 11:58:56 2022
+INFO: [SYSTEM_LINK 82-70] Extracting xo v3 file /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xo
+INFO: [SYSTEM_LINK 82-53] Creating IP database /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/_sysl/.cdb/xd_ip_db.xml
+INFO: [SYSTEM_LINK 82-38] [11:59:31] build_xd_ip_db started: /tools/Xilinx/Vitis/2022.1/bin/build_xd_ip_db -ip_search 0  -sds-pf /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/hw.hpfm -clkid 0 -ip /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/iprepo/xilinx_com_hls_vadd_1_0,vadd -o /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/_sysl/.cdb/xd_ip_db.xml
+INFO: [SYSTEM_LINK 82-37] [11:59:40] build_xd_ip_db finished successfully
+Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 2269.457 ; gain = 0.000 ; free physical = 205000 ; free virtual = 298501
+INFO: [SYSTEM_LINK 82-51] Create system connectivity graph
+INFO: [SYSTEM_LINK 82-102] Applying explicit connections to the system connectivity graph: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/cfgraph/cfgen_cfgraph.xml
+INFO: [SYSTEM_LINK 82-38] [11:59:40] cfgen started: /tools/Xilinx/Vitis/2022.1/bin/cfgen  -nk vadd:1:vadd_1 -sp vadd_1.HBM_in0:HBM[0] -sp vadd_1.HBM_in1:HBM[3] -sp vadd_1.HBM_in2:HBM[5] -sp vadd_1.HBM_in3:HBM[8] -sp vadd_1.HBM_in4:HBM[10] -sp vadd_1.HBM_in5:HBM[13] -sp vadd_1.HBM_in6:HBM[15] -sp vadd_1.HBM_in7:HBM[18] -sp vadd_1.HBM_in8:HBM[20] -sp vadd_1.HBM_meta_info:HBM[23] -sp vadd_1.HBM_vector_quantizer:HBM[25] -sp vadd_1.HBM_out:HBM[28] -dmclkid 0 -r /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/_sysl/.cdb/xd_ip_db.xml -o /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/cfgraph/cfgen_cfgraph.xml
+INFO: [CFGEN 83-0] Kernel Specs: 
+INFO: [CFGEN 83-0]   kernel: vadd, num: 1  {vadd_1}
+INFO: [CFGEN 83-0] Port Specs: 
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in0, sptag: HBM[0]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in1, sptag: HBM[3]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in2, sptag: HBM[5]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in3, sptag: HBM[8]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in4, sptag: HBM[10]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in5, sptag: HBM[13]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in6, sptag: HBM[15]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in7, sptag: HBM[18]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_in8, sptag: HBM[20]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_meta_info, sptag: HBM[23]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_vector_quantizer, sptag: HBM[25]
+INFO: [CFGEN 83-0]   kernel: vadd_1, k_port: HBM_out, sptag: HBM[28]
+INFO: [SYSTEM_LINK 82-37] [11:59:49] cfgen finished successfully
+Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 2269.457 ; gain = 0.000 ; free physical = 204929 ; free virtual = 298440
+INFO: [SYSTEM_LINK 82-52] Create top-level block diagram
+INFO: [SYSTEM_LINK 82-38] [11:59:49] cf2bd started: /tools/Xilinx/Vitis/2022.1/bin/cf2bd  --linux --trace_buffer 1024 --input_file /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/cfgraph/cfgen_cfgraph.xml --ip_db /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/_sysl/.cdb/xd_ip_db.xml --cf_name dr --working_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/_sysl/.xsd --temp_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link --output_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int --target_bd ulp.bd
+INFO: [CF2BD 82-31] Launching cf2xd: cf2xd -linux -trace-buffer 1024 -i /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/cfgraph/cfgen_cfgraph.xml -r /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/_sysl/.cdb/xd_ip_db.xml -o dr.xml
+INFO: [CF2BD 82-28] cf2xd finished successfully
+INFO: [CF2BD 82-31] Launching cf_xsd: cf_xsd -disable-address-gen -bd ulp.bd -dn dr -dp /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/sys_link/_sysl/.xsd
+INFO: [CF2BD 82-28] cf_xsd finished successfully
+INFO: [SYSTEM_LINK 82-37] [11:59:54] cf2bd finished successfully
+Time (s): cpu = 00:00:04 ; elapsed = 00:00:05 . Memory (MB): peak = 2269.457 ; gain = 0.000 ; free physical = 204917 ; free virtual = 298435
+INFO: [v++ 60-1441] [11:59:54] Run run_link: Step system_link: Completed
+Time (s): cpu = 00:00:30 ; elapsed = 00:00:59 . Memory (MB): peak = 2218.641 ; gain = 0.000 ; free physical = 205052 ; free virtual = 298573
+INFO: [v++ 60-1443] [11:59:54] Run run_link: Step cf2sw: Started
+INFO: [v++ 60-1453] Command Line: cf2sw -sdsl /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/sdsl.dat -rtd /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/cf2sw.rtd -nofilter /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/cf2sw_full.rtd -xclbin /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/xclbin_orig.xml -o /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/xclbin_orig.1.xml
+INFO: [v++ 60-1454] Run Directory: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/run_link
+INFO: [v++ 60-1441] [12:00:00] Run run_link: Step cf2sw: Completed
+Time (s): cpu = 00:00:06 ; elapsed = 00:00:06 . Memory (MB): peak = 2218.641 ; gain = 0.000 ; free physical = 205019 ; free virtual = 298544
+INFO: [v++ 60-1443] [12:00:00] Run run_link: Step rtd2_system_diagram: Started
+INFO: [v++ 60-1453] Command Line: rtd2SystemDiagram
+INFO: [v++ 60-1454] Run Directory: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/run_link
+INFO: [v++ 60-1441] [12:00:01] Run run_link: Step rtd2_system_diagram: Completed
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.93 . Memory (MB): peak = 2218.641 ; gain = 0.000 ; free physical = 204958 ; free virtual = 298483
+INFO: [v++ 60-1443] [12:00:01] Run run_link: Step vpl: Started
+INFO: [v++ 60-1453] Command Line: vpl -t hw -f xilinx_u55c_gen3x16_xdma_3_202210_1 -g --kernel_frequency 140 --remote_ip_cache /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/.ipcache -s --trace_memory HBM[0] --profile_kernel data:all:all:all --output_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int --log_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/logs/link --report_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/reports/link --config /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/vplConfig.ini -k /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/kernel_info.dat --webtalk_flag Vitis --temp_dir /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link --no-info --iprepo /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/xo/ip_repo/xilinx_com_hls_vadd_1_0 --messageDb /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/run_link/vpl.pb /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/dr.bd.tcl
+INFO: [v++ 60-1454] Run Directory: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/run_link
+
+****** vpl v2022.1 (64-bit)
+  **** SW Build 3524075 on 2022-04-13-17:42:45
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+INFO: [VPL 60-839] Read in kernel information from file '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/kernel_info.dat'.
+INFO: [VPL 74-78] Compiler Version string: 2022.1
+INFO: [VPL 60-423]   Target device: xilinx_u55c_gen3x16_xdma_3_202210_1
+INFO: [VPL 82-4282] Memory used for trace offload is HBM 0 
+INFO: [VPL 60-1032] Extracting hardware platform to /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/vivado/vpl/.local/hw_platform
+[12:00:19] Run vpl: Step create_project: Started
+Creating Vivado project.
+[12:00:24] Run vpl: Step create_project: Completed
+[12:00:24] Run vpl: Step create_bd: Started
+[12:01:13] Run vpl: Step create_bd: Completed
+[12:01:13] Run vpl: Step update_bd: Started
+WARNING: [VPL-1] The use of profile options turned on trace, which uses a memory resource in one SLR; however kernels or compute units could potentially be located in multiple SLRs. This may impact timing due to SLR crossing. To improve timing, please consider implementing trace memory in every SLRs used via the linker option: --profile.trace_memory <memory>:<SLR>. SLRs present on the design : SLR0 SLR1 SLR2
+[12:01:26] Run vpl: Step update_bd: Completed
+[12:01:26] Run vpl: Step generate_target: Started
+[12:02:44] Run vpl: Step generate_target: RUNNING...
+[12:04:04] Run vpl: Step generate_target: RUNNING...
+[12:05:25] Run vpl: Step generate_target: RUNNING...
+[12:05:49] Run vpl: Step generate_target: Completed
+[12:05:49] Run vpl: Step config_hw_runs: Started
+[12:05:55] Run vpl: Step config_hw_runs: Completed
+[12:05:55] Run vpl: Step synth: Started
+[12:06:29] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:07:01] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:07:34] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:08:06] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:08:39] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:09:12] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:09:45] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:10:17] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:10:50] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:11:22] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:11:55] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:12:28] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:13:01] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:13:33] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:14:06] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:14:39] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:15:13] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:15:45] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:16:18] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:16:51] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:17:24] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:17:56] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:18:30] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:19:03] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:19:36] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:20:09] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:20:42] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:21:15] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:21:48] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:22:20] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:22:53] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:23:26] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:23:59] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:24:32] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:25:05] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:25:37] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:26:10] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:26:43] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:27:16] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:27:49] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:28:23] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:28:58] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:29:31] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:30:04] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:30:38] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:31:13] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:31:48] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:32:21] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:32:54] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:33:27] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:34:01] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:34:33] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:35:06] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:35:39] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:36:12] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:36:45] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:37:18] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:37:51] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:38:24] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:38:57] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:39:30] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:40:02] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:40:36] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:41:09] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:41:42] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:42:14] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:42:48] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:43:20] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:43:54] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:44:26] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:45:00] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:45:33] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:46:06] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:46:39] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:47:12] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:47:45] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:48:18] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:48:50] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:49:23] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:49:56] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:50:29] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:51:02] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:51:35] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:52:08] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:52:42] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:53:14] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:53:48] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:54:20] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:54:50] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:55:25] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:55:57] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:56:31] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:57:03] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:57:37] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:58:09] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:58:43] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:59:15] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[12:59:49] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:00:21] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:00:56] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:01:28] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:02:02] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:02:34] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:03:08] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:03:40] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:04:15] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:04:47] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:05:21] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:05:53] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:06:27] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:06:58] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:07:32] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:08:04] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:08:38] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:09:10] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:09:44] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:10:16] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:10:50] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:11:22] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:11:54] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:12:26] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:13:00] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:13:32] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:14:06] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:14:38] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:15:13] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:15:45] Block-level synthesis in progress, 0 of 1 jobs complete, 1 job running.
+[13:16:19] Block-level synthesis in progress, 1 of 1 jobs complete, 0 jobs running.
+[13:16:51] Top-level synthesis in progress.
+[13:17:23] Top-level synthesis in progress.
+[13:17:55] Top-level synthesis in progress.
+[13:18:27] Top-level synthesis in progress.
+[13:18:46] Run vpl: Step synth: Completed
+[13:18:46] Run vpl: Step impl: Started
+[13:42:09] Finished 2nd of 6 tasks (FPGA linking synthesized kernels to platform). Elapsed time: 01h 42m 06s 
+
+[13:42:09] Starting logic optimization..
+[13:44:19] Phase 1 Retarget
+[13:45:24] Phase 2 Constant propagation
+[13:45:57] Phase 3 Sweep
+[13:47:34] Phase 4 BUFG optimization
+[13:48:07] Phase 5 Shift Register Optimization
+[13:48:40] Phase 6 Post Processing Netlist
+[13:52:27] Finished 3rd of 6 tasks (FPGA logic optimization). Elapsed time: 00h 10m 18s 
+
+[13:52:27] Starting logic placement..
+[13:54:04] Phase 1 Placer Initialization
+[13:54:04] Phase 1.1 Placer Initialization Netlist Sorting
+[13:57:52] Phase 1.2 IO Placement/ Clock Placement/ Build Placer Device
+[14:00:36] Phase 1.3 Build Placer Netlist Model
+[14:06:33] Phase 1.4 Constrain Clocks/Macros
+[14:08:10] Phase 2 Global Placement
+[14:08:10] Phase 2.1 Floorplanning
+[14:10:20] Phase 2.1.1 Partition Driven Placement
+[14:10:20] Phase 2.1.1.1 PBP: Partition Driven Placement
+[14:14:40] Phase 2.1.1.2 PBP: Clock Region Placement
+[14:16:18] Phase 2.1.1.3 PBP: Discrete Incremental
+[14:16:50] Phase 2.1.1.4 PBP: Compute Congestion
+[14:16:50] Phase 2.1.1.5 PBP: Macro Placement
+[14:17:23] Phase 2.1.1.6 PBP: UpdateTiming
+[14:17:55] Phase 2.1.1.7 PBP: Add part constraints
+[14:18:28] Phase 2.2 Physical Synthesis After Floorplan
+[14:19:34] Phase 2.3 Update Timing before SLR Path Opt
+[14:20:06] Phase 2.4 Post-Processing in Floorplanning
+[14:20:06] Phase 2.5 Global Placement Core
+[14:38:41] Phase 2.5.1 Physical Synthesis In Placer
+[14:44:08] Phase 3 Detail Placement
+[14:44:41] Phase 3.1 Commit Multi Column Macros
+[14:44:41] Phase 3.2 Commit Most Macros & LUTRAMs
+[14:48:29] Phase 3.3 Small Shape DP
+[14:48:29] Phase 3.3.1 Small Shape Clustering
+[14:50:40] Phase 3.3.2 Flow Legalize Slice Clusters
+[14:50:40] Phase 3.3.3 Slice Area Swap
+[14:50:40] Phase 3.3.3.1 Slice Area Swap Initial
+[15:16:51] Phase 3.4 Place Remaining
+[15:38:45] Phase 3.5 Re-assign LUT pins
+[15:39:50] Phase 3.6 Pipeline Register Optimization
+[15:40:23] Phase 3.7 Fast Optimization
+[15:42:34] Phase 4 Post Placement Optimization and Clean-Up
+[15:42:34] Phase 4.1 Post Commit Optimization
+[15:46:55] Phase 4.1.1 Post Placement Optimization
+[15:46:55] Phase 4.1.1.1 BUFG Insertion
+[15:46:55] Phase 1 Physical Synthesis Initialization
+[15:54:00] Phase 4.1.1.2 BUFG Replication
+[15:54:00] Phase 4.1.1.3 Post Placement Timing Optimization
+[16:01:38] Phase 4.1.1.4 Replication
+[16:04:22] Phase 4.2 Post Placement Cleanup
+[16:04:54] Phase 4.3 Placer Reporting
+[16:04:54] Phase 4.3.1 Print Estimated Congestion
+[16:05:28] Phase 4.4 Final Placement Cleanup
+[16:31:08] Finished 4th of 6 tasks (FPGA logic placement). Elapsed time: 02h 38m 40s 
+
+[16:31:08] Starting logic routing..
+[16:33:18] Phase 1 Build RT Design
+[16:38:45] Phase 2 Router Initialization
+[16:38:45] Phase 2.1 Fix Topology Constraints
+[16:39:18] Phase 2.2 Pre Route Cleanup
+[16:40:24] Phase 2.3 Global Clock Net Routing
+[16:42:01] Phase 2.4 Update Timing
+[16:49:38] Phase 2.5 Update Timing for Bus Skew
+[16:49:38] Phase 2.5.1 Update Timing
+[16:52:25] Phase 3 Initial Routing
+[16:52:25] Phase 3.1 Global Routing
+[16:52:25] Phase 3.1.1 SLL Assignment
+[16:57:19] Phase 4 Rip-up And Reroute
+[16:57:19] Phase 4.1 Global Iteration 0
+[18:22:43] Phase 4.2 Global Iteration 1
+[18:53:44] Phase 4.3 Global Iteration 2
+[19:21:28] Phase 4.4 Global Iteration 3
+[19:37:47] Phase 4.5 Global Iteration 4
+[19:48:39] Phase 5 Delay and Skew Optimization
+[19:48:39] Phase 5.1 Delay CleanUp
+[19:48:39] Phase 5.1.1 Update Timing
+[19:51:21] Phase 5.1.2 Update Timing
+[19:53:32] Phase 5.2 Clock Skew Optimization
+[19:54:37] Phase 6 Post Hold Fix
+[19:54:37] Phase 6.1 Hold Fix Iter
+[19:55:10] Phase 6.1.1 Update Timing
+[19:57:53] Phase 7 Route finalize
+[19:58:58] Phase 8 Verifying routed nets
+[19:59:31] Phase 9 Depositing Routes
+[20:01:09] Phase 10 Leaf Clock Prog Delay Opt
+[20:06:35] Phase 10.1 Delay CleanUp
+[20:06:35] Phase 10.1.1 Update Timing
+[20:08:46] Phase 10.1.2 Update Timing
+[20:10:57] Phase 10.2 Hold Fix Iter
+[20:10:57] Phase 10.2.1 Update Timing
+[20:12:35] Phase 10.2.2 Lut RouteThru Assignment for hold
+[20:13:40] Phase 10.3 Additional Hold Fix
+[20:24:35] Phase 10.4 Global Iteration for Hold
+[20:24:35] Phase 10.4.1 Update Timing
+[20:28:56] Phase 11 Depositing Routes
+[20:30:34] Phase 12 Resolve XTalk
+[20:31:40] Phase 13 Post Router Timing
+[20:34:24] Phase 14 Physical Synthesis in Router
+[20:34:24] Phase 14.1 Physical Synthesis Initialization
+[20:43:43] Phase 14.2 Critical Path Optimization
+[20:46:27] Phase 15 Route finalize
+[20:46:59] Finished 5th of 6 tasks (FPGA routing). Elapsed time: 04h 15m 51s 
+
+[20:46:59] Starting bitstream generation..
+[21:11:34] Creating bitmap...
+[21:17:34] Writing bitstream ./level0_i_ulp_my_rm_partial.bit...
+[21:17:34] Finished 6th of 6 tasks (FPGA bitstream generation). Elapsed time: 00h 30m 34s 
+[21:17:56] Run vpl: Step impl: Completed
+[21:17:58] Run vpl: FINISHED. Run Status: impl Complete!
+INFO: [v++ 60-1441] [21:17:59] Run run_link: Step vpl: Completed
+Time (s): cpu = 00:06:28 ; elapsed = 09:17:58 . Memory (MB): peak = 2218.641 ; gain = 0.000 ; free physical = 107273 ; free virtual = 217272
+INFO: [v++ 60-1443] [21:17:59] Run run_link: Step rtdgen: Started
+INFO: [v++ 60-1453] Command Line: rtdgen
+INFO: [v++ 60-1454] Run Directory: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/run_link
+INFO: [v++ 60-991] clock name 'ulp_ucs/aclk_kernel_01' (clock ID '1') is being mapped to clock name 'KERNEL_CLK' in the xclbin
+INFO: [v++ 60-991] clock name 'ulp_ucs/aclk_kernel_00' (clock ID '0') is being mapped to clock name 'DATA_CLK' in the xclbin
+INFO: [v++ 60-991] clock name 'hbm_aclk' (clock ID '') is being mapped to clock name 'hbm_aclk' in the xclbin
+INFO: [v++ 60-1230] The compiler selected the following frequencies for the runtime controllable kernel clock(s) and scalable system clock(s): System (SYSTEM) clock: hbm_aclk = 429, Kernel (KERNEL) clock: ulp_ucs/aclk_kernel_01 = 500, Kernel (DATA) clock: ulp_ucs/aclk_kernel_00 = 140
+INFO: [v++ 60-1453] Command Line: cf2sw -force-enable-memory HBM[0] -a /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/address_map.xml -sdsl /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/sdsl.dat -xclbin /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/xclbin_orig.xml -rtd /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw.rtd -o /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw.xml
+INFO: [v++ 60-1652] Cf2sw returned exit code: 0
+INFO: [v++ 60-1441] [21:18:04] Run run_link: Step rtdgen: Completed
+Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 2218.641 ; gain = 0.000 ; free physical = 109492 ; free virtual = 219493
+INFO: [v++ 60-1443] [21:18:04] Run run_link: Step xclbinutil: Started
+INFO: [v++ 60-1453] Command Line: xclbinutil --add-section DEBUG_IP_LAYOUT:JSON:/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/debug_ip_layout.rtd --add-section BITSTREAM:RAW:/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/partial.bit --force --target hw --key-value SYS:dfx_enable:true --add-section :JSON:/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw.rtd --append-section :JSON:/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/appendSection.rtd --add-section CLOCK_FREQ_TOPOLOGY:JSON:/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw_xml.rtd --add-section BUILD_METADATA:JSON:/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw_build.rtd --add-section EMBEDDED_METADATA:RAW:/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw.xml --add-section SYSTEM_METADATA:RAW:/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/systemDiagramModelSlrBaseAddress.json --key-value SYS:PlatformVBNV:xilinx_u55c_gen3x16_xdma_3_202210_1 --output /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xclbin
+INFO: [v++ 60-1454] Run Directory: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/run_link
+XRT Build Version: 2.13.466 (2022.1)
+       Build Date: 2022-04-14 17:43:11
+          Hash ID: f5505e402c2ca1ffe45eb6d3a9399b23a0dc8776
+Creating a default 'in-memory' xclbin image.
+
+Section: 'DEBUG_IP_LAYOUT'(9) was successfully added.
+Size   : 2168 bytes
+Format : JSON
+File   : '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/debug_ip_layout.rtd'
+
+Section: 'BITSTREAM'(0) was successfully added.
+Size   : 61721318 bytes
+Format : RAW
+File   : '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/partial.bit'
+
+Section: 'MEM_TOPOLOGY'(6) was successfully added.
+Format : JSON
+File   : 'mem_topology'
+
+Section: 'IP_LAYOUT'(8) was successfully added.
+Format : JSON
+File   : 'ip_layout'
+
+Section: 'CONNECTIVITY'(7) was successfully added.
+Format : JSON
+File   : 'connectivity'
+
+Section: 'CLOCK_FREQ_TOPOLOGY'(11) was successfully added.
+Size   : 410 bytes
+Format : JSON
+File   : '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw_xml.rtd'
+
+Section: 'BUILD_METADATA'(14) was successfully added.
+Size   : 5815 bytes
+Format : JSON
+File   : '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw_build.rtd'
+
+Section: 'EMBEDDED_METADATA'(2) was successfully added.
+Size   : 636815 bytes
+Format : RAW
+File   : '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/vadd.hw.xml'
+
+Section: 'SYSTEM_METADATA'(22) was successfully added.
+Size   : 40786 bytes
+Format : RAW
+File   : '/pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/int/systemDiagramModelSlrBaseAddress.json'
+
+Section: 'PARTITION_METADATA'(20) was successfully appended to.
+Format : JSON
+File   : 'partition_metadata'
+
+Section: 'IP_LAYOUT'(8) was successfully appended to.
+Format : JSON
+File   : 'ip_layout'
+Successfully wrote (62442382 bytes) to the output file: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xclbin
+Leaving xclbinutil.
+INFO: [v++ 60-1441] [21:18:06] Run run_link: Step xclbinutil: Completed
+Time (s): cpu = 00:00:00.15 ; elapsed = 00:00:01 . Memory (MB): peak = 2218.641 ; gain = 0.000 ; free physical = 109334 ; free virtual = 219395
+INFO: [v++ 60-1443] [21:18:06] Run run_link: Step xclbinutilinfo: Started
+INFO: [v++ 60-1453] Command Line: xclbinutil --quiet --force --info /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xclbin.info --input /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xclbin
+INFO: [v++ 60-1454] Run Directory: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/run_link
+INFO: [v++ 60-1441] [21:18:07] Run run_link: Step xclbinutilinfo: Completed
+Time (s): cpu = 00:00:00.63 ; elapsed = 00:00:00.78 . Memory (MB): peak = 2218.641 ; gain = 0.000 ; free physical = 109263 ; free virtual = 219325
+INFO: [v++ 60-1443] [21:18:07] Run run_link: Step generate_sc_driver: Started
+INFO: [v++ 60-1453] Command Line: 
+INFO: [v++ 60-1454] Run Directory: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/link/run_link
+INFO: [v++ 60-1441] [21:18:07] Run run_link: Step generate_sc_driver: Completed
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.02 . Memory (MB): peak = 2218.641 ; gain = 0.000 ; free physical = 109307 ; free virtual = 219370
+INFO: [v++ 60-244] Generating system estimate report...
+INFO: [v++ 60-1092] Generated system estimate report: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/reports/link/system_estimate_vadd.hw.xtxt
+INFO: [v++ 60-586] Created /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.ltx
+INFO: [v++ 60-586] Created xclbin/vadd.hw.xclbin
+INFO: [v++ 60-1307] Run completed. Additional information can be found in:
+	Guidance: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/reports/link/v++_link_vadd.hw_guidance.html
+	Timing Report: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/reports/link/imp/impl_1_hw_bb_locked_timing_summary_routed.rpt
+	Vivado Log: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/logs/link/vivado.log
+	Steps Log File: /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/_x.hw/logs/link/link.steps.log
+
+INFO: [v++ 60-2343] Use the vitis_analyzer tool to visualize and navigate the relevant reports. Run the following command. 
+    vitis_analyzer /pub/scratch/wenqi/Auto-ANNS-Accelerator/generated_projects_2021.2/U55C_Deep100M_K1_R30_util_60_140MHz/xclbin/vadd.hw.xclbin.link_summary 
+INFO: [v++ 60-791] Total elapsed time: 9h 20m 24s
+INFO: [v++ 60-1653] Closing dispatch client.
+/tools/Xilinx//Vitis/2022.1/bin/emconfigutil --nd 1 --od . --platform xilinx_u55c_gen3x16_xdma_3_202210_1
+
+****** configutil v2022.1 (64-bit)
+  **** SW Build 3524075 on 2022-04-13-17:42:45
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+INFO: [ConfigUtil 60-895]   Target platform: /opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/xilinx_u55c_gen3x16_xdma_3_202210_1.xpfm
+INFO: [ConfigUtil 60-1578]   This platform contains Xilinx Shell Archive '/opt/xilinx/platforms/xilinx_u55c_gen3x16_xdma_3_202210_1/hw/hw.xsa'
+INFO: [ConfigUtil 60-1032] Extracting hardware platform to .
+emulation configuration file `emconfig.json` is created in . directory 
