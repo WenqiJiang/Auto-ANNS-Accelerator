@@ -310,7 +310,7 @@ int main(int argc, char** argv)
     size_t HBM_vector_quantizer_len = nlist * 128;
     size_t HBM_product_quantizer_len = 16 * 256 * (128 / 16);
     size_t HBM_OPQ_matrix_len = 128 * 128;
-    size_t HBM_out_len = TOPK * query_num; 
+    size_t HBM_out_len = TOPK * query_num * 2; 
 
     // the storage format of the meta info:
     //   (1) HBM_info_start_addr_and_scanned_entries_every_cell_and_last_element_valid: size = 3 * nlist
@@ -345,7 +345,7 @@ int main(int argc, char** argv)
     size_t HBM_vector_quantizer_size = HBM_vector_quantizer_len * sizeof(float);
     size_t HBM_product_quantizer_size = HBM_product_quantizer_len * sizeof(float);
     size_t HBM_OPQ_matrix_size = HBM_OPQ_matrix_len * sizeof(float);
-    size_t HBM_out_size = HBM_out_len * sizeof(uint32_t) * 2; 
+    size_t HBM_out_size = HBM_out_len * sizeof(uint32_t); 
     size_t HBM_meta_info_size = HBM_meta_info_len * sizeof(float);
 
     size_t raw_gt_vec_ID_size = raw_gt_vec_ID_len * sizeof(int);
@@ -983,7 +983,7 @@ int main(int argc, char** argv)
     std::cout << "QPS: " << query_num / (durationUs / 1000.0 / 1000.0) << std::endl;
 
 
-//    exit(0);
+    exit(0);
 
     // std::cout << "TEST " << (match ? "PASSED" : "FAILED") << std::endl; 
     // return (match ? EXIT_SUCCESS : EXIT_FAILURE);
