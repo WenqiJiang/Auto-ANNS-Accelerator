@@ -1,0 +1,564 @@
+Executing command:
+./host xclbin/vadd.hw.xclbin 8192 8 0 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_IVF8192,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+nlist: 8192
+nprobe: 8
+OPQ enable: 0
+data directory/mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_IVF8192,PQ16_16_banks
+ground truth directory/mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+Inferred parameters:
+centroids_per_partition_even: 820
+centroids_per_partition_last_PE: 812
+nprobe_per_table_construction_pe_larger: 2
+nprobe_per_table_construction_pe_smaller: 2
+
+Found Platform
+
+Platform Name: Xilinx
+Finished getting device...
+Finished creating context...
+Finished creating command queue...
+
+ Loading: xclbin/vadd.hw.xclbin
+Finished loading binary...
+Finished creating program...
+Finished creating kernel...
+Start to allocate device memory...
+Starting copy from Host to device... (wait for 10 sec to make sure wait finishes)
+Host to device finished...
+Comparing Results...
+
+=====  Recall: 0.70870000  =====
+duration (sec), including dev->host cp, may have small difference with Vitis profiler:0.949392
+QPS: 10533.1
+
+
+dbname=Deep100M index_key=IVF8192,PQ16 topK=10 recall_goal=0.7 QPS=10538.218429868683
+
+
+Executing command:
+./host xclbin/vadd.hw.xclbin 1024 1 0 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_IVF1024,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+nlist: 1024
+nprobe: 1
+OPQ enable: 0
+data directory/mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_IVF1024,PQ16_16_banks
+ground truth directory/mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+Increasing nprobe_stage4 due to stage 4 hardware compatibility reason,current nprobe_stage4: 2
+Increasing nprobe_stage4 due to stage 4 hardware compatibility reason,current nprobe_stage4: 3
+Increasing nprobe_stage4 due to stage 4 hardware compatibility reason,current nprobe_stage4: 4
+Inferred parameters:
+centroids_per_partition_even: 103
+centroids_per_partition_last_PE: 97
+nprobe_per_table_construction_pe_larger: 1
+nprobe_per_table_construction_pe_smaller: 1
+
+Found Platform
+
+Platform Name: Xilinx
+Finished getting device...
+Finished creating context...
+Finished creating command queue...
+
+ Loading: xclbin/vadd.hw.xclbin
+Finished loading binary...
+Finished creating program...
+Finished creating kernel...
+Start to allocate device memory...
+Starting copy from Host to device... (wait for 10 sec to make sure wait finishes)
+Host to device finished...
+Comparing Results...
+
+=====  Recall: 0.47920001  =====
+duration (sec), including dev->host cp, may have small difference with Vitis profiler:0.521631
+QPS: 19170.6
+
+
+dbname=Deep100M index_key=IVF1024,PQ16 topK=10 recall_goal=0.07 QPS=19188.112580494133
+
+
+Executing command:
+./host xclbin/vadd.hw.xclbin 1024 8 0 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_IVF1024,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+nlist: 1024
+nprobe: 8
+OPQ enable: 0
+data directory/mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_IVF1024,PQ16_16_banks
+ground truth directory/mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+Inferred parameters:
+centroids_per_partition_even: 103
+centroids_per_partition_last_PE: 97
+nprobe_per_table_construction_pe_larger: 2
+nprobe_per_table_construction_pe_smaller: 2
+
+Found Platform
+
+Platform Name: Xilinx
+Finished getting device...
+Finished creating context...
+Finished creating command queue...
+
+ Loading: xclbin/vadd.hw.xclbin
+Finished loading binary...
+Finished creating program...
+Finished creating kernel...
+Start to allocate device memory...
+Starting copy from Host to device... (wait for 10 sec to make sure wait finishes)
+Host to device finished...
+Comparing Results...
+
+=====  Recall: 0.70230001  =====
+duration (sec), including dev->host cp, may have small difference with Vitis profiler:3.96058
+QPS: 2524.88
+
+
+dbname=Deep100M index_key=IVF1024,PQ16 topK=10 recall_goal=0.7 QPS=2525.195134454015
+
+
+Executing command:
+./host xclbin/vadd.hw.xclbin 1024 4 1 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_OPQ16,IVF1024,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+nlist: 1024
+nprobe: 4
+OPQ enable: 1
+data directory/mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_OPQ16,IVF1024,PQ16_16_banks
+ground truth directory/mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+Inferred parameters:
+centroids_per_partition_even: 103
+centroids_per_partition_last_PE: 97
+nprobe_per_table_construction_pe_larger: 1
+nprobe_per_table_construction_pe_smaller: 1
+
+Found Platform
+
+Platform Name: Xilinx
+Finished getting device...
+Finished creating context...
+Finished creating command queue...
+
+ Loading: xclbin/vadd.hw.xclbin
+Finished loading binary...
+Finished creating program...
+Finished creating kernel...
+Start to allocate device memory...
+Starting copy from Host to device... (wait for 10 sec to make sure wait finishes)
+Host to device finished...
+Comparing Results...
+
+=====  Recall: 0.70620000  =====
+duration (sec), including dev->host cp, may have small difference with Vitis profiler:2.02276
+QPS: 4943.74
+
+
+dbname=Deep100M index_key=OPQ16,IVF1024,PQ16 topK=10 recall_goal=0.7 QPS=4945.011472426616
+
+
+Executing command:
+./host xclbin/vadd.hw.xclbin 4096 6 1 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_OPQ16,IVF4096,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+nlist: 4096
+nprobe: 6
+OPQ enable: 1
+data directory/mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_OPQ16,IVF4096,PQ16_16_banks
+ground truth directory/mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+Increasing nprobe_stage4 due to stage 4 hardware compatibility reason,current nprobe_stage4: 7
+Inferred parameters:
+centroids_per_partition_even: 410
+centroids_per_partition_last_PE: 406
+nprobe_per_table_construction_pe_larger: 2
+nprobe_per_table_construction_pe_smaller: 1
+
+Found Platform
+
+Platform Name: Xilinx
+Finished getting device...
+Finished creating context...
+Finished creating command queue...
+
+ Loading: xclbin/vadd.hw.xclbin
+Finished loading binary...
+Finished creating program...
+Finished creating kernel...
+Start to allocate device memory...
+Starting copy from Host to device... (wait for 10 sec to make sure wait finishes)
+Host to device finished...
+Comparing Results...
+
+=====  Recall: 0.71520001  =====
+duration (sec), including dev->host cp, may have small difference with Vitis profiler:0.898988
+QPS: 11123.6
+
+
+dbname=Deep100M index_key=OPQ16,IVF4096,PQ16 topK=10 recall_goal=0.7 QPS=11129.41281218003
+
+
+Executing command:
+./host xclbin/vadd.hw.xclbin 8192 6 1 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_OPQ16,IVF8192,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+nlist: 8192
+nprobe: 6
+OPQ enable: 1
+data directory/mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_OPQ16,IVF8192,PQ16_16_banks
+ground truth directory/mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+Increasing nprobe_stage4 due to stage 4 hardware compatibility reason,current nprobe_stage4: 7
+Inferred parameters:
+centroids_per_partition_even: 820
+centroids_per_partition_last_PE: 812
+nprobe_per_table_construction_pe_larger: 2
+nprobe_per_table_construction_pe_smaller: 1
+
+Found Platform
+
+Platform Name: Xilinx
+Finished getting device...
+Finished creating context...
+Finished creating command queue...
+
+ Loading: xclbin/vadd.hw.xclbin
+Finished loading binary...
+Finished creating program...
+Finished creating kernel...
+Start to allocate device memory...
+Starting copy from Host to device... (wait for 10 sec to make sure wait finishes)
+Host to device finished...
+Comparing Results...
+
+=====  Recall: 0.70249999  =====
+duration (sec), including dev->host cp, may have small difference with Vitis profiler:0.94747
+QPS: 10554.4
+
+
+dbname=Deep100M index_key=OPQ16,IVF8192,PQ16 topK=10 recall_goal=0.7 QPS=10559.728995115069
+
+
+Executing command:
+./host xclbin/vadd.hw.xclbin 2048 5 1 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_OPQ16,IVF2048,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+nlist: 2048
+nprobe: 5
+OPQ enable: 1
+data directory/mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_OPQ16,IVF2048,PQ16_16_banks
+ground truth directory/mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+Increasing nprobe_stage4 due to stage 4 hardware compatibility reason,current nprobe_stage4: 6
+Increasing nprobe_stage4 due to stage 4 hardware compatibility reason,current nprobe_stage4: 7
+Inferred parameters:
+centroids_per_partition_even: 205
+centroids_per_partition_last_PE: 203
+nprobe_per_table_construction_pe_larger: 2
+nprobe_per_table_construction_pe_smaller: 1
+
+Found Platform
+
+Platform Name: Xilinx
+Finished getting device...
+Finished creating context...
+Finished creating command queue...
+
+ Loading: xclbin/vadd.hw.xclbin
+Finished loading binary...
+Finished creating program...
+Finished creating kernel...
+Start to allocate device memory...
+Starting copy from Host to device... (wait for 10 sec to make sure wait finishes)
+Host to device finished...
+Comparing Results...
+
+=====  Recall: 0.70730001  =====
+duration (sec), including dev->host cp, may have small difference with Vitis profiler:1.35143
+QPS: 7399.55
+
+
+dbname=Deep100M index_key=OPQ16,IVF2048,PQ16 topK=10 recall_goal=0.7 QPS=7401.869712289324
+
+
+Executing command:
+./host xclbin/vadd.hw.xclbin 16384 7 1 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_OPQ16,IVF16384,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+nlist: 16384
+nprobe: 7
+OPQ enable: 1
+data directory/mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_OPQ16,IVF16384,PQ16_16_banks
+ground truth directory/mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+Inferred parameters:
+centroids_per_partition_even: 1639
+centroids_per_partition_last_PE: 1633
+nprobe_per_table_construction_pe_larger: 2
+nprobe_per_table_construction_pe_smaller: 1
+
+Found Platform
+
+Platform Name: Xilinx
+Finished getting device...
+Finished creating context...
+Finished creating command queue...
+
+ Loading: xclbin/vadd.hw.xclbin
+Finished loading binary...
+Finished creating program...
+Finished creating kernel...
+Start to allocate device memory...
+Starting copy from Host to device... (wait for 10 sec to make sure wait finishes)
+Host to device finished...
+Comparing Results...
+
+=====  Recall: 0.70660001  =====
+duration (sec), including dev->host cp, may have small difference with Vitis profiler:1.87967
+QPS: 5320.08
+
+
+dbname=Deep100M index_key=OPQ16,IVF16384,PQ16 topK=10 recall_goal=0.7 QPS=5321.413367390379
+
+
+Executing command:
+./host xclbin/vadd.hw.xclbin 32768 9 1 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_OPQ16,IVF32768,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+nlist: 32768
+nprobe: 9
+OPQ enable: 1
+data directory/mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_OPQ16,IVF32768,PQ16_16_banks
+ground truth directory/mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+Increasing nprobe_stage4 due to stage 4 hardware compatibility reason,current nprobe_stage4: 10
+Inferred parameters:
+centroids_per_partition_even: 3277
+centroids_per_partition_last_PE: 3275
+nprobe_per_table_construction_pe_larger: 3
+nprobe_per_table_construction_pe_smaller: 1
+
+Found Platform
+
+Platform Name: Xilinx
+Finished getting device...
+Finished creating context...
+Finished creating command queue...
+
+ Loading: xclbin/vadd.hw.xclbin
+Finished loading binary...
+Finished creating program...
+Finished creating kernel...
+Start to allocate device memory...
+Starting copy from Host to device... (wait for 10 sec to make sure wait finishes)
+Host to device finished...
+Comparing Results...
+
+=====  Recall: 0.70420003  =====
+duration (sec), including dev->host cp, may have small difference with Vitis profiler:3.75205
+QPS: 2665.21
+
+
+dbname=Deep100M index_key=OPQ16,IVF32768,PQ16 topK=10 recall_goal=0.7 QPS=2665.5506894446858
+
+
+Executing command:
+./host xclbin/vadd.hw.xclbin 65536 10 1 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_OPQ16,IVF65536,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+nlist: 65536
+nprobe: 10
+OPQ enable: 1
+data directory/mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_OPQ16,IVF65536,PQ16_16_banks
+ground truth directory/mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+Inferred parameters:
+centroids_per_partition_even: 6554
+centroids_per_partition_last_PE: 6550
+nprobe_per_table_construction_pe_larger: 3
+nprobe_per_table_construction_pe_smaller: 1
+
+Found Platform
+
+Platform Name: Xilinx
+Finished getting device...
+Finished creating context...
+Finished creating command queue...
+
+ Loading: xclbin/vadd.hw.xclbin
+Finished loading binary...
+Finished creating program...
+Finished creating kernel...
+Start to allocate device memory...
+Starting copy from Host to device... (wait for 10 sec to make sure wait finishes)
+Host to device finished...
+Comparing Results...
+
+=====  Recall: 0.70330000  =====
+duration (sec), including dev->host cp, may have small difference with Vitis profiler:7.49806
+QPS: 1333.68
+
+
+dbname=Deep100M index_key=OPQ16,IVF65536,PQ16 topK=10 recall_goal=0.7 QPS=1333.7636944187325
+
+
+Executing command:
+./host xclbin/vadd.hw.xclbin 32768 10 0 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_IVF32768,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+nlist: 32768
+nprobe: 10
+OPQ enable: 0
+data directory/mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_IVF32768,PQ16_16_banks
+ground truth directory/mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+Inferred parameters:
+centroids_per_partition_even: 3277
+centroids_per_partition_last_PE: 3275
+nprobe_per_table_construction_pe_larger: 3
+nprobe_per_table_construction_pe_smaller: 1
+
+Found Platform
+
+Platform Name: Xilinx
+Finished getting device...
+Finished creating context...
+Finished creating command queue...
+
+ Loading: xclbin/vadd.hw.xclbin
+Finished loading binary...
+Finished creating program...
+Finished creating kernel...
+Start to allocate device memory...
+Starting copy from Host to device... (wait for 10 sec to make sure wait finishes)
+Host to device finished...
+Comparing Results...
+
+=====  Recall: 0.70770001  =====
+duration (sec), including dev->host cp, may have small difference with Vitis profiler:3.75203
+QPS: 2665.23
+
+
+dbname=Deep100M index_key=IVF32768,PQ16 topK=10 recall_goal=0.7 QPS=2665.5933210893745
+
+
+Executing command:
+./host xclbin/vadd.hw.xclbin 16384 9 0 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_IVF16384,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+nlist: 16384
+nprobe: 9
+OPQ enable: 0
+data directory/mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_IVF16384,PQ16_16_banks
+ground truth directory/mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+Increasing nprobe_stage4 due to stage 4 hardware compatibility reason,current nprobe_stage4: 10
+Inferred parameters:
+centroids_per_partition_even: 1639
+centroids_per_partition_last_PE: 1633
+nprobe_per_table_construction_pe_larger: 3
+nprobe_per_table_construction_pe_smaller: 1
+
+Found Platform
+
+Platform Name: Xilinx
+Finished getting device...
+Finished creating context...
+Finished creating command queue...
+
+ Loading: xclbin/vadd.hw.xclbin
+Finished loading binary...
+Finished creating program...
+Finished creating kernel...
+Start to allocate device memory...
+Starting copy from Host to device... (wait for 10 sec to make sure wait finishes)
+Host to device finished...
+Comparing Results...
+
+=====  Recall: 0.70819998  =====
+duration (sec), including dev->host cp, may have small difference with Vitis profiler:1.87965
+QPS: 5320.15
+
+
+dbname=Deep100M index_key=IVF16384,PQ16 topK=10 recall_goal=0.7 QPS=5321.526639562358
+
+
+Executing command:
+./host xclbin/vadd.hw.xclbin 4096 7 0 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_IVF4096,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+nlist: 4096
+nprobe: 7
+OPQ enable: 0
+data directory/mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_IVF4096,PQ16_16_banks
+ground truth directory/mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+Inferred parameters:
+centroids_per_partition_even: 410
+centroids_per_partition_last_PE: 406
+nprobe_per_table_construction_pe_larger: 2
+nprobe_per_table_construction_pe_smaller: 1
+
+Found Platform
+
+Platform Name: Xilinx
+Finished getting device...
+Finished creating context...
+Finished creating command queue...
+
+ Loading: xclbin/vadd.hw.xclbin
+Finished loading binary...
+Finished creating program...
+Finished creating kernel...
+Start to allocate device memory...
+Starting copy from Host to device... (wait for 10 sec to make sure wait finishes)
+Host to device finished...
+Comparing Results...
+
+=====  Recall: 0.70679998  =====
+duration (sec), including dev->host cp, may have small difference with Vitis profiler:1.04334
+QPS: 9584.61
+
+
+dbname=Deep100M index_key=IVF4096,PQ16 topK=10 recall_goal=0.7 QPS=9588.830929733047
+
+
+Executing command:
+./host xclbin/vadd.hw.xclbin 2048 8 0 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_IVF2048,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+nlist: 2048
+nprobe: 8
+OPQ enable: 0
+data directory/mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_IVF2048,PQ16_16_banks
+ground truth directory/mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+Inferred parameters:
+centroids_per_partition_even: 205
+centroids_per_partition_last_PE: 203
+nprobe_per_table_construction_pe_larger: 2
+nprobe_per_table_construction_pe_smaller: 2
+
+Found Platform
+
+Platform Name: Xilinx
+Finished getting device...
+Finished creating context...
+Finished creating command queue...
+
+ Loading: xclbin/vadd.hw.xclbin
+Finished loading binary...
+Finished creating program...
+Finished creating kernel...
+Start to allocate device memory...
+Starting copy from Host to device... (wait for 10 sec to make sure wait finishes)
+Host to device finished...
+Comparing Results...
+
+=====  Recall: 0.70260000  =====
+duration (sec), including dev->host cp, may have small difference with Vitis profiler:2.13572
+QPS: 4682.26
+
+
+dbname=Deep100M index_key=IVF2048,PQ16 topK=10 recall_goal=0.7 QPS=4683.248488481551
+
+
+Executing command:
+./host xclbin/vadd.hw.xclbin 65536 11 0 /mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_IVF65536,PQ16_16_banks /mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+nlist: 65536
+nprobe: 11
+OPQ enable: 0
+data directory/mnt/scratch/wenqi/saved_npy_data/FPGA_data_Deep100M_IVF65536,PQ16_16_banks
+ground truth directory/mnt/scratch/wenqi/saved_npy_data/Deep_gnd
+Inferred parameters:
+centroids_per_partition_even: 6554
+centroids_per_partition_last_PE: 6550
+nprobe_per_table_construction_pe_larger: 3
+nprobe_per_table_construction_pe_smaller: 2
+
+Found Platform
+
+Platform Name: Xilinx
+Finished getting device...
+Finished creating context...
+Finished creating command queue...
+
+ Loading: xclbin/vadd.hw.xclbin
+Finished loading binary...
+Finished creating program...
+Finished creating kernel...
+Start to allocate device memory...
+Starting copy from Host to device... (wait for 10 sec to make sure wait finishes)
+Host to device finished...
+Comparing Results...
+
+=====  Recall: 0.70150000  =====
+duration (sec), including dev->host cp, may have small difference with Vitis profiler:7.49798
+QPS: 1333.69
+
+
+dbname=Deep100M index_key=IVF65536,PQ16 topK=10 recall_goal=0.7 QPS=1333.776147014142
+
+
